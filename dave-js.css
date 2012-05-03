@@ -1,0 +1,29 @@
+/* styles for the message box module */
+#daveMessageBox{
+   padding: 25px;
+   
+   border: 1px solid;
+   border-radius: 10px;
+   
+   background = white;
+   
+   background-image: linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
+   background-image: -o-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
+   background-image: -moz-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
+   background-image: -webkit-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
+   background-image: -ms-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
+   background-image: -webkit-gradient(
+      linear,
+      left top,
+      left top,
+      color-stop(0.45, rgb(233,242,242)),
+      color-stop(0.73, rgb(228,247,247))
+   );
+   
+   overflow: auto;
+}
+#daveMessageClose{
+   position: absolute;
+   top: 5px;
+   right: 5px;
+}
