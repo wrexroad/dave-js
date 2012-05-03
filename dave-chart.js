@@ -297,8 +297,8 @@ Dave_js.chart = function(name) {
                coord_i = parseInt(x * (data.indep.length/chart.sizes.width));
                
                //create message and show message if we are within the plot
-               if(xCoord = data.indep[coord_i]){
-                  
+               if(data.indep[coord_i] != undefined){
+                  xCoord = data.indep[coord_i];
                   message = chart.labels.indep + " = " + xCoord;
                   
                   for(var plt_i in data.dep){
