@@ -6,7 +6,6 @@
    border-radius: 10px;
    
    background: white;
-   
    background-image: linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
    background-image: -o-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
    background-image: -moz-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);

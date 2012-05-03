@@ -273,46 +273,45 @@ Dave_js.chart = function(name) {
       }
       
       //add coordinate display if this is an xy plot
-      if(flags.xy){   
+      if(flags.xy && Dave_js.message){   
          //create a message holder 
-         if(Dave_js.message){
-            elms.coordMsg = new Dave_js.message();
+         elms.coordMsg = new Dave_js.message();
+         elms.coordMsg.box.style.opacity = "0.8";
+         
+         //add event listeners to display cursor coordinates in the message holder
+         elms.canvas.onmouseover = function(){
+            elms.canvas.addEventListener("mousemove", showCoord);
+         }
+         elms.canvas.onmouseout = function(){
+            elms.canvas.removeEventListener("mousemove", showCoord);
+            elms.coordMsg.hideMessage(elms.coordMsg);
+         }
+         
+         function showCoord(e){
+            var x, coord_i, message, yCoord, xCoord;
             
-            //add event listeners to display cursor coordinates in the message holder
-            elms.canvas.onmouseover = function(){
-               elms.canvas.addEventListener("mousemove", showCoord);
-            }
-            elms.canvas.onmouseout = function(){
-               elms.canvas.removeEventListener("mousemove", showCoord);
-               elms.coordMsg.hideMessage(elms.coordMsg);
-            }
+            //x coordinate of cursor relative to canvas
+            x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
             
-            function showCoord(e){
-               var x, coord_i, message, yCoord, xCoord;
+            //calculate the data point index we are closest to
+            coord_i = parseInt(x * (data.indep.length/chart.sizes.width));
+            
+            //create message and show message if we are within the plot
+            if(data.indep[coord_i] != undefined){
+               xCoord = data.indep[coord_i];
+               message = chart.labels.indep + " = " + xCoord;
                
-               //x coordinate of cursor relative to canvas
-               x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
-               
-               //calculate the data point index we are closest to
-               coord_i = parseInt(x * (data.indep.length/chart.sizes.width));
-               
-               //create message and show message if we are within the plot
-               if(data.indep[coord_i] != undefined){
-                  xCoord = data.indep[coord_i];
-                  message = chart.labels.indep + " = " + xCoord;
+               for(var plt_i in data.dep){
+                  yCoord = data.dep[plt_i][coord_i];
                   
-                  for(var plt_i in data.dep){
-                     yCoord = data.dep[plt_i][coord_i];
-                     
-                     message += 
-                        "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
-                  }
-                  
-                  elms.coordMsg.showMessage(
-                     message, (e.pageX + 10), (e.pageY + 10)
-                  );
+                  message += 
+                     "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
                }
-            };
+               
+               elms.coordMsg.showMessage(
+                  message, (e.pageX + 10), (e.pageY + 10)
+               );
+            }
          }
       }
    }
