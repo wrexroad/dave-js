@@ -277,7 +277,7 @@ Dave_js.chart = function(name) {
          //create a message holder 
          elms.coordMsg = new Dave_js.message();
          elms.coordMsg.box.style.opacity = "0.8";
-         
+         elms.coordMsg.box.style.filter = "alpha(opacity=80)";
          //add event listeners to display cursor coordinates in the message holder
          elms.canvas.onmouseover = function(){
             elms.canvas.addEventListener("mousemove", showCoord);
