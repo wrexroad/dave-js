@@ -34,8 +34,7 @@ Dave_js.chart = function(name) {
       },
    
       //default x and y origins for the canvas coordinate system   
-      origX : 60, 
-      origY : 20,
+      origin : { x : 60, y : 20},
       totalOffsetX : 0,
       totalOffsetY : 0,
       
@@ -226,7 +225,7 @@ Dave_js.chart = function(name) {
       
       //move coord origin to the upper left corner of plot area
       ctx.translate(
-         chart.origX, chart.origY
+         chart.origin.x, chart.origin.y
       );
       
       if(!flags.subplot){
@@ -271,129 +270,52 @@ Dave_js.chart = function(name) {
             ctx.fillText(chart.labels.dep, 0, 0);
             ctx.restore();
          }
-         
-      }
-   };
-   
-   //Adds mousemove listener to the plot so we can get a points exact value
-   //Defines functions needed to highlight points and return values
-   function CoordDisp(){
-      elms.xCoordBox = document.getElementById(
-         plotPros.coordDisp.xID
-      );
-   
-      elms.yCoordBox = document.getElementById(
-         coordDisp.yID
-      );
-      
-      //make sure we could actually find the coord box elements
-      if(elms.yCoordBox && elms.xCoordBox){ 
-         //make oldIndex variable presist after point highligher subroutine ends
-         coordDisp.oldIndex = 0;
-         //add mouse position listener to canvas
-         elms.canvas.addEventListener('mousemove', ev_mousemove, false);
       }
       
-      //function the event listener calls
-      function ev_mousemove (ev) {
-         // Get the mouse position relative to the canvas element.
-         if (ev.layerX || ev.layerX == 0) { // Firefox
-            var x = ev.layerX;
-         } 
-         else if (ev.offsetX || ev.offsetX == 0) { // Opera
-            var x = ev.offsetX;
-         }
-         
-         var xIndex = x - chart.origX;
-         var numOfPnts = data.indep.length - 1;
-         var chartWidth = chart.sizes.width;
-         var pnt = parseInt( xIndex * numOfPnts / chartWidth ); 
-         highlightPoint(pnt);
-      }
-      
-      function highlightPoint( pnt_i ) {
-         var yCoordBoxCode = null;
-      
-         //hightlight a point on mouseover if its not an empty point
-         ctx.fillStyle=colors.activePoint;
-         for(var dataSet_i=0; dataSet_i<data.dep.length; dataSet_i++){
-            if( 
-               data.dep[dataSet_i][pnt_i]!=undefined 
-               && !isNaN(data.dep[dataSet_i][pnt_i])
-            ){
-               ctx.fillRect(
-                  pnt_i * chart.pntSpacing.indep - (chart.sizes.pointSize / 2 ) + chart.totalOffsetX,
-                  ( chart.limits.min - plotProps.data.dep[dataSet_i][pnt_i] ) * chart.pntSpacing.dep - ( chart.sizes.pointSize / 2 ) + chart.totalOffsetY,
-                  chart.sizes.pointSize,chart.sizes.pointSize
-               );
-            }
-         }
-      
-         //restore previous color on mouseoff
-         if(pnt_i != coordDisp.oldIndex){
-            ctx.fillStyle = 
-               plotPros.colors.data[dataSet_i];
+      //add coordinate display if this is an xy plot
+      if(flags.xy){   
+         //create a message holder 
+         if(Dave_js.message){
+            elms.coordMsg = new Dave_js.message();
             
-            for(var dataSet_i=0; dataSet_i < data.dep.length; dataSet_i++){
-               if(data.dep[dataSet_i][coordDisp.oldIndex]!=undefined && !isNaN(data.dep[dataSet_i][coordDisp.oldIndex])){
-                  ctx.fillRect(
-                     coordDisp.oldIndex * chart.pntSpacing.indep - (chart.sizes.pointSize / 2) + chart.totalOffsetX,
-                     (chart.limits.min - data.dep[dataSet_i][coordDisp.oldIndex]) * chart.pntSpacing.dep - (chart.sizes.pointSize / 2) + chart.totalOffsetY,
-                     plotPros.pointSize, chart.sizes.pointSize
+            //add event listeners to display cursor coordinates in the message holder
+            elms.canvas.onmouseover = function(){
+               elms.canvas.addEventListener("mousemove", showCoord);
+            }
+            elms.canvas.onmouseout = function(){
+               elms.canvas.removeEventListener("mousemove", showCoord);
+               elms.coordMsg.hideMessage(elms.coordMsg);
+            }
+            
+            function showCoord(e){
+               var x, coord_i, message, yCoord, xCoord;
+               
+               //x coordinate of cursor relative to canvas
+               x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
+               
+               //calculate the data point index we are closest to
+               coord_i = parseInt(x * (data.indep.length/chart.sizes.width));
+               
+               //create message and show message if we are within the plot
+               if(xCoord = data.indep[coord_i]){
+                  
+                  message = chart.labels.indep + " = " + xCoord;
+                  
+                  for(var plt_i in data.dep){
+                     yCoord = data.dep[plt_i][coord_i];
+                     
+                     message += 
+                        "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
+                  }
+                  
+                  elms.coordMsg.showMessage(
+                     message, (e.pageX + 10), (e.pageY + 10)
                   );
                }
-            }
+            };
          }
-      
-         //print corrds for plotted points
-         if (data.indep[pnt_i] != undefined){
-            xCoordBox.innerHTML = 
-               chart.labels.indep 
-               + ": " 
-               + data.indep[pnt_i];
-         }
-         var changedCoord = 0;
-         for(var dataSet_i = 0; i < data.dep.length; dataSet_i++){
-            if (
-               data.dep[dataSet_i][pnt_i]
-               && !isNaN(data.dep[dataSet_i][pnt_i])
-            ){
-               yCoordBoxCode += 
-                  data.yVars[dataSet_i] 
-                  + ": "
-                  + data.dep[dataSet_i][pnt_i]
-                  + "<br />";
-               changedCoord++;
-            }
-         }
-         if(changedCoord > 0){
-            elms.yCoordBox.innerHTML = yCoordBoxCode;
-         }
-         
-         //print extra coord info
-         if(
-            data.trackers[0][pnt_i]
-            && !isNaN(data.trackers[0][pnt_i])
-         ){
-            document.getElementById('track1Box').innerHTML = 
-               data.trackLabels[0]
-               + ": "
-               + data.trackers[0][pnt_i];
-         }
-         if(
-            data.trackers[1][pnt_i]
-            && !isNaN(data.trackers[1][pnt_i])
-         ){
-            document.getElementById('track2Box').innerHTML = 
-               data.trackLabels[1]
-               + ": "
-               + data.trackers[1][pnt_i];
-         }
-         
-         coordDisp.oldIndex = index;   
-      }   
-   };
-
+      }
+   }
    
    //Scales the data set by either a linear value or logrithmically 
    function scaler(){
@@ -921,8 +843,8 @@ Dave_js.chart = function(name) {
    }
    
    self.setOrigin = function(x,y){
-      chart.origX = x;
-      chart.origY = y;
+      chart.origin.x = x;
+      chart.origin.y = y;
    }
    
    self.setCanvasSize = function(height, width, margin){

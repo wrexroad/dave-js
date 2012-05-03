@@ -1,50 +1,42 @@
-Dave_js.message = function(width, height){
+Dave_js.message = function(){
    var self = this;
-   var onclickHolder;
    
    //add a new hidden div to the body that will contain the message
    var bodyEl = document.getElementsByTagName("body")[0];
-   var box = document.createElement("div");
-   box.id = "daveMessageBox";
-   box.hidden = true;
-   box.style.position = "absolute";
-   if(height && width){
-      box.style.width = width + "px";
-      box.style.height = height + "px";
-   }
-   bodyEl.appendChild( box );
+   self.box = document.createElement("div");
+   self.box.className = "daveMessageBox";
+   self.box.hidden = true;
+   self.box.style.position = "absolute";
+   
+   bodyEl.appendChild( self.box );
    
    //add a button that will rehide the message box
    var closeButton = document.createElement("button");
-   closeButton.id = "daveMessageClose";
+   closeButton.className = "daveMessageClose";
    closeButton.innerHTML = "X";
-   closeButton.onclick = self.hideMessage;
-   box.appendChild( closeButton );
+   closeButton.onclick = function(){self.hideMessage(self);}
+   self.box.appendChild(closeButton);
    
-   self.showMessage = function(message, x, y){
-      if(!x){x = 0;}
-      if(!y){y = 0;}
-      
-      box.style.top = y + "px";
-      box.style.left = x + "px";
-      
-      box.appendChild( document.createTextNode(message) );
-      
-      box.hidden = false;
-      
-      //add onclick listener to the body
-      onclickHolder = bodyEl.onclick;
-      bodyEl.onclick = self.hideMessage;
+   //add a dive to hold message content
+   var messageDiv = document.createElement("div");
+   self.box.appendChild(messageDiv);
+   
+   self.setSize = function(width, height){
+      self.box.style.width = width + "px";
+      self.box.style.height = height + "px";
    }
    
-   self.hideMessage = function(e){
-      var target = (e && e.target) || (event && event.srcElement);
+   self.showMessage = function(message, x, y){
+      self.box.style.top = (y || 0) + "px";
+      self.box.style.left = (x || 0) + "px";
       
-      //dont hide if clicking the message itself
-      if(target.id != "daveMessageBox"){
-         box.hidden = true;
-         bodyEl.onclick = onclickHolder;
-      } 
+      messageDiv.innerHTML = message;
+      
+      self.box.hidden = false;
+   }
+   
+   self.hideMessage = function(messageBox){
+      messageBox.box.hidden = true; 
    }
 }
 

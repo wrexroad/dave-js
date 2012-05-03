@@ -1,11 +1,11 @@
 /* styles for the message box module */
-#daveMessageBox{
+.daveMessageBox{
    padding: 25px;
    
    border: 1px solid;
    border-radius: 10px;
    
-   background = white;
+   background: white;
    
    background-image: linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
    background-image: -o-linear-gradient(, rgb(233,242,242) 45%, rgb(228,247,247) 73%);
@@ -22,7 +22,7 @@
    
    overflow: auto;
 }
-#daveMessageClose{
+.daveMessageClose{
    position: absolute;
    top: 5px;
    right: 5px;

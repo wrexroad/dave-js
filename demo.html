@@ -46,13 +46,14 @@ function init(){
       (function (){
          
          var width = 200;
-         var height = 200
+         var height = 200;
       
          var x = (window.innerWidth - width ) / 2;
          var y = (window.innerHeight  - height ) / 2;
          
          
-         message = new Dave_js.message(200,200);
+         message = new Dave_js.message();
+         message.setSize(200,200);
          message.showMessage("test", x, y);
       }());
       
