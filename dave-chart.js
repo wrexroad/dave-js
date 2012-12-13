@@ -326,7 +326,8 @@ Dave_js.chart = function(name) {
                if(data.dep[i][j] != 0){
                   data.dep[i][j] = 
                      parseFloat(
-                        (Math.log(data.dep[i][j]) / Math.log(scaleParam[1])).toFixed(3)
+                        (Math.log(data.dep[i][j]) / 
+                        Math.log(scaleParam[1])).toFixed(3)
                      );
                }
             }
@@ -345,37 +346,24 @@ Dave_js.chart = function(name) {
    
    //either apply limits to dependant data, or generate axis limits from it
    function doLimits(){
-      chart.limits.min
+      
       for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
          for(var pnt_i = 0; pnt_i < data.dep[plt_i].length; pnt_i++){
             
             if(!isNaN(data.dep[plt_i][pnt_i])){
                //check for min/max value if we are generating it from the set
                if(!flags.limits){
-                  if(
-                     data.dep[plt_i][pnt_i]
-                     < chart.limits.min
-                  ){
+                  if( data.dep[plt_i][pnt_i] < chart.limits.min ){
                      chart.limits.min = data.dep[plt_i][pnt_i];
                   }
-                  else if(
-                     data.dep[plt_i][pnt_i] 
-                     > chart.limits.max
-                  ){
-                     chart.limits.max = 
-                        data.dep[plt_i][pnt_i];
+                  else if( data.dep[plt_i][pnt_i] > chart.limits.max ){
+                     chart.limits.max = data.dep[plt_i][pnt_i];
                   }
                }else{//limit the data set based on user defined min/max
-                  if(
-                     data.dep[plt_i][pnt_i] 
-                     > chart.limits.max
-                  ){
+                  if( data.dep[plt_i][pnt_i] > chart.limits.max ){
                      data.dep[plt_i][pnt_i] = chart.limits.max;
                   }
-                  else if(
-                     data.dep[plt_i][pnt_i] 
-                     < chart.limits.min
-                  ){
+                  else if( data.dep[plt_i][pnt_i] < chart.limits.min ){
                      data.dep[plt_i][pnt_i] = chart.limits.min;
                   }
                }
@@ -383,14 +371,15 @@ Dave_js.chart = function(name) {
          }
       }
       
+      //make sure the min and max values are numbers
+      chart.limits.min = parseFloat(chart.limits.min);
+      chart.limits.max = parseFloat(chart.limits.max);
+      
       //Make sure the ymax and min are not the same value
-      if(
-         chart.limits.min 
-         == chart.limits.min
-      ){
+      if(chart.limits.min == chart.limits.max){
          chart.limits.min -= 
             chart.sizes.height / 2;
-         chart.limits.min += 
+         chart.limits.max += 
             chart.sizes.height/2;
       }
    }
@@ -437,7 +426,7 @@ Dave_js.chart = function(name) {
             chart.sizes.height - (ticHeight * chart.pntSpacing.dep);
          ticLabel = i;
          
-         if(ticLabel != isNaN && (ticLabel % 1) != 0){
+         if(!isNaN(ticLabel) && (ticLabel % 1) != 0){
             ticLabel = ticLabel.toFixed(2);
          }
          
