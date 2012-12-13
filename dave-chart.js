@@ -261,13 +261,13 @@ Dave_js.chart = function(name) {
             ctx.textAlign = "start";
             ctx.fillText(
                chart.labels.indep, 
-               0, (chart.sizes.height + 40)
+               -50, (chart.sizes.height + 40)
             );
             ctx.save();
             ctx.translate(-45, (chart.sizes.height / 2) );
-            ctx.rotate(1.5* Math.PI);  
-            ctx.textAlign="center";
-            ctx.fillText(chart.labels.dep, 0, 0);
+            ctx.rotate(1.5 * Math.PI);  
+            ctx.textAlign = "center";
+            ctx.fillText(chart.labels.dep, 0, -20);
             ctx.restore();
          }
       }
@@ -436,6 +436,11 @@ Dave_js.chart = function(name) {
          offset = 
             chart.sizes.height - (ticHeight * chart.pntSpacing.dep);
          ticLabel = i;
+         
+         if(ticLabel != isNaN && (ticLabel % 1) != 0){
+            ticLabel = ticLabel.toFixed(2);
+         }
+         
          drawTic(ticLabel,offset);
       }
    }
@@ -593,7 +598,7 @@ Dave_js.chart = function(name) {
       //set bar width
       ctx.lineWidth = chart.histBarWidth;
       
-      //move to the char origin
+      //move to the chart origin
       ctx.translate(
          0, chart.sizes.height + chart.limits.min * chart.pntSpacing.dep
       );
