@@ -59,6 +59,8 @@ Dave_js.chart = function(name) {
       //min and max values for dependant variables
       limits : {min : 0, max : 0},
       
+      //default settings for plot scale
+      scale : {"type" : "lin", "value" : 1},
       
       //histogram bar width plus margin
       histBarTotal : undefined, 
@@ -136,10 +138,7 @@ Dave_js.chart = function(name) {
       lines : false, 
       
       //values will be represented by a point
-      points : false, 
-      
-      //polar coordinate plot
-      polar : false, 
+      points : false,
       
       //convert angular/radial values to longitude/lattitude
       map : false, 
@@ -170,11 +169,7 @@ Dave_js.chart = function(name) {
       indep : Array(),
       varLabels : Array(),
       trackers : Array(),
-      trackLabels : Array(),
-      
-      //how the yaxis data should be scaled 
-      //options are lin-X or log-X where X a number
-      scale : ""
+      trackLabels : Array()
    };
 
    //////////////////////////Private Methods//////////////////////////////
@@ -304,6 +299,15 @@ Dave_js.chart = function(name) {
                for(var plt_i in data.dep){
                   yCoord = data.dep[plt_i][coord_i];
                   
+                  //unscale the yCoord if needed
+                  if(flags.scaled){
+                     if(chart.scale.type == "log"){
+                        yCoord = Math.pow(chart.scale.value, yCoord);
+                     }else if(chart.scale.type == "lin"){
+                        yCoord /= chart.scale.value;
+                     }
+                  }
+                  
                   message += 
                      "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
                }
@@ -318,27 +322,23 @@ Dave_js.chart = function(name) {
    
    //Scales the data set by either a linear value or logrithmically 
    function scaler(){
-      var scaleParam = data.scale.split("-");
-      scaleParam[1]=parseInt(scaleParam[1]);
-      if(scaleParam[0]=="log"){//log plot
+      if(chart.scale.type == "log"){//log plot
          for(var i = 0; i < data.dep.length; i++){
             for(var j = 0; j < data.dep[i].length; j++){
                if(data.dep[i][j] != 0){
                   data.dep[i][j] = 
                      parseFloat(
                         (Math.log(data.dep[i][j]) / 
-                        Math.log(scaleParam[1])).toFixed(3)
+                        Math.log(chart.scale.value)).toFixed(3)
                      );
                }
             }
          }
-         //change y-axis label
-         chart.labels.dep = "log_" + scaleParam[1] + " " + chart.labels.dep;
       }
-      else if(scaleParam[0] == "lin"){ //linear plot
+      else if(chart.scale.type == "lin"){ //linear plot
          for(var i = 0; i < data.dep.length; i++){
             for(var j = 0; j < data.dep[i].length; j++){
-               data.dep[i][j] = data.dep[i][j] * scaleParam[1];
+               data.dep[i][j] *= chart.scale.value;
             }
          }
       }
@@ -383,7 +383,13 @@ Dave_js.chart = function(name) {
          chart.limits.min -= 
             chart.sizes.height / 2;
          chart.limits.max += 
-            chart.sizes.height/2;
+            chart.sizes.height / 2;
+      }
+      
+      //if we have a log plot, make the y axis start and end at an integer 
+      if(flags.scaled && chart.scale.type == "log"){
+         chart.limits.min = Math.floor(chart.limits.min) ;
+         chart.limits.max = Math.ceil(chart.limits.max);
       }
    }
    
@@ -427,7 +433,17 @@ Dave_js.chart = function(name) {
          ticHeight = i - chart.limits.min;
          offset = 
             chart.sizes.height - (ticHeight * chart.pntSpacing.dep);
+         
          ticLabel = i;
+         
+         //unscale the y axis value if needed
+         if(flags.scaled){
+            if(chart.scale.type == "log"){
+               ticLabel = Math.pow(chart.scale.value, ticLabel);
+            }else if(chart.scale.type == "lin"){
+               ticLabel /= chart.scale.value;
+            }
+         }
          
          if(!isNaN(ticLabel) && (ticLabel % 1) != 0){
             ticLabel = ticLabel.toFixed(2);
@@ -952,7 +968,11 @@ Dave_js.chart = function(name) {
    //set the data to be scaled in some way
    self.setScale = function(scale){
       flags.scaled = true;
-      chart.scale = scale;
+      
+      var scaleParams = scale.split("_");
+      
+      chart.scale.type = scaleParams[0];
+      chart.scale.value = parseInt(scaleParams[1]);
    }
    
    //set the min and max values for the yaxis
@@ -1002,7 +1022,6 @@ Dave_js.chart = function(name) {
    //////////////////////////Public Methods////////////////////////// 
  
    self.buildPlot = function(){
-   
       //Adjust the data as needed
       if(flags.scaled){
          scaler();
