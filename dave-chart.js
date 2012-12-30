@@ -308,6 +308,9 @@ Dave_js.chart = function(name) {
                      }
                   }
                   
+                  //drop values past 3 decimal places
+                  if((yCoord % 1) != 0){yCoord = yCoord.toFixed(3);}
+                  
                   message += 
                      "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
                }
@@ -1007,7 +1010,7 @@ Dave_js.chart = function(name) {
    }
    
    self.setBackgroundImage = function(id){
-      chart.bgImg = documents.getElementById(id);  
+      chart.bgImg = document.getElementById(id);  
    }
    
    self.setGrid = function(){
@@ -1046,7 +1049,7 @@ Dave_js.chart = function(name) {
          configSpacing();
          configPolar();
          
-         if(!flags.subPlot){
+         if(!flags.subPlot && flags.setGrid){
             drawPolarGrid();
          }
          
