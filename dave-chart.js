@@ -309,7 +309,9 @@ Dave_js.chart = function(name) {
                   }
                   
                   //drop values past 3 decimal places
-                  if((yCoord % 1) != 0){yCoord = yCoord.toFixed(3);}
+                  if(((yCoord % 1) != 0) && (typeof yCoord == "function")){
+                     yCoord = yCoord.toFixed(3);
+                  }
                   
                   message += 
                      "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
@@ -351,7 +353,7 @@ Dave_js.chart = function(name) {
    function doLimits(){
       
       if(!flags.limits){ 
-         //user has not defined limits, so take the max and min of the data set
+         //user has not defined limits, so take the max and  of the data set
          
          //make sure the min and max values are numbers
          chart.limits.min = parseFloat(chart.limits.min);
@@ -361,8 +363,32 @@ Dave_js.chart = function(name) {
          var max = new Array();
          var min = new Array();
          for(var plt_i in data.dep){
-            min.push(Math.min.apply(null, data.dep[plt_i]));
-            max.push(Math.max.apply(null, data.dep[plt_i]));
+            var pnt_i = 0;
+            
+            //find first real data point for initial min/max
+            for(pnt_i; pnt_i < data.dep[plt_i].length; pnt_i++){
+               if(!isNaN(data.dep[plt_i][pnt_i])){
+                  min[plt_i] = max[plt_i] = data.dep[plt_i][pnt_i];
+                  break;
+               }
+            }
+            
+            //go through the rest of the data points looking for min/max
+            for(pnt_i; pnt_i < data.dep[plt_i].length; pnt_i++){
+               if(
+                  !isNaN(data.dep[plt_i][pnt_i]) &&
+                  data.dep[plt_i][pnt_i] < min[plt_i]
+               ){
+                  min[plt_i] = data.dep[plt_i][pnt_i];
+               }else if(
+                  !isNaN(data.dep[plt_i][pnt_i]) &&
+                  data.dep[plt_i][pnt_i] > max[plt_i]
+               ){
+                  max[plt_i] = data.dep[plt_i][pnt_i];
+               }
+            }
+            //min.push(Math.min.apply(null, data.dep[plt_i]));
+            //max.push(Math.max.apply(null, data.dep[plt_i]));
          }
          
          //select the extremes from the max and min arrays
