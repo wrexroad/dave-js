@@ -289,7 +289,7 @@ Dave_js.chart = function(name) {
             x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
             
             //calculate the data point index we are closest to
-            coord_i = parseInt(x * (data.indep.length/chart.sizes.width));
+            coord_i = parseInt(x * (data.indep.length / chart.sizes.width));
             
             //create message and show message if we are within the plot
             if(data.indep[coord_i] != undefined){
@@ -297,7 +297,28 @@ Dave_js.chart = function(name) {
                message = chart.labels.indep + " = " + xCoord;
                
                for(var plt_i in data.dep){
-                  yCoord = data.dep[plt_i][coord_i];
+                  //make sure the yCoord is a number
+                  //try stepping backwards and forwards until a number is found ,
+                  //or the end of the dataset is reached
+                  var negOffset = posOffset = coord_i;
+                  while(1){
+                     //try to step back
+                     if(negOffset >= 0){ 
+                        yCoord = data.dep[plt_i][negOffset];
+                     }
+                     //try to step forward
+                     if(isNaN(yCoord) && posOffset < data.dep.length){
+                        yCoord = data.dep[plt_i][posOffset];
+                     }
+                     //check to see if it is time to break
+                     if(
+                        !isNaN(yCoord) ||
+                        (negOffset < 0 && posOffset > data.dep.length)
+                     ) break;
+                     
+                     negOffset--;
+                     posOffset++;
+                  }
                   
                   //unscale the yCoord if needed
                   if(flags.scaled){
