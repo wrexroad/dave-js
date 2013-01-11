@@ -64,7 +64,7 @@ Dave_js.colorPallet = function(t, n) {
    self.getNumOfColors = function(){
       return numOfColors;
    }
-   self.getPallet = function(){
+   self.getColors = function(){
       return pallet;
    }
    self.reversePallet = function(){
@@ -129,7 +129,7 @@ Dave_js.colorPallet.prototype.displayColors = function(
    divEl, width, height, border
 ){
    var self = this;
-   var pallet = self.getPallet();
+   var pallet = self.getColors();
    var num = self.getNumOfColors();
    
    //check for a good size
@@ -167,4 +167,19 @@ Dave_js.colorPallet.prototype.displayColors = function(
    }catch(err){
       
    }
+}
+
+//Return an array of color codes in rgb or hex format
+Dave_js.colorPallet.prototype.getPallet = function(f){
+   var self = this;
+   var pallet = self.getColors();
+   var num = self.getNumOfColors();
+   var out = new Array(num);
+   
+   for(var color_i = 0; color_i < num; color_i++){
+      if(f == "hex") out[color_i] = pallet[color_i].toHexStr();
+      else out[color_i] = pallet[color_i].toRgbStr();
+   }
+   
+   return out;
 }
