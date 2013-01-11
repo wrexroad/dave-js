@@ -368,27 +368,20 @@ Dave_js.chart = function(name) {
             //find first real data point for initial min/max
             for(pnt_i; pnt_i < data.dep[plt_i].length; pnt_i++){
                if(!isNaN(data.dep[plt_i][pnt_i])){
-                  min[plt_i] = max[plt_i] = data.dep[plt_i][pnt_i];
+                  min[plt_i] = max[plt_i] = parseFloat(data.dep[plt_i][pnt_i]);
                   break;
                }
             }
             
             //go through the rest of the data points looking for min/max
             for(pnt_i; pnt_i < data.dep[plt_i].length; pnt_i++){
-               if(
-                  !isNaN(data.dep[plt_i][pnt_i]) &&
-                  data.dep[plt_i][pnt_i] < min[plt_i]
-               ){
-                  min[plt_i] = data.dep[plt_i][pnt_i];
-               }else if(
-                  !isNaN(data.dep[plt_i][pnt_i]) &&
-                  data.dep[plt_i][pnt_i] > max[plt_i]
-               ){
-                  max[plt_i] = data.dep[plt_i][pnt_i];
+               if(isNaN(data.dep[plt_i][pnt_i])){
+                  continue;
                }
+               
+               min[plt_i] = Math.min(data.dep[plt_i][pnt_i], min[plt_i]);
+               max[plt_i] = Math.max(data.dep[plt_i][pnt_i], max[plt_i]);
             }
-            //min.push(Math.min.apply(null, data.dep[plt_i]));
-            //max.push(Math.max.apply(null, data.dep[plt_i]));
          }
          
          //select the extremes from the max and min arrays
