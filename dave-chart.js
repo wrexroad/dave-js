@@ -544,13 +544,14 @@ Dave_js.chart = function(name) {
                chart.sizes.pointSize,chart.sizes.pointSize
             );
          }
-                                                       
+         
          //step through the data points
          for (var pnt_i = 1; pnt_i < data.indep.length; pnt_i++){
-            pntHeight = -1 * (data.dep[plt_i][pnt_i] - chart.limits.min);
-            
             //try to plot the point
-            try{
+            //makw sure we have a numerical value to plot
+            if(!isNaN(data.dep[plt_i][pnt_i])){
+               pntHeight = -1 * (data.dep[plt_i][pnt_i] - chart.limits.min);
+               
                if(flags.lines){
                   ctx.lineTo(
                      pnt_i * chart.pntSpacing.indep,
@@ -564,10 +565,6 @@ Dave_js.chart = function(name) {
                      chart.sizes.pointSize,chart.sizes.pointSize
                   );
                }
-            }catch(err){
-               //Swallow errors and skip points. 
-               //There may be non-numerical data we can do nothing about
-               continue;
             }
          }
          if(flags.lines){
