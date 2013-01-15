@@ -132,7 +132,7 @@ Dave_js.chart = function(name) {
       
       //setting this true will add an event listener to the plot 
       //so we can display exact mouseover plot values
-      showCoords : false, 
+      showCoords : true, 
       
       //values will be connected with a line
       lines : false, 
@@ -160,7 +160,10 @@ Dave_js.chart = function(name) {
       //on xy plots this lists variable names in their color along the top, 
       //in polar plots, this draws a line from a colored variable name to 
       //the last drawn point
-      legend : false 
+      legend : false,
+      
+      //makes plot zoomable by clicking and dragging over the desired area
+      zoomable : true
    };
    
    //contains user provided data for plotting
@@ -169,7 +172,8 @@ Dave_js.chart = function(name) {
       indep : Array(),
       varLabels : Array(),
       trackers : Array(),
-      trackLabels : Array()
+      trackLabels : Array(),
+      range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
    };
 
    //////////////////////////Private Methods//////////////////////////////
@@ -268,35 +272,111 @@ Dave_js.chart = function(name) {
       }
       
       //add coordinate display if this is an xy plot
-      if(flags.xy && Dave_js.message){   
+      if(flags.xy){
+         //keeps track of current index of the data point closest to the mouse
+         var coord_i = 0;
+         
          //create a message holder 
          elms.coordMsg = new Dave_js.message();
          elms.coordMsg.box.style.opacity = "0.8";
          elms.coordMsg.box.style.filter = "alpha(opacity=80)";
+         
          //add event listeners to display cursor coordinates in the message holder
-         elms.canvas.onmouseover = function(){
-            elms.canvas.addEventListener("mousemove", showCoord);
-         }
-         elms.canvas.onmouseout = function(){
-            elms.canvas.removeEventListener("mousemove", showCoord);
-            elms.coordMsg.hideMessage(elms.coordMsg);
+         elms.canvas.addEventListener("mouseover", canvasMouseIn);
+         elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
+         
+         function canvasMouseIn(e){
+            e.stopPropagation();
+            
+            //create zoom object if one does not yet exist
+            if(Dave_js.chart_zoom && flags.zoomable){ 
+               if(chart.zoom == null){
+                  chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
+               }
+            }
+            
+            //add event listeners for tracking mouse pointer
+            elms.canvasBox.addEventListener(
+               "mousedown", mouseDown
+            );
+            elms.canvasBox.addEventListener(
+               "mouseup", mouseUp
+            );
+            elms.canvasBox.addEventListener(
+               "mousemove", mouseMove
+            );
          }
          
-         function showCoord(e){
-            var x, coord_i, message, yCoord, xCoord;
+         function canvasMouseOut(e){
+            //make sure the mouse out did not occur because of running over a mask
+            if(e.target.className == "daveMask"){return;}
             
+            //remove event listeners
+            elms.canvasBox.removeEventListener(
+               "mousedown", mouseDown
+            );
+            elms.canvasBox.removeEventListener(
+               "mouseup", mouseUp
+            );
+            elms.canvasBox.removeEventListener(
+               "mousemove", mouseMove
+            );
+            
+            //remove the masking divs
+            if(chart.zoom != null){chart.zoom = chart.zoom.destroy();}
+            
+            //remove the coordinate message
+            if(elms.coordMsg.box.parentNode){
+               elms.coordMsg.box.hidden = true;
+            }
+         }
+         
+         function mouseDown(e){
+            if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
+               //start tracking the mouse pointer
+               chart.zoom.start(coord_i);
+            }
+         }
+         
+         function mouseUp(e){
+            if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
+               chart.zoom.stop(coord_i, e.pageX);
+            }
+         }
+         
+         function mouseMove(e){
             //x coordinate of cursor relative to canvas
-            x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
+            var x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
             
             //calculate the data point index we are closest to
-            coord_i = parseInt(x * (data.indep.length / chart.sizes.width));
+            coord_i =
+               Math.round(x * (data.range.numOfPts - 1) / chart.sizes.width) +
+               data.range.start;
+            
+            //make sure the coord_i is within the data set
+            coord_i = Math.min(coord_i, (data.indep.length - 1));
+            coord_i = Math.max(coord_i, 0);
+               
+            if(Dave_js.message && flags.showCoords){
+               showCoord(coord_i, e.pageX, e.pageY);
+            }
+            if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
+               chart.zoom.moveMask(e.pageX);
+            }
+         }
+         
+         function showCoord(coord_i, x, y){
+            var message, yCoord, xCoord;
+            
+            //make sure the coordinate box is visible
+            elms.coordMsg.box.hidden = false;
             
             //create message and show message if we are within the plot
             if(data.indep[coord_i] != undefined){
                xCoord = data.indep[coord_i];
                message = chart.labels.indep + " = " + xCoord;
                
-               for(var plt_i in data.dep){
+               for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
                   //make sure the yCoord is a number
                   //try stepping backwards and forwards until a number is found ,
                   //or the end of the dataset is reached
@@ -339,7 +419,7 @@ Dave_js.chart = function(name) {
                }
                
                elms.coordMsg.showMessage(
-                  message, (e.pageX + 10), (e.pageY + 10)
+                  message, (x + 10), (y + 10)
                );
             }
          }
@@ -349,12 +429,12 @@ Dave_js.chart = function(name) {
    //Scales the data set by either a linear value or logrithmically 
    function scaler(){
       if(chart.scale.type == "log"){//log plot
-         for(var i = 0; i < data.dep.length; i++){
-            for(var j = 0; j < data.dep[i].length; j++){
-               if(data.dep[i][j] != 0){
-                  data.dep[i][j] = 
+         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
+            for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
+               if(data.dep[plt_i][pnt_i] != 0){
+                  data.dep[plt_i][pnt_i] = 
                      parseFloat(
-                        (Math.log(data.dep[i][j]) / 
+                        (Math.log(data.dep[plt_i][pnt_i]) / 
                         Math.log(chart.scale.value)).toFixed(3)
                      );
                }
@@ -362,9 +442,9 @@ Dave_js.chart = function(name) {
          }
       }
       else if(chart.scale.type == "lin"){ //linear plot
-         for(var i = 0; i < data.dep.length; i++){
-            for(var j = 0; j < data.dep[i].length; j++){
-               data.dep[i][j] *= chart.scale.value;
+         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
+            for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
+               data.dep[plt_i][pnt_i] *= chart.scale.value;
             }
          }
       }
@@ -383,25 +463,32 @@ Dave_js.chart = function(name) {
          //create an array of max and mins for each subset
          var max = new Array();
          var min = new Array();
-         for(var plt_i in data.dep){
+         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
             var pnt_i = 0;
             
             //find first real data point for initial min/max
-            for(pnt_i; pnt_i < data.dep[plt_i].length; pnt_i++){
-               if(!isNaN(data.dep[plt_i][pnt_i])){
-                  min[plt_i] = max[plt_i] = parseFloat(data.dep[plt_i][pnt_i]);
+            for(pnt_i; pnt_i < data.range.numOfPts; pnt_i++){
+               if(!isNaN(data.dep[plt_i][pnt_i + data.range.start])){
+                  min[plt_i] = max[plt_i] =
+                     parseFloat(data.dep[plt_i][pnt_i + data.range.start]);
                   break;
                }
             }
             
             //go through the rest of the data points looking for min/max
-            for(pnt_i; pnt_i < data.dep[plt_i].length; pnt_i++){
-               if(isNaN(data.dep[plt_i][pnt_i])){
+            for(pnt_i; pnt_i < data.range.numOfPts; pnt_i++){
+               if(isNaN(data.dep[plt_i][pnt_i + data.range.start])){
                   continue;
                }
                
-               min[plt_i] = Math.min(data.dep[plt_i][pnt_i], min[plt_i]);
-               max[plt_i] = Math.max(data.dep[plt_i][pnt_i], max[plt_i]);
+               min[plt_i] =
+                  Math.min(
+                     data.dep[plt_i][pnt_i + data.range.start], min[plt_i]
+                  );
+               max[plt_i] =
+                  Math.max(
+                     data.dep[plt_i][pnt_i + data.range.start], max[plt_i]
+                  );
             }
          }
          
@@ -411,12 +498,12 @@ Dave_js.chart = function(name) {
          
       }else{
          //the user has predefined data limits, so apply to each subset
-         for(var plt_i in data.dep){
-            for(var pnt_i in data.dep[plt_i]){
+         for(var plt_i = 0; plt_i < data.dep; plt_i++){
+            for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
                data.dep[plt_i][pnt_i] = 
-                  Math.min[data.dep[plt_i][pnt_i], chart.limits.max];
+                  Math.min[data.dep[plt_i][pnt_i + data.range.start], chart.limits.max];
                data.dep[plt_i][pnt_i] = 
-                  Math.max[data.dep[plt_i][pnt_i], chart.limits.min];
+                  Math.max[data.dep[plt_i][pnt_i + data.range.start], chart.limits.min];
             }
          }
       }
@@ -440,26 +527,17 @@ Dave_js.chart = function(name) {
    function configSpacing(){
       var depRange = 
          Math.abs(chart.limits.max - chart.limits.min);
-      
+         
       chart.skipTics.indep = 
-         parseInt(20 * data.indep.length / chart.sizes.width);
-      if(chart.skipTics.indep < 1){
-         chart.skipTics.indep = 1;
-      }
+         Math.max(1, parseInt(20 * data.range.numOfPts / chart.sizes.width));
       
       chart.skipTics.dep = 
-         parseInt( 20 * depRange / chart.sizes.height);
-         
-      if(
-         chart.skipTics.dep < 1
-      ){
-         chart.skipTics.dep = 1;
-      }
+         Math.max(1, parseInt(20 * depRange / chart.sizes.height));
       
       if(flags.polar){//polar plots only need spacing in the radial direction
          chart.pntSpacing.dep = chart.sizes.radius / chart.limits.max;
       }else{ // all other plots are rectangular and need x/y spacing
-         chart.pntSpacing.indep = chart.sizes.width / (data.indep.length - 1);
+         chart.pntSpacing.indep = chart.sizes.width / (data.range.numOfPts - 1);
          chart.pntSpacing.dep = chart.sizes.height / depRange;
       }
    }
@@ -515,9 +593,13 @@ Dave_js.chart = function(name) {
       ctx.translate(0, chart.sizes.height);
       ctx.rotate(1.5 * Math.PI);
       
-      for(var i = 0; i < data.indep.length; i += chart.skipTics.indep){      
-         offset = (i + textShift) * spacing;
-         ticLabel = data.indep[i];
+      for(
+         var pnt_i = 0;
+         pnt_i < data.range.numOfPts;
+         pnt_i += chart.skipTics.indep
+      ){
+         offset = (pnt_i * spacing) + textShift;
+         ticLabel = data.indep[pnt_i + data.range.start];
          drawTic(ticLabel, offset);                                  
       }
       ctx.restore();
@@ -546,7 +628,8 @@ Dave_js.chart = function(name) {
          
          //initial point height.
          //heights must be negative to move up in the plot
-         pntHeight = -1 * (data.dep[plt_i][0] - chart.limits.min);
+         pntHeight =
+            0 - (data.dep[plt_i][data.range.start] - chart.limits.min);
          
          //if we are drawing a line, set the line origin and start the line
          if(flags.lines){
@@ -560,18 +643,22 @@ Dave_js.chart = function(name) {
          //if we are drawing points, plot the initial point
          if(flags.points){
             ctx.fillRect(
-               -chart.sizes.pointSize / 2,
+               0 - chart.sizes.pointSize / 2,
                (pntHeight * chart.pntSpacing.dep) - (chart.sizes.pointSize / 2),
                chart.sizes.pointSize,chart.sizes.pointSize
             );
          }
          
          //step through the data points
-         for (var pnt_i = 1; pnt_i < data.indep.length; pnt_i++){
+         for(
+            var pnt_i = 1;
+            pnt_i < data.range.numOfPts;
+            pnt_i++
+         ){
             //try to plot the point
             //makw sure we have a numerical value to plot
             if(!isNaN(data.dep[plt_i][pnt_i])){
-               pntHeight = -1 * (data.dep[plt_i][pnt_i] - chart.limits.min);
+               pntHeight = -1 * (data.dep[plt_i][pnt_i + data.range.start] - chart.limits.min);
                
                if(flags.lines){
                   ctx.lineTo(
@@ -581,9 +668,11 @@ Dave_js.chart = function(name) {
                }
                if(flags.points){
                   ctx.fillRect(
-                     pnt_i * chart.pntSpacing.indep - (chart.sizes.pointSize / 2),
-                     (pntHeight * chart.pntSpacing.dep) - (chart.sizes.pointSize / 2),
-                     chart.sizes.pointSize,chart.sizes.pointSize
+                     (pnt_i) * chart.pntSpacing.indep -
+                     (chart.sizes.pointSize / 2),
+                     (pntHeight * chart.pntSpacing.dep) -
+                     (chart.sizes.pointSize / 2),
+                     chart.sizes.pointSize, chart.sizes.pointSize
                   );
                }
             }
@@ -614,7 +703,7 @@ Dave_js.chart = function(name) {
                chart.sizes.width + legendOffset,
                pntHeight * chart.pntSpacing.dep
             );
-            legendOffset += data.varLabels[plt_i].length;
+            //legendOffset += data.varLabels[plt_i].length;
          }
       }
       
@@ -664,9 +753,9 @@ Dave_js.chart = function(name) {
          ctx.strokeStyle = colors.data[plt_i];
          
          //loop through each sub array
-         for (var pnt_i = 0; pnt_i < data.dep[plt_i].length; pnt_i++){ 
+         for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){ 
             try{
-               barHeight =  -1 * data.dep[plt_i][pnt_i];
+               barHeight =  -1 * data.dep[plt_i][pnt_i + data.range.start];
                
                ctx.beginPath();
                ctx.moveTo(
@@ -697,9 +786,8 @@ Dave_js.chart = function(name) {
       //convert radius values to angles if this is a map
       if(flags.map){
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
-            for(var pnt_i = 0; pnt_i < data.dep[plt_i].length; pnt_i++){
-               data.dep[plt_i][pnt_i] = 
-                  90 - data.dep[plt_i][pnt_i];
+            for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
+               data.dep[plt_i][pnt_i + data.range.start] -= 90;
             }
          }
       }
@@ -833,10 +921,10 @@ Dave_js.chart = function(name) {
             ctx.restore();
          }
          
-         for(var pnt_i = 0; pnt_i < data.dep[plt_i].length; pnt_i++){
+         for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
             //get the angle and radius of the next point
-            angle = data.indep[pnt_i] * Math.PI / 180;
-            radius = data.dep[plt_i][pnt_i];
+            angle = data.indep[pnt_i + data.rang.start] * Math.PI / 180;
+            radius = data.dep[plt_i][pnt_i + data.rang.start];
             pntOffset = -1 * chart.sizes.pointSize / 2;
             angle -= 90 * Math.PI / 180;
             ctx.save();
@@ -942,6 +1030,15 @@ Dave_js.chart = function(name) {
       return id;
    }
    
+   self.setDataRange = function(start, stop){
+      //make sure the index range is within the data set and save it
+      data.range.start = Math.max(start, 0);
+      data.range.stop = Math.min(stop, data.indep.length - 1);
+      
+      //figure out how manys data points we have
+      data.range.numOfPts = data.range.stop - data.range.start + 1;
+   }
+   
    self.setSubPlot = function(bool){
       flags.subPlot = bool;
    }
@@ -952,9 +1049,9 @@ Dave_js.chart = function(name) {
    
    //first argument is an array containing the name of each tracker. each aditional argument is an array containing tracker data
    self.setTrackers = function(){ 
-      data.trackLabels=arguments[0].slice(0);
-      for(var array_i=1 ; array_i < arguments.length; array_i){
-         data.trackers[array_i]=arguments[array_i].slice(0);
+      data.trackLabels = arguments[0].slice(0);
+      for(var array_i = 1 ; array_i < arguments.length; array_i){
+         data.trackers[array_i] = arguments[array_i].slice(0);
       }
    }
    
@@ -1057,11 +1154,35 @@ Dave_js.chart = function(name) {
    self.setLegend = function(){
       flags.legend = true;
    }
+   
+   self.setZoomable = function(){
+      flags.zoomable = true;
+   }
+   
+   self.getData = function(){
+      return data;
+   }
+   
+   self.getPlotElements = function(){
+      return elms;
+   }
+   
+   self.getChartProps = function(){
+      return chart;
+   }
 
 
    //////////////////////////Public Methods////////////////////////// 
  
-   self.buildPlot = function(){
+   self.buildPlot = function(start, stop){
+      //determine if start and stop indicies were set
+      //if not, set for full range
+      if(start == undefined){start = 0;}
+      if(stop == undefined){stop = data.indep.length - 1;}
+      
+      //set the start and stop indecies for all the loops
+      self.setDataRange(start, stop);
+      
       //Adjust the data as needed
       if(flags.scaled){
          scaler();
@@ -1102,6 +1223,5 @@ Dave_js.chart = function(name) {
          
          drawHistBars();
       }
-   
    }  
 }
