@@ -116,7 +116,10 @@ Dave_js.chart = function(name) {
    };
    
    //contains flags that may be set to govern the plotter's behavior
-   var flags = { 
+   var flags = {
+      //set true if the data has been plotted once. Prevents scaling data multiple times
+      replot : false,
+      
       //set this to indicate a polar
       polar : false, 
       
@@ -1184,9 +1187,11 @@ Dave_js.chart = function(name) {
       self.setDataRange(start, stop);
       
       //Adjust the data as needed
-      if(flags.scaled){
+      if(flags.scaled && !flags.replot){
          scaler();
       }
+      
+      flags.replot = true;
       
       //initalize the canvas element and context
       buildCanvas();
