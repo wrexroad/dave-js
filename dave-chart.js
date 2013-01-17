@@ -639,8 +639,10 @@ Dave_js.chart = function(name) {
          //initial point height.
          //heights must be negative to move up in the plot
          pix.y =
-            (chart.limits.min - data.dep[plt_i][data.range.start]) *
-            chart.pntSpacing.dep;
+            parseInt(
+               (chart.limits.min - data.dep[plt_i][data.range.start]) *
+               chart.pntSpacing.dep
+            );
          
          //if we are drawing a line, set the line origin and start the line
          if(flags.lines){
@@ -672,9 +674,11 @@ Dave_js.chart = function(name) {
             
             //figure out current pixel location
             pix.y =
-               (chart.limits.min - data.dep[plt_i][pnt_i + data.range.start]) *
-               chart.pntSpacing.dep;
-            pix.x = pnt_i * chart.pntSpacing.indep;
+               Math.round(
+                  (chart.limits.min - data.dep[plt_i][pnt_i + data.range.start])
+                  * chart.pntSpacing.dep
+               );
+            pix.x = Math.round(pnt_i * chart.pntSpacing.indep);
             
             //Test to see if the pixel has already been printed
             if(pix.x == lastPxCol){
