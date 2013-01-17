@@ -1190,7 +1190,7 @@ Dave_js.chart = function(name) {
       self.setDataRange(start, stop);
      
       //figure out the point size
-      if(!flags.fixedPointSize){
+      if(!flags.fixedPtSize){
          if(chart.sizes.width <= data.range.numOfPts){
             chart.sizes.pointSize = 1;
          }else if((chart.sizes.width / 2) <= data.range.numOfPts){
