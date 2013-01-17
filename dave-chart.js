@@ -603,7 +603,9 @@ Dave_js.chart = function(name) {
       ){
          offset = (pnt_i * spacing) + textShift;
          ticLabel = data.indep[pnt_i + data.range.start];
-         drawTic(ticLabel, offset);                                  
+         
+         //only draw the tic mark if it is defined
+         if(ticLabel != undefined){drawTic(ticLabel, offset);}
       }
       ctx.restore();
    }
@@ -618,8 +620,13 @@ Dave_js.chart = function(name) {
    }
    
    function drawLinesPoints(){
-      var pntHeight, y0;
+      var pix = {x: 0, y: 0}; //screen coordinate for the plotted point
       var legendOffset = 10;
+      
+      //variables to make sure we aren't plotting
+      // the exact same point multiple times
+      var lastPxCol = 0;
+      var plotted = new Object();
       
       //move to the plot origin
       ctx.translate(0, chart.sizes.height);
@@ -631,24 +638,25 @@ Dave_js.chart = function(name) {
          
          //initial point height.
          //heights must be negative to move up in the plot
-         pntHeight =
-            0 - (data.dep[plt_i][data.range.start] - chart.limits.min);
+         pix.y =
+            (chart.limits.min - data.dep[plt_i][data.range.start]) *
+            chart.pntSpacing.dep;
          
          //if we are drawing a line, set the line origin and start the line
          if(flags.lines){
             ctx.lineWidth = chart.sizes.lineWidth;
-            y0 = pntHeight * chart.pntSpacing.dep;
-            if (isNaN(y0)){y0 = 0;}
+            
+            if (isNaN(pix.y)){pix.y = 0;}
             ctx.beginPath();
-            ctx.moveTo(0, y0);
+            ctx.moveTo(0, pix.y);
          }
          
          //if we are drawing points, plot the initial point
          if(flags.points){
             ctx.fillRect(
                0 - chart.sizes.pointSize / 2,
-               (pntHeight * chart.pntSpacing.dep) - (chart.sizes.pointSize / 2),
-               chart.sizes.pointSize,chart.sizes.pointSize
+               pix.y - (chart.sizes.pointSize / 2),
+               chart.sizes.pointSize, chart.sizes.pointSize
             );
          }
          
@@ -659,25 +667,38 @@ Dave_js.chart = function(name) {
             pnt_i++
          ){
             //try to plot the point
-            //makw sure we have a numerical value to plot
-            if(!isNaN(data.dep[plt_i][pnt_i])){
-               pntHeight = -1 * (data.dep[plt_i][pnt_i + data.range.start] - chart.limits.min);
-               
-               if(flags.lines){
-                  ctx.lineTo(
-                     pnt_i * chart.pntSpacing.indep,
-                     pntHeight * chart.pntSpacing.dep
-                  );
+            //make sure we have a numerical value to plot
+            if(isNaN(data.dep[plt_i][pnt_i + data.range.start])){continue;}
+            
+            //figure out current pixel location
+            pix.y =
+               (chart.limits.min - data.dep[plt_i][pnt_i + data.range.start]) *
+               chart.pntSpacing.dep;
+            pix.x = pnt_i * chart.pntSpacing.indep;
+            
+            //Test to see if the pixel has already been printed
+            if(pix.x == lastPxCol){
+               if(plotted[pix.y.toString()] == 1){
+                  //skip this point if we already have record of plotting it
+                  continue;
+               }else{
+                  //log the point coordinate so we dont print it again
+                  plotted[pix.y.toString()] = 1;
                }
-               if(flags.points){
-                  ctx.fillRect(
-                     (pnt_i) * chart.pntSpacing.indep -
-                     (chart.sizes.pointSize / 2),
-                     (pntHeight * chart.pntSpacing.dep) -
-                     (chart.sizes.pointSize / 2),
-                     chart.sizes.pointSize, chart.sizes.pointSize
-                  );
-               }
+            }else{
+               //this is a new column, so clear the record of plotted points
+               plotted = new Object();
+            }
+            
+            if(flags.lines){
+               ctx.lineTo(pix.x, pix.y);
+            }
+            if(flags.points){
+               ctx.fillRect(
+                  pix.x - (chart.sizes.pointSize / 2),
+                  pix.y - (chart.sizes.pointSize / 2),
+                  chart.sizes.pointSize, chart.sizes.pointSize
+               );
             }
          }
          if(flags.lines){
@@ -689,14 +710,8 @@ Dave_js.chart = function(name) {
             ctx.strokeStyle = colors.data[plt_i];
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(
-               (pnt_i - 1) * chart.pntSpacing.indep,
-               pntHeight * chart.pntSpacing.dep
-            );
-            ctx.lineTo(
-               (pnt_i - 1) * chart.pntSpacing.indep + legendOffset,
-               pntHeight * chart.pntSpacing.dep
-            );
+            ctx.moveTo(pix.x, pix.y);
+            ctx.lineTo(pix.x + legendOffset, pix.y);
             ctx.stroke();
             
             ctx.fillStyle = colors.data[plt_i];
@@ -704,12 +719,10 @@ Dave_js.chart = function(name) {
             ctx.fillText(
                data.varLabels[plt_i], 
                chart.sizes.width + legendOffset,
-               pntHeight * chart.pntSpacing.dep
+               pix.y
             );
-            //legendOffset += data.varLabels[plt_i].length;
          }
       }
-      
       //return to the canvas origin
       ctx.translate(0, -1 * chart.sizes.height);
    }
