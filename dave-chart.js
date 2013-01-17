@@ -287,145 +287,145 @@ Dave_js.chart = function(name) {
          //add event listeners to display cursor coordinates in the message holder
          elms.canvas.addEventListener("mouseover", canvasMouseIn);
          elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
+      }
+   }
+   
+   function canvasMouseIn(e){
+      e.stopPropagation();
+      
+      //create zoom object if one does not yet exist
+      if(Dave_js.chart_zoom && flags.zoomable){ 
+         if(chart.zoom == null){
+            chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
+         }
+      }
+      
+      //add event listeners for tracking mouse pointer
+      elms.canvasBox.addEventListener(
+         "mousedown", mouseDown
+      );
+      elms.canvasBox.addEventListener(
+         "mouseup", mouseUp
+      );
+      elms.canvasBox.addEventListener(
+         "mousemove", mouseMove
+      );
+   }
+   
+   function canvasMouseOut(e){
+      //make sure the mouse out did not occur because of running over a mask
+      if(e.target.className == "daveMask"){return;}
+      
+      //remove event listeners
+      elms.canvasBox.removeEventListener(
+         "mousedown", mouseDown
+      );
+      elms.canvasBox.removeEventListener(
+         "mouseup", mouseUp
+      );
+      elms.canvasBox.removeEventListener(
+         "mousemove", mouseMove
+      );
+      
+      //remove the masking divs
+      if(chart.zoom != null){chart.zoom = chart.zoom.destroy();}
+      
+      //remove the coordinate message
+      if(elms.coordMsg.box.parentNode){
+         elms.coordMsg.box.hidden = true;
+      }
+   }
+   
+   function mouseDown(e){
+      if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
+         //start tracking the mouse pointer
+         chart.zoom.start(coord_i);
+      }
+   }
+   
+   function mouseUp(e){
+      if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
+         chart.zoom.stop(coord_i, e.pageX);
+      }
+   }
+   
+   function mouseMove(e){
+      //x coordinate of cursor relative to canvas
+      var x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
+      
+      //calculate the data point index we are closest to
+      coord_i =
+         Math.round(x * (data.range.numOfPts - 1) / chart.sizes.width) +
+         data.range.start;
+      
+      //make sure the coord_i is within the data set
+      coord_i = Math.min(coord_i, (data.indep.length - 1));
+      coord_i = Math.max(coord_i, 0);
          
-         function canvasMouseIn(e){
-            e.stopPropagation();
+      if(Dave_js.message && flags.showCoords){
+         showCoord(coord_i, e.pageX, e.pageY);
+      }
+      if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
+         chart.zoom.moveMask(e.pageX);
+      }
+   }
+   
+   function showCoord(coord_i, x, y){
+      var message, yCoord, xCoord;
+      
+      //make sure the coordinate box is visible
+      elms.coordMsg.box.hidden = false;
+      
+      //create message and show message if we are within the plot
+      if(data.indep[coord_i] != undefined){
+         xCoord = data.indep[coord_i];
+         message = chart.labels.indep + " = " + xCoord;
+         
+         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
+            //make sure the yCoord is a number
+            //try stepping backwards and forwards until a number is found ,
+            //or the end of the dataset is reached
+            var negOffset = posOffset = coord_i;
+            while(1){
+               //try to step back
+               if(negOffset >= 0){ 
+                  yCoord = data.dep[plt_i][negOffset];
+               }
+               //try to step forward
+               if(isNaN(yCoord) && posOffset < data.dep.length){
+                  yCoord = data.dep[plt_i][posOffset];
+               }
+               //check to see if it is time to break
+               if(
+                  !isNaN(yCoord) ||
+                  (negOffset < 0 && posOffset > data.dep.length)
+               ) break;
+               
+               negOffset--;
+               posOffset++;
+            }
             
-            //create zoom object if one does not yet exist
-            if(Dave_js.chart_zoom && flags.zoomable){ 
-               if(chart.zoom == null){
-                  chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
+            //unscale the yCoord if needed
+            if(flags.scaled){
+               if(chart.scale.type == "log"){
+                  yCoord = Math.pow(chart.scale.value, yCoord);
+               }else if(chart.scale.type == "lin"){
+                  yCoord /= chart.scale.value;
                }
             }
             
-            //add event listeners for tracking mouse pointer
-            elms.canvasBox.addEventListener(
-               "mousedown", mouseDown
-            );
-            elms.canvasBox.addEventListener(
-               "mouseup", mouseUp
-            );
-            elms.canvasBox.addEventListener(
-               "mousemove", mouseMove
-            );
+            //drop values past 3 decimal places
+            if(((yCoord % 1) != 0) && (typeof yCoord == "function")){
+               yCoord = yCoord.toFixed(3);
+            }
+            
+            message += 
+               "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
          }
          
-         function canvasMouseOut(e){
-            //make sure the mouse out did not occur because of running over a mask
-            if(e.target.className == "daveMask"){return;}
-            
-            //remove event listeners
-            elms.canvasBox.removeEventListener(
-               "mousedown", mouseDown
-            );
-            elms.canvasBox.removeEventListener(
-               "mouseup", mouseUp
-            );
-            elms.canvasBox.removeEventListener(
-               "mousemove", mouseMove
-            );
-            
-            //remove the masking divs
-            if(chart.zoom != null){chart.zoom = chart.zoom.destroy();}
-            
-            //remove the coordinate message
-            if(elms.coordMsg.box.parentNode){
-               elms.coordMsg.box.hidden = true;
-            }
-         }
-         
-         function mouseDown(e){
-            if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
-               //start tracking the mouse pointer
-               chart.zoom.start(coord_i);
-            }
-         }
-         
-         function mouseUp(e){
-            if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
-               chart.zoom.stop(coord_i, e.pageX);
-            }
-         }
-         
-         function mouseMove(e){
-            //x coordinate of cursor relative to canvas
-            var x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
-            
-            //calculate the data point index we are closest to
-            coord_i =
-               Math.round(x * (data.range.numOfPts - 1) / chart.sizes.width) +
-               data.range.start;
-            
-            //make sure the coord_i is within the data set
-            coord_i = Math.min(coord_i, (data.indep.length - 1));
-            coord_i = Math.max(coord_i, 0);
-               
-            if(Dave_js.message && flags.showCoords){
-               showCoord(coord_i, e.pageX, e.pageY);
-            }
-            if(Dave_js.chart_zoom && flags.zoomable){ //stop tracking mouse
-               chart.zoom.moveMask(e.pageX);
-            }
-         }
-         
-         function showCoord(coord_i, x, y){
-            var message, yCoord, xCoord;
-            
-            //make sure the coordinate box is visible
-            elms.coordMsg.box.hidden = false;
-            
-            //create message and show message if we are within the plot
-            if(data.indep[coord_i] != undefined){
-               xCoord = data.indep[coord_i];
-               message = chart.labels.indep + " = " + xCoord;
-               
-               for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
-                  //make sure the yCoord is a number
-                  //try stepping backwards and forwards until a number is found ,
-                  //or the end of the dataset is reached
-                  var negOffset = posOffset = coord_i;
-                  while(1){
-                     //try to step back
-                     if(negOffset >= 0){ 
-                        yCoord = data.dep[plt_i][negOffset];
-                     }
-                     //try to step forward
-                     if(isNaN(yCoord) && posOffset < data.dep.length){
-                        yCoord = data.dep[plt_i][posOffset];
-                     }
-                     //check to see if it is time to break
-                     if(
-                        !isNaN(yCoord) ||
-                        (negOffset < 0 && posOffset > data.dep.length)
-                     ) break;
-                     
-                     negOffset--;
-                     posOffset++;
-                  }
-                  
-                  //unscale the yCoord if needed
-                  if(flags.scaled){
-                     if(chart.scale.type == "log"){
-                        yCoord = Math.pow(chart.scale.value, yCoord);
-                     }else if(chart.scale.type == "lin"){
-                        yCoord /= chart.scale.value;
-                     }
-                  }
-                  
-                  //drop values past 3 decimal places
-                  if(((yCoord % 1) != 0) && (typeof yCoord == "function")){
-                     yCoord = yCoord.toFixed(3);
-                  }
-                  
-                  message += 
-                     "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
-               }
-               
-               elms.coordMsg.showMessage(
-                  message, (x + 10), (y + 10)
-               );
-            }
-         }
+         elms.coordMsg.showMessage(
+            message, (x + 10), (y + 10)
+         );
       }
    }
    
