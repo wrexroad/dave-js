@@ -51,10 +51,10 @@ Dave_js.chart = function(name) {
       },
       
       //Default number of y tics to skip
-      skipTics : { dep : 1, indep : 1 }, 
+      skipTics : {dep : 1, indep : 1 }, 
       
       //number of pixels per point in each dimension
-      pntSpacing : { dep : 1, indep : 1},
+      pntSpacing : {dep : 1, indep : 1},
       
       //min and max values for dependant variables
       limits : {min : 0, max : 0},
@@ -142,7 +142,10 @@ Dave_js.chart = function(name) {
       
       //values will be represented by a point
       points : false,
-      
+     
+      //the user sets a fixed point width
+      fixedPtSize : false,
+ 
       //convert angular/radial values to longitude/lattitude
       map : false, 
       
@@ -188,8 +191,8 @@ Dave_js.chart = function(name) {
       if (userAgent.indexOf("MSIE")!=-1){
          if (parseInt(navigator.appVersion) < 9){
             alert( 
-               '<center>Internet Explorer does not support HTML5 canvas. ' +
-               'Please use Google Chrome, Firefox, Opera, or Safari</center>'
+               'Internet Explorer does not support HTML5 canvas. ' +
+               'Please use Google Chrome, Firefox, Opera, or Safari'
             );
             return;
          }
@@ -197,7 +200,7 @@ Dave_js.chart = function(name) {
       else if(userAgent.indexOf("Firefox")!=-1){
          if (parseInt(navigator.appVersion) < 3){
             alert( 
-               "<center>Firefox 3.0 or later required for proper display</center>"
+               "Firefox 3.0 or later required for proper display"
             );
          }
       }
@@ -623,11 +626,6 @@ Dave_js.chart = function(name) {
       var pix = {x: 0, y: 0}; //screen coordinate for the plotted point
       var legendOffset = 10;
       
-      //variables to make sure we aren't plotting
-      // the exact same point multiple times
-      var lastPxCol = 0;
-      var plotted = new Object();
-      
       //move to the plot origin
       ctx.translate(0, chart.sizes.height);
       
@@ -655,56 +653,31 @@ Dave_js.chart = function(name) {
          
          //if we are drawing points, plot the initial point
          if(flags.points){
-            ctx.fillRect(
-               0 - chart.sizes.pointSize / 2,
-               pix.y - (chart.sizes.pointSize / 2),
-               chart.sizes.pointSize, chart.sizes.pointSize
-            );
+            plotPnt(0, pix.y);
          }
          
          //step through the data points
-         for(
-            var pnt_i = 1;
-            pnt_i < data.range.numOfPts;
-            pnt_i++
-         ){
+         for(var pnt_i = 1; pnt_i < data.range.numOfPts; pnt_i++){
             //try to plot the point
             //make sure we have a numerical value to plot
             if(isNaN(data.dep[plt_i][pnt_i + data.range.start])){continue;}
             
             //figure out current pixel location
             pix.y =
-               Math.round(
-                  (chart.limits.min - data.dep[plt_i][pnt_i + data.range.start])
+               (
+                  (chart.limits.min-data.dep[plt_i][pnt_i + data.range.start])
                   * chart.pntSpacing.dep
                );
-            pix.x = Math.round(pnt_i * chart.pntSpacing.indep);
-            
-            //Test to see if the pixel has already been printed
-            if(pix.x == lastPxCol){
-               if(plotted[pix.y.toString()] == 1){
-                  //skip this point if we already have record of plotting it
-                  continue;
-               }else{
-                  //log the point coordinate so we dont print it again
-                  plotted[pix.y.toString()] = 1;
-               }
-            }else{
-               //this is a new column, so clear the record of plotted points
-               plotted = new Object();
-            }
+            pix.x = (pnt_i * chart.pntSpacing.indep);
             
             if(flags.lines){
                ctx.lineTo(pix.x, pix.y);
             }
             if(flags.points){
-               ctx.fillRect(
-                  pix.x - (chart.sizes.pointSize / 2),
-                  pix.y - (chart.sizes.pointSize / 2),
-                  chart.sizes.pointSize, chart.sizes.pointSize
-               );
+               plotPnt(pix.x, pix.y);
             }
-         }
+         } 
+
          if(flags.lines){
             ctx.stroke();
          }
@@ -714,8 +687,8 @@ Dave_js.chart = function(name) {
             ctx.strokeStyle = colors.data[plt_i];
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(pix.x, pix.y);
-            ctx.lineTo(pix.x + legendOffset, pix.y);
+            ctx.moveTo(chart.sizes.width, pix.y);
+            ctx.lineTo(chart.sizes.width + legendOffset, pix.y);
             ctx.stroke();
             
             ctx.fillStyle = colors.data[plt_i];
@@ -731,6 +704,14 @@ Dave_js.chart = function(name) {
       ctx.translate(0, -1 * chart.sizes.height);
    }
    
+   function plotPnt(x, y){
+      ctx.fillRect(
+         x - chart.sizes.pointSize / 2,
+         y - (chart.sizes.pointSize / 2),
+         chart.sizes.pointSize, chart.sizes.pointSize
+      );
+   }
+
    function configHistBars(){
       //figure out total possible bar size
       chart.histBarTotal = 
@@ -1093,7 +1074,8 @@ Dave_js.chart = function(name) {
       chart.type = type;
       
       //set xy or polar plot flags
-      if(chart.type.indexOf("xy") != -1){ //found a rectangular plot type set the flag and check the subtype.
+      if(chart.type.indexOf("xy") != -1){ 
+         //found a rectangular plot type set the flag and check the subtype.
          flags.xy = true;
       }
       else if(chart.type.indexOf("hist") != -1){
@@ -1148,7 +1130,11 @@ Dave_js.chart = function(name) {
    }
    
    self.setPointSize = function(width){
-      chart.sizes.pointSize = width;
+      //stop from auto calculating point size
+      flags.fixedPtSize = true;
+
+      //make sure the supplied point size is not too small
+      chart.sizes.pointSize = Math.max(1, width);
    }
    
    self.setHistBars = function(ratio){
@@ -1202,7 +1188,20 @@ Dave_js.chart = function(name) {
       
       //set the start and stop indecies for all the loops
       self.setDataRange(start, stop);
-      
+     
+      //figure out the point size
+      if(!flags.fixedPointSize){
+         if(chart.sizes.width <= data.range.numOfPts){
+            chart.sizes.pointSize = 1;
+         }else if((chart.sizes.width / 2) <= data.range.numOfPts){
+            chart.sizes.pointSize = 2;
+         }else if((chart.sizes.width / 4) <= data.range.numOfPts){
+            chart.sizes.pointSize = 4;
+         }else{
+            chart.sizes.pointSize = 8;
+         }
+      }
+ 
       //Adjust the data as needed
       if(flags.scaled && !flags.replot){
          scaler();
