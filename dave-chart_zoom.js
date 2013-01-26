@@ -132,7 +132,7 @@ Dave_js.chart_zoom.prototype.stop = function(i, x){
    
    //remove the coordinate display
    var message = self.getPlotElement("coordMsg");
-   message.box.parentNode.removeChild(message.box);
+   if(message){message.box.parentNode.removeChild(message.box);}
    
    //zoom to fit selected points
    if(self.getStart() == i){
