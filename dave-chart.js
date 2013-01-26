@@ -1191,15 +1191,15 @@ Dave_js.chart = function(name) {
      
       //figure out the point size
       if(!flags.fixedPtSize){
-         if(chart.sizes.width <= data.range.numOfPts){
-            chart.sizes.pointSize = 1;
-         }else if((chart.sizes.width / 2) <= data.range.numOfPts){
-            chart.sizes.pointSize = 2;
-         }else if((chart.sizes.width / 4) <= data.range.numOfPts){
-            chart.sizes.pointSize = 4;
-         }else{
-            chart.sizes.pointSize = 8;
-         }
+         //take a best guess at point size
+         chart.sizes.pointSize = 
+            parseInt(chart.sizes.width / data.range.numOfPts / 2);
+         console.log(chart.sizes.pointSize);
+
+         //make sure the point is between 2 and 8
+         chart.sizes.pointSize = 
+            Math.max(1, Math.min(8, chart.sizes.pointSize));
+         console.log(chart.sizes.pointSize);
       }
  
       //Adjust the data as needed
