@@ -277,8 +277,8 @@ Dave_js.chart = function(name) {
          }
       }
       
-      //add coordinate display if this is an xy plot
-      if(flags.xy){
+      //add coordinate display if this is an xy plot and the coord flag is set
+      if(flags.xy && flags.showCoords){
          //keeps track of current index of the data point closest to the mouse
          var coord_i = 0;
          
@@ -287,10 +287,11 @@ Dave_js.chart = function(name) {
          elms.coordMsg.box.style.opacity = "0.8";
          elms.coordMsg.box.style.filter = "alpha(opacity=80)";
          
-         //add event listeners to display cursor coordinates in the message holder
-         elms.canvas.addEventListener("mouseover", canvasMouseIn);
-         elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
       }
+
+      //add event listeners to display coordinates in the message holder
+      elms.canvas.addEventListener("mouseover", canvasMouseIn);
+      elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
    }
    
    function canvasMouseIn(e){
@@ -334,7 +335,7 @@ Dave_js.chart = function(name) {
       if(chart.zoom != null){chart.zoom = chart.zoom.destroy();}
       
       //remove the coordinate message
-      if(elms.coordMsg.box.parentNode){
+      if(flags.showCoords && elms.coordMsg.box.parentNode){
          elms.coordMsg.box.hidden = true;
       }
    }
@@ -1194,12 +1195,10 @@ Dave_js.chart = function(name) {
          //take a best guess at point size
          chart.sizes.pointSize = 
             parseInt(chart.sizes.width / data.range.numOfPts / 2);
-         console.log(chart.sizes.pointSize);
 
          //make sure the point is between 2 and 8
          chart.sizes.pointSize = 
             Math.max(1, Math.min(8, chart.sizes.pointSize));
-         console.log(chart.sizes.pointSize);
       }
  
       //Adjust the data as needed
