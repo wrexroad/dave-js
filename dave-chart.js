@@ -174,11 +174,11 @@ Dave_js.chart = function(name) {
    
    //contains user provided data for plotting
    var data = { 
-      dep : Array(),
-      indep : Array(),
-      varLabels : Array(),
-      trackers : Array(),
-      trackLabels : Array(),
+      dep : new Array(),
+      indep : new Array(),
+      varLabels : new Array(),
+      trackers : new Array(),
+      trackLabels : new Array(),
       range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
    };
 
@@ -438,7 +438,7 @@ Dave_js.chart = function(name) {
       if(chart.scale.type == "log"){//log plot
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
-               if(data.dep[plt_i][pnt_i] != 0){
+               if(data.dep[plt_i][pnt_i] != 0 && !isNaN(data.dep[plt_i][pnt_i])){
                   data.dep[plt_i][pnt_i] = 
                      parseFloat(
                         (Math.log(data.dep[plt_i][pnt_i]) / 
@@ -451,7 +451,9 @@ Dave_js.chart = function(name) {
       else if(chart.scale.type == "lin"){ //linear plot
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
-               data.dep[plt_i][pnt_i] *= chart.scale.value;
+               if(!isNaN(data.dep[plt_i][pnt_i])){
+                  data.dep[plt_i][pnt_i] *= chart.scale.value;
+               }
             }
          }
       }
