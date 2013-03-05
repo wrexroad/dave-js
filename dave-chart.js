@@ -510,9 +510,15 @@ Dave_js.chart = function(name) {
          for(var plt_i = 0; plt_i < data.dep; plt_i++){
             for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
                data.dep[plt_i][pnt_i] = 
-                  Math.min[data.dep[plt_i][pnt_i + data.range.start], chart.limits.max];
+                  Math.min(
+                     data.dep[plt_i][pnt_i + data.range.start],
+                     chart.limits.max
+                  );
                data.dep[plt_i][pnt_i] = 
-                  Math.max[data.dep[plt_i][pnt_i + data.range.start], chart.limits.min];
+                  Math.max(
+                     data.dep[plt_i][pnt_i + data.range.start], 
+                     chart.limits.min
+                  );
             }
          }
       }
@@ -1051,7 +1057,8 @@ Dave_js.chart = function(name) {
       flags.showCoords = bool;
    }
    
-   //first argument is an array containing the name of each tracker. each aditional argument is an array containing tracker data
+   //first argument is an array containing the name of each tracker. 
+   //each aditional argument is an array containing tracker data
    self.setTrackers = function(){ 
       data.trackLabels = arguments[0].slice(0);
       for(var array_i = 1 ; array_i < arguments.length; array_i){
