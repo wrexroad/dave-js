@@ -117,7 +117,8 @@ Dave_js.chart = function(name) {
    
    //contains flags that may be set to govern the plotter's behavior
    var flags = {
-      //set true if the data has been plotted once. Prevents scaling data multiple times
+      //set true if the data has been plotted once. 
+      //Prevents scaling data multiple times
       replot : false,
       
       //set this to indicate a polar
@@ -438,7 +439,7 @@ Dave_js.chart = function(name) {
       if(chart.scale.type == "log"){//log plot
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
-               if(data.dep[plt_i][pnt_i] != 0 && !isNaN(data.dep[plt_i][pnt_i])){
+               if(data.dep[plt_i][pnt_i]!=0 && !isNaN(data.dep[plt_i][pnt_i])){
                   data.dep[plt_i][pnt_i] = 
                      parseFloat(
                         (Math.log(data.dep[plt_i][pnt_i]) / 
@@ -461,7 +462,6 @@ Dave_js.chart = function(name) {
    
    //either apply limits to dependant data, or generate axis limits from it
    function doLimits(){
-      
       if(!flags.limits){ 
          //user has not defined limits, so take the max and  of the data set
          
@@ -489,7 +489,6 @@ Dave_js.chart = function(name) {
                if(isNaN(data.dep[plt_i][pnt_i + data.range.start])){
                   continue;
                }
-               
                min[plt_i] =
                   Math.min(
                      data.dep[plt_i][pnt_i + data.range.start], min[plt_i]
@@ -537,7 +536,6 @@ Dave_js.chart = function(name) {
          chart.limits.max = Math.ceil(chart.limits.max);
       }
    }
-   
    
    function configSpacing(){
       var depRange = 
@@ -632,80 +630,73 @@ Dave_js.chart = function(name) {
    }
    
    function drawLinesPoints(){
-      var pix = {x: 0, y: 0}; //screen coordinate for the plotted point
+      var x = 0, y = 0; //screen coordinate for the plotted point
       var legendOffset = 10;
       
+      var range_start = data.range.start;
+      var chart_min = chart.limits.min;
+      var y_spacing = chart.pntSpacing.dep;
+      var x_spacing = chart.pntSpacing.indep;
+
       //move to the plot origin
       ctx.translate(0, chart.sizes.height);
       
       for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
+         //cache the data set for this plot
+         var y_data = data.dep[plt_i];
+         var x_data = data.indep[plt_i];
+
          //set colors for this plot
          ctx.fillStyle = colors.data[plt_i];
          ctx.strokeStyle = colors.data[plt_i];
          
          //initial point height.
          //heights must be negative to move up in the plot
-         pix.y =
-            parseInt(
-               (chart.limits.min - data.dep[plt_i][data.range.start]) *
-               chart.pntSpacing.dep
-            );
+         y = parseInt((chart_min - y_data[data.range.start]) *  y_spacing);
          
          //if we are drawing a line, set the line origin and start the line
          if(flags.lines){
             ctx.lineWidth = chart.sizes.lineWidth;
             
-            if (isNaN(pix.y)){pix.y = 0;}
+            if (isNaN(y)){y = 0;}
             ctx.beginPath();
-            ctx.moveTo(0, pix.y);
+            ctx.moveTo(0, y);
          }
          
          //if we are drawing points, plot the initial point
          if(flags.points){
-            plotPnt(0, pix.y);
+            plotPnt(0, y);
          }
          
          //step through the data points
          for(var pnt_i = 1; pnt_i < data.range.numOfPts; pnt_i++){
             //try to plot the point
             //make sure we have a numerical value to plot
-            if(isNaN(data.dep[plt_i][pnt_i + data.range.start])){continue;}
+            if(isNaN(y_data[pnt_i + range_start])){continue;}
             
             //figure out current pixel location
-            pix.y =
-               (
-                  (chart.limits.min-data.dep[plt_i][pnt_i + data.range.start])
-                  * chart.pntSpacing.dep
-               );
-            pix.x = (pnt_i * chart.pntSpacing.indep);
+            y = ((chart_min - y_data[pnt_i + range_start]) * y_spacing);
+            x = (pnt_i * x_spacing);
             
-            if(flags.lines){
-               ctx.lineTo(pix.x, pix.y);
-            }
-            if(flags.points){
-               plotPnt(pix.x, pix.y);
-            }
+            if(flags.lines){ctx.lineTo(x, y);}
+            if(flags.points){plotPnt(x, y);}
          } 
 
-         if(flags.lines){
-            ctx.stroke();
-         }
+         if(flags.lines){ctx.stroke();}
          
          //draw legend
          if(flags.legend){
             ctx.strokeStyle = colors.data[plt_i];
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(chart.sizes.width, pix.y);
-            ctx.lineTo(chart.sizes.width + legendOffset, pix.y);
+            ctx.moveTo(chart.sizes.width, y);
+            ctx.lineTo(chart.sizes.width + legendOffset, y);
             ctx.stroke();
             
             ctx.fillStyle = colors.data[plt_i];
             ctx.textAlign = "start";
             ctx.fillText(
-               data.varLabels[plt_i], 
-               chart.sizes.width + legendOffset,
-               pix.y
+               data.varLabels[plt_i], chart.sizes.width + legendOffset, y
             );
          }
       }
