@@ -209,6 +209,8 @@ Dave_js.chart = function(name) {
    // Add a new canvas to the "canvasBox" element, 
    // gets the canvas context, and draws a skeleton graph
    function buildCanvas(){
+      var timer = (new Date).getTime();
+
       //if this is not part of an existing plot, clear the canvas
       if(flags.subplot != 1){
          //remove old canvas element
@@ -292,6 +294,9 @@ Dave_js.chart = function(name) {
       //add event listeners to display coordinates in the message holder
       elms.canvas.addEventListener("mouseover", canvasMouseIn);
       elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
+
+      timer = (new Date).getTime() - timer;
+      console.log("Canvas Build = " + timer / 1000);
    }
    
    function canvasMouseIn(e){
@@ -435,6 +440,8 @@ Dave_js.chart = function(name) {
    
    //Scales the data set by either a linear value or logrithmically 
    function scaler(){
+      var timer = (new Date).getTime();
+
       if(chart.scale.type == "log"){//log plot
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
@@ -457,11 +464,15 @@ Dave_js.chart = function(name) {
             }
          }
       }
+
+      timer = (new Date).getTime() - timer;
+      console.log("Scale Data = " + timer / 1000);
    }
    
    //either apply limits to dependant data, or generate axis limits from it
    function doLimits(){
-      
+      var timer = (new Date).getTime();
+
       if(!flags.limits){ 
          //user has not defined limits, so take the max and  of the data set
          
@@ -536,6 +547,9 @@ Dave_js.chart = function(name) {
          chart.limits.min = Math.floor(chart.limits.min) ;
          chart.limits.max = Math.ceil(chart.limits.max);
       }
+
+      timer = (new Date).getTime() - timer;
+      console.log("Limits Calculated = " + timer / 1000);
    }
    
    
