@@ -210,6 +210,8 @@ Dave_js.chart = function(name) {
    // Add a new canvas to the "canvasBox" element, 
    // gets the canvas context, and draws a skeleton graph
    function buildCanvas(){
+      var timer = (new Date).getTime();
+
       //if this is not part of an existing plot, clear the canvas
       if(flags.subplot != 1){
          //remove old canvas element
@@ -293,6 +295,9 @@ Dave_js.chart = function(name) {
       //add event listeners to display coordinates in the message holder
       elms.canvas.addEventListener("mouseover", canvasMouseIn);
       elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
+
+      timer = (new Date).getTime() - timer;
+      console.log("Canvas Build = " + timer / 1000);
    }
    
    function canvasMouseIn(e){
@@ -436,32 +441,46 @@ Dave_js.chart = function(name) {
    
    //Scales the data set by either a linear value or logrithmically 
    function scaler(){
-      if(chart.scale.type == "log"){//log plot
+      var timer = (new Date).getTime();
+
+      var scale_type = chart.scale.type;
+      var scale_val = chart.scale.value;
+
+      if(scale_type == "log"){//log plot
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
+            var y_data = data.dep[plt_i];
+
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
-               if(data.dep[plt_i][pnt_i]!=0 && !isNaN(data.dep[plt_i][pnt_i])){
-                  data.dep[plt_i][pnt_i] = 
+               if(y_data[pnt_i]!=0 && !isNaN(y_data[pnt_i])){
+                  y_data[pnt_i] = 
                      parseFloat(
-                        (Math.log(data.dep[plt_i][pnt_i]) / 
-                        Math.log(chart.scale.value)).toFixed(3)
+                        (Math.log(y_data[pnt_i]) / 
+                        Math.log(scale_val)).toFixed(3)
                      );
                }
             }
          }
       }
-      else if(chart.scale.type == "lin"){ //linear plot
+      else if(scale_type == "lin"){ //linear plot
          for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
+            var y_data = data.dep[plt_i];
+
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
-               if(!isNaN(data.dep[plt_i][pnt_i])){
-                  data.dep[plt_i][pnt_i] *= chart.scale.value;
+               if(!isNaN(y_data[pnt_i])){
+                  y_data[pnt_i] *= scale_val;
                }
             }
          }
       }
+
+      timer = (new Date).getTime() - timer;
+      console.log("Scale Data = " + timer / 1000);
    }
    
    //either apply limits to dependant data, or generate axis limits from it
    function doLimits(){
+      var timer = (new Date).getTime();
+
       if(!flags.limits){ 
          //user has not defined limits, so take the max and  of the data set
          
@@ -535,6 +554,9 @@ Dave_js.chart = function(name) {
          chart.limits.min = Math.floor(chart.limits.min) ;
          chart.limits.max = Math.ceil(chart.limits.max);
       }
+
+      timer = (new Date).getTime() - timer;
+      console.log("Limits Calculated = " + timer / 1000);
    }
    
    function configSpacing(){
