@@ -453,10 +453,7 @@ Dave_js.chart = function(name) {
             for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
                if(y_data[pnt_i]!=0 && !isNaN(y_data[pnt_i])){
                   y_data[pnt_i] = 
-                     parseFloat(
-                        (Math.log(y_data[pnt_i]) / 
-                        Math.log(scale_val)).toFixed(3)
-                     );
+                     Math.log(y_data[pnt_i]) / Math.log(scale_val);
                }
             }
          }
@@ -605,7 +602,7 @@ Dave_js.chart = function(name) {
             ticLabel = ticLabel.toFixed(2);
          }
          
-         drawTic(ticLabel,offset);
+         drawTic(ticLabel, offset);
       }
    }
    
