@@ -631,6 +631,8 @@ Dave_js.chart = function(name) {
    
    function drawLinesPoints(){
       var x = 0, y = 0; //screen coordinate for the plotted point
+      var timer = (new Date).getTime();
+
       var legendOffset = 10;
       
       var range_start = data.range.start;
@@ -702,6 +704,9 @@ Dave_js.chart = function(name) {
       }
       //return to the canvas origin
       ctx.translate(0, -1 * chart.sizes.height);
+
+      timer = (new Date).getTime() - timer;
+      console.log("Draw Time = " + timer/1000);
    }
    
    function plotPnt(x, y){
