@@ -1,7 +1,6 @@
 define(function(require){   
   var body = document.getElementsByTagName("body")[0];
   var config = {};
-  var modules = {};
 
   var configure = function configure(settings){
     if(settings.style){
@@ -9,33 +8,41 @@ define(function(require){
       var style = document.createElement("link");
       style.rel = "stylesheet";
       style.type = "text/css";
-      style.href = setting.style;
+      style.href = settings.style;
       body.appendChild(style);
     }
 
     config.container = settings.container || body;
 
     config.plotter = settings.plotter || 'dave-chart';
-    config.plugins = settings.plugins;
+    config.modules = [].concat(config.plotter, settings.plugins);
   }
 
-  var loadModules = function loadModules(){
-    modules.plotter = require('davejs/modules/' + config.plotter);
-
-    //load any plugins
-    for(var i = 0 < config.plugins; i++){
-      var name = names[i];
-      modules[name] = require('davejs/modules/' + name);
-    }
-  }
-
-  var plot = function plot(){
+  var plot = (function plot(){
+    //load all of the modules 
+    var moduleIndex = {};
+    require(config.modules, function(){
+      for(var i = 0; i < arguments.length; i++){
+        moduleIndex[arguments[i].getName()] = arguments[i];
+      }
+    });
     
-  }
+    var loadData = (function loadData(){
+
+    });
+
+    var draw = (function draw(){
+
+    });
+
+    return {
+      'loadData': loadData,
+      'draw': draw
+    }
+  });
 
   return {
     'configure': configure,
-    'loadModules': loadModules,
     'plot': plot
   }
 });
