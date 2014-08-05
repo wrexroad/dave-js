@@ -1,9 +1,8 @@
-requirejs.config(
-  baseUrl: 'lib',
+requirejs.config({
+  baseUrl: '/js/lib',
   paths: {
-    davejs: 'davejs',
-    modules: 'davejs/modules'
+    app: '../app'
   }
 });
 
-requirejs(['dave']);
+requirejs(['app/main']);
