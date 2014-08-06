@@ -25,6 +25,7 @@ define(function(require){
       for(var i = 0; i < arguments.length; i++){
         if(arguments[i]){ 
           moduleIndex[arguments[i].getName()] = arguments[i];
+          console.log("Loaded Dave.js module: " + arguments[i].getName());
         }
       }
     });
