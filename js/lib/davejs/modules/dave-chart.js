@@ -1,4 +1,5 @@
-Dave_js.chart = function(name) { 
+(function(){
+var Chart = function(name){
    var self = this;
    
    //////////////////////////Private Members//////////////////////////////
@@ -1269,3 +1270,11 @@ Dave_js.chart = function(name) {
       }
    }  
 }
+
+define(function(require){
+  return {
+    'getName': function getName(){return 'Chart';},
+    'init': Chart
+  }
+});
+})();

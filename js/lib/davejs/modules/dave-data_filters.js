@@ -1,10 +1,11 @@
+(function(){
 /*
    Dave_js.data_filters is a collection of filters and data manipulation tools.
    This is a singleton and can not be instantiated 
    like most of of the Dave_js packages.
 */
 
-Dave_js.data_filters = {
+var DataFilters = {
    //Moving Average Filter
    //Arguments:
    //   numOfPts: number of points in front of and behind the current point
@@ -40,4 +41,10 @@ Dave_js.data_filters = {
    }
 }
 
-
+define(function(require){
+  return {
+    'getName': function(){return "DataFilters";},
+    'init': DataFilters
+  }
+});
+})();

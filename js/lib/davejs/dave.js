@@ -23,6 +23,7 @@ define(function(require){
     var moduleIndex = {};
     var module;
     var moduleName;
+
     require(config.modules, function(){
       for(var i = 0; i < arguments.length; i++){
         module = arguments[i];

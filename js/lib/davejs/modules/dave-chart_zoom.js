@@ -1,5 +1,6 @@
+(function(){
 //add the main zoom function to the chart object
-Dave_js.chart_zoom = function(plot, data, els, chart) { 
+var Zoom = function(plot, data, els, chart) { 
    var self = this;
    
    var startPnt; //stores the coordinate of the mouse at mousedown event
@@ -87,7 +88,7 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
    }
 }
 
-/*Dave_js.chart_zoom.prototype.getDataIndex = function(e){
+/*chart_zoom.prototype.getDataIndex = function(e){
    var self = this;
    
    //figure out the conversion of horiz pixel location to data point index
@@ -104,7 +105,8 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
    return ;
 }
 */
-Dave_js.chart_zoom.prototype.start = function(i){
+
+Zoom.prototype.start = function(i){
    var self = this;
 
    //make sure the calculated index is within the currently displayed range
@@ -115,7 +117,7 @@ Dave_js.chart_zoom.prototype.start = function(i){
    self.setStart(i);
 }
 
-Dave_js.chart_zoom.prototype.stop = function(i, x){
+Zoom.prototype.stop = function(i, x){
    var self = this;
    
    //ignore mouseup events unless the mouse was just down
@@ -146,7 +148,7 @@ Dave_js.chart_zoom.prototype.stop = function(i, x){
    }
 }
 
-Dave_js.chart_zoom.prototype.moveMask = function(x){
+Zoom.prototype.moveMask = function(x){
    var self = this;
    
    var canvas = self.getPlotElement("canvas");
@@ -183,7 +185,7 @@ Dave_js.chart_zoom.prototype.moveMask = function(x){
    }
 }
 
-Dave_js.chart_zoom.prototype.destroy = function(){
+Zoom.prototype.destroy = function(){
    var self = this;
    
    mask = self.getZoomMask()
@@ -193,7 +195,12 @@ Dave_js.chart_zoom.prototype.destroy = function(){
       mask.r.parentNode.removeChild(mask.r);
    }
    mask = null;
-   
-   
-   return null;
 }
+
+define(function(require){
+  return {
+    'getName': function(){return "Zoom";},
+    'init': Zoom
+  }
+});
+})();

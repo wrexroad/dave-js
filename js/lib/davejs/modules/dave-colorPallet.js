@@ -1,4 +1,5 @@
-Dave_js.colorPallet = function(t, n) { 
+(function(){
+var ColorPallet = function(t, n) { 
    var self = this;
    
    //make sure we have valid input
@@ -73,7 +74,7 @@ Dave_js.colorPallet = function(t, n) {
 }
 
 //calculates the pallet values
-Dave_js.colorPallet.prototype.buildPallet = function(){
+ColorPallet.prototype.buildPallet = function(){
    var self = this;
    var num = self.getNumOfColors();
    
@@ -125,7 +126,7 @@ Dave_js.colorPallet.prototype.buildPallet = function(){
 
 //Takes a div element as input and fills it with color boxes
 //The size input determines the pixel width of the color boxes
-Dave_js.colorPallet.prototype.displayColors = function(
+ColorPallet.prototype.displayColors = function(
    divEl, width, height, border
 ){
    var self = this;
@@ -170,7 +171,7 @@ Dave_js.colorPallet.prototype.displayColors = function(
 }
 
 //Return an array of color codes in rgb or hex format
-Dave_js.colorPallet.prototype.getPallet = function(f){
+ColorPallet.prototype.getPallet = function(f){
    var self = this;
    var pallet = self.getColors();
    var num = self.getNumOfColors();
@@ -183,3 +184,11 @@ Dave_js.colorPallet.prototype.getPallet = function(f){
    
    return out;
 }
+
+define(function(require){
+  return {
+    'getName': function(){return "ColorPallet";},
+    'init': ColorPallet
+  }
+});
+})();

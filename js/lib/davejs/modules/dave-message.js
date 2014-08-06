@@ -1,4 +1,5 @@
-Dave_js.message = function(){
+(function(){
+Message = function(){
    var self = this;
    
    //add a new hidden div to the body that will contain the message
@@ -40,4 +41,10 @@ Dave_js.message = function(){
    }
 }
 
-
+define(function(require){
+  return {
+    'getName': function(){return "Message";},
+    'init': Message
+  }
+});
+})();
