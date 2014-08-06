@@ -21,11 +21,15 @@ define(function(require){
   var plot = (function plot(){
     //load all of the modules 
     var moduleIndex = {};
+    var module;
+    var moduleName;
     require(config.modules, function(){
       for(var i = 0; i < arguments.length; i++){
-        if(arguments[i]){ 
-          moduleIndex[arguments[i].getName()] = arguments[i];
-          console.log("Loaded Dave.js module: " + arguments[i].getName());
+        module = arguments[i];
+        if(module && module.getName){ 
+          moduleName = module.getName();
+          moduleIndex[moduleName] = module;
+          console.log("Loaded Dave.js module: " + moduleName);
         }
       }
     });
