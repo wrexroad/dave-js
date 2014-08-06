@@ -22,10 +22,9 @@ define(function(require){
     //load all of the modules 
     var moduleIndex = {};
     require(config.modules, function(){
-      var module = arguments[i];
       for(var i = 0; i < arguments.length; i++){
-        if(module){ 
-          moduleIndex[module.getName()] = module;
+        if(arguments[i]){ 
+          moduleIndex[arguments[i].getName()] = arguments[i];
         }
       }
     });
