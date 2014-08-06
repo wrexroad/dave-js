@@ -1,5 +1,5 @@
 (function(){
-Message = function(){
+var Message = function(){
    var self = this;
    
    //add a new hidden div to the body that will contain the message
