@@ -18,39 +18,38 @@ define(function(require){
     config.modules = [].concat(config.plotter, settings.plugins);
   }
 
-  var plot = (function plot(){
-    //load all of the modules 
-    var moduleIndex = {};
-    var module;
-    var moduleName;
+  this.plot = function plot(){
+    //give this instance of the plot its own module reference and data store
+    this.data;
+    this.modules = {}
+    console.log(this.modules);
+  };
+
+  plot.prototype.loadData = function loadData(){
+    
+  };
+
+  plot.prototype.draw = function draw(){
+    var 
+      modules = this.modules,
+      module,
+      moduleName;
 
     require(config.modules, function(){
       for(var i = 0; i < arguments.length; i++){
         module = arguments[i];
         if(module && module.getName){ 
           moduleName = module.getName();
-          moduleIndex[moduleName] = module;
+          modules[moduleName] = module;
           console.log("Loaded Dave.js module: " + moduleName);
         }
       }
     });
-    
-    var loadData = (function loadData(){
-
-    });
-
-    var draw = (function draw(){
-
-    });
-
-    return {
-      'loadData': loadData,
-      'draw': draw
-    }
-  });
+  };
 
   return {
     'configure': configure,
     'plot': plot
   }
 });
+
