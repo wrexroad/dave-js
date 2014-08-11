@@ -1,5 +1,4 @@
 var Dave_js = {
-   
    //autoload the style sheet.
    init : function(){ 
       var bodyEl = document.getElementsByTagName("body")[0];
@@ -18,18 +17,5 @@ var Dave_js = {
    
    setLibRoot : function(path){
       Dave_js.libRoot = path;
-   },
-   
-   loadMod : function(mod){
-      var bodyEl = document.getElementsByTagName("body")[0];
-      
-      //indicate that something is still loading
-      Dave_js.loaded = false;
-      
-      //create a script element that loads requested js file
-      var scriptEl = document.createElement("script");
-      scriptEl.src = Dave_js.libRoot + "/dave-" + mod + ".js";
-      bodyEl.appendChild(scriptEl);
-      scriptEl.onload = function(){Dave_js.loaded = true;};
-   },
+   }
 }
