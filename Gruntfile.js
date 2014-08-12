@@ -1,36 +1,24 @@
 module.exports = function(grunt) {
-  var version = '0.0.1';
-  var pkgName = 'dave-' + version;
-
-  //where do all of the dave.js library files live?
-  var davePath = 'www/js/lib/davejs/';
-
-  //list of all dave.js modules. Do not include dave.js itself
-  var daveMods = [
-    'dave-chart.js',
-    'dave-chart_zoom.js',
-    'dave-colorPallet.js',
-    'dave-data_filters.js',
-    'dave-messages.js'
-  ];
-
-  var output = 'build/';
 
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    buildName: '<%= pkg.name %>-<%= pkg.version%>',
+
     concat: {
-      src: [].concat('dave.js', daveMods),
-      dest: output + 'dave-' + version + '.concat.js'
+      src: [].concat(
+        '<%= pkg.davePath %>dave.js', '<%= pkg.daveMods %>'),
+      dest: '<%= pkg.outputDir %><%= pkg.outputDir %><%= buildName %>'
     },
 
     uglify: {
       banner: 
-        '/*! ' + pkgName + ' <%= grunt.template.today("dd-mm-yyyy") %> */\n',
-      src: output + pkgName + '.concat.js',
-      dest: output + pkgName + '.min.js'
+        '/*! <%= buildName %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+      src: '<%= pkg.outputDir %><%= buildName %>.concat.js',
+      dest: '<%= pkg.outputDir %><%= buildName %>.min.js'
     },
     
     jshint: {
-      files: [davePath +'/*.js']
+      files: ['<%= pkg.davePath %>/*.js']
     },
 
     watch: {

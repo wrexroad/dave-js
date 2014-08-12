@@ -1,0 +1,28 @@
+{
+  "name": "daveJS",
+  "version": "0.0.1",
+
+  "davePath": "www/js/lib/davejs/",
+
+  "outputDir": "build/",
+
+  "daveMods": [
+    "dave-chart.js",
+    "dave-chart_zoom.js",
+    "dave-colorPallet.js",
+    "dave-data_filters.js",
+    "dave-messages.js"
+  ],
+
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-concat": "*"
+  },
+  "engines": {
+      "node": ">=0.10.0"
+  }
+}
