@@ -17,4 +17,4 @@ Type the followig into a terminal to download and build Dave.js
 The minified Dave.js should be stored in the dave-js/build directory.
 
 ##Contact
-Send complaints to wrexroad@gmail.com
+Send complaints to [wrexroad@gmail.com](mailto:wrexroad@gmail.com)
