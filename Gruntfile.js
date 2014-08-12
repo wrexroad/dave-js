@@ -3,18 +3,23 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     buildName: '<%= pkg.name %>-<%= pkg.version%>',
+    concatFile: '<%= pkg.outputDir %><%= buildName %>.concat.js',
+    uglyFile: '<%= pkg.outputDir %><%= buildName %>.min.js',
 
     concat: {
-      src: [].concat(
-        '<%= pkg.davePath %>dave.js', '<%= pkg.daveMods %>'),
-      dest: '<%= pkg.outputDir %><%= pkg.outputDir %><%= buildName %>'
+      build: {
+        src: [].concat('<%= pkg.davePath %>dave.js', '<%= pkg.daveMods %>'),
+        dest: '<%= concatFile %>'
+      }
     },
 
     uglify: {
       banner:
         '/*! <%= buildName %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
-      src: '<%= pkg.outputDir %><%= buildName %>.concat.js',
-      dest: '<%= pkg.outputDir %><%= buildName %>.min.js'
+      build: {
+        src: '<%= concatFile %>',
+        dest: '<%= uglyFile %>'
+      }
     },
     
     jshint: {
@@ -33,5 +38,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'concat:build', 'uglify:build']);
 };
