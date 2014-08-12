@@ -175,11 +175,11 @@ Dave_js.chart = function(name) {
    
    //contains user provided data for plotting
    var data = { 
-      dep : new Array(),
-      indep : new Array(),
-      varLabels : new Array(),
-      trackers : new Array(),
-      trackLabels : new Array(),
+      dep : [],
+      indep : [],
+      varLabels : [],
+      trackers : [],
+      trackLabels : [],
       range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
    };
 
@@ -189,7 +189,7 @@ Dave_js.chart = function(name) {
    function browserTest(){ 
       //set special values based on browser
       var userAgent=navigator.userAgent;
-      if (userAgent.indexOf("MSIE")!=-1){
+      if (userAgent.indexOf("MSIE") != -1){
          if (parseInt(navigator.appVersion) < 9){
             alert( 
                'Internet Explorer does not support HTML5 canvas. ' +
@@ -198,19 +198,19 @@ Dave_js.chart = function(name) {
             return;
          }
       }
-      else if(userAgent.indexOf("Firefox")!=-1){
+      else if(userAgent.indexOf("Firefox") != -1){
          if (parseInt(navigator.appVersion) < 3){
             alert( 
                "Firefox 3.0 or later required for proper display"
             );
          }
       }
-   };
+   }
    
    // Add a new canvas to the "canvasBox" element, 
    // gets the canvas context, and draws a skeleton graph
    function buildCanvas(){
-      var timer = (new Date).getTime();
+      var timer = (new Date()).getTime();
 
       //if this is not part of an existing plot, clear the canvas
       if(flags.subplot != 1){
@@ -296,7 +296,7 @@ Dave_js.chart = function(name) {
       elms.canvas.addEventListener("mouseover", canvasMouseIn);
       elms.canvasBox.addEventListener("mouseover", canvasMouseOut);
 
-      timer = (new Date).getTime() - timer;
+      timer = (new Date()).getTime() - timer;
       console.log("Canvas Build = " + timer / 1000);
    }
    
@@ -305,7 +305,7 @@ Dave_js.chart = function(name) {
       
       //create zoom object if one does not yet exist
       if(Dave_js.chart_zoom && flags.zoomable){ 
-         if(chart.zoom == null){
+         if(chart.zoom === null){
             chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
          }
       }
@@ -338,7 +338,7 @@ Dave_js.chart = function(name) {
       );
       
       //remove the masking divs
-      if(chart.zoom != null){chart.zoom = chart.zoom.destroy();}
+      if(chart.zoom !== null){chart.zoom = chart.zoom.destroy();}
       
       //remove the coordinate message
       if(flags.showCoords && elms.coordMsg.box.parentNode){
@@ -387,7 +387,7 @@ Dave_js.chart = function(name) {
       elms.coordMsg.box.hidden = false;
       
       //create message and show message if we are within the plot
-      if(data.indep[coord_i] != undefined){
+      if(data.indep[coord_i] !== undefined){
          xCoord = data.indep[coord_i];
          message = chart.labels.indep + " = " + xCoord;
          
@@ -395,7 +395,8 @@ Dave_js.chart = function(name) {
             //make sure the yCoord is a number
             //try stepping backwards and forwards until a number is found ,
             //or the end of the dataset is reached
-            var negOffset = posOffset = coord_i;
+            var negOffset, posOffset;
+            negOffset = posOffset = coord_i;
             while(1){
                //try to step back
                if(negOffset >= 0){ 
@@ -425,7 +426,7 @@ Dave_js.chart = function(name) {
             }
             
             //drop values past 3 decimal places
-            if(((yCoord % 1) != 0) && (typeof yCoord == "function")){
+            if(((yCoord % 1) !== 0) && (typeof yCoord == "function")){
                yCoord = yCoord.toFixed(3);
             }
             
@@ -441,17 +442,19 @@ Dave_js.chart = function(name) {
    
    //Scales the data set by either a linear value or logrithmically 
    function scaler(){
-      var timer = (new Date).getTime();
+      var timer = (new Date()).getTime();
 
       var scale_type = chart.scale.type;
       var scale_val = chart.scale.value;
+      
+      var plt_i, pnt_i, y_data;
 
       if(scale_type == "log"){//log plot
-         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
-            var y_data = data.dep[plt_i];
+         for(plt_i = 0; plt_i < data.dep.length; plt_i++){
+            y_data = data.dep[plt_i];
 
-            for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
-               if(y_data[pnt_i]!=0 && !isNaN(y_data[pnt_i])){
+            for(pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
+               if(y_data[pnt_i] !== 0 && !isNaN(y_data[pnt_i])){
                   y_data[pnt_i] = 
                      Math.log(y_data[pnt_i]) / Math.log(scale_val);
                }
@@ -459,10 +462,10 @@ Dave_js.chart = function(name) {
          }
       }
       else if(scale_type == "lin"){ //linear plot
-         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
-            var y_data = data.dep[plt_i];
+         for(plt_i = 0; plt_i < data.dep.length; plt_i++){
+            y_data = data.dep[plt_i];
 
-            for(var pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
+            for(pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
                if(!isNaN(y_data[pnt_i])){
                   y_data[pnt_i] *= scale_val;
                }
@@ -470,13 +473,14 @@ Dave_js.chart = function(name) {
          }
       }
 
-      timer = (new Date).getTime() - timer;
+      timer = (new Date()).getTime() - timer;
       console.log("Scale Data = " + timer / 1000);
    }
    
    //either apply limits to dependant data, or generate axis limits from it
    function doLimits(){
-      var timer = (new Date).getTime();
+      var timer = (new Date()).getTime();
+      var plt_i, pnt_i;
 
       if(!flags.limits){ 
          //user has not defined limits, so take the max and  of the data set
@@ -486,11 +490,11 @@ Dave_js.chart = function(name) {
          chart.limits.max = parseFloat(chart.limits.max);
          
          //create an array of max and mins for each subset
-         var max = new Array();
-         var min = new Array();
-         for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
-            var pnt_i = 0;
-            
+         var max = [];
+         var min = [];
+
+         
+         for(plt_i = 0; plt_i < data.dep.length; plt_i++){
             //find first real data point for initial min/max
             for(pnt_i; pnt_i < data.range.numOfPts; pnt_i++){
                if(!isNaN(data.dep[plt_i][pnt_i + data.range.start])){
@@ -522,8 +526,8 @@ Dave_js.chart = function(name) {
          
       }else{
          //the user has predefined data limits, so apply to each subset
-         for(var plt_i = 0; plt_i < data.dep; plt_i++){
-            for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
+         for(plt_i = 0; plt_i < data.dep; plt_i++){
+            for(pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
                data.dep[plt_i][pnt_i] = 
                   Math.min(
                      data.dep[plt_i][pnt_i + data.range.start],
@@ -552,7 +556,7 @@ Dave_js.chart = function(name) {
          chart.limits.max = Math.ceil(chart.limits.max);
       }
 
-      timer = (new Date).getTime() - timer;
+      timer = (new Date()).getTime() - timer;
       console.log("Limits Calculated = " + timer / 1000);
    }
    
@@ -598,7 +602,7 @@ Dave_js.chart = function(name) {
             }
          }
          
-         if(!isNaN(ticLabel) && (ticLabel % 1) != 0){
+         if(!isNaN(ticLabel) && (ticLabel % 1) !== 0){
             ticLabel = ticLabel.toFixed(2);
          }
          
@@ -634,13 +638,13 @@ Dave_js.chart = function(name) {
          ticLabel = data.indep[pnt_i + data.range.start];
          
          //only draw the tic mark if it is defined
-         if(ticLabel != undefined){drawTic(ticLabel, offset);}
+         if(ticLabel !== undefined){drawTic(ticLabel, offset);}
       }
       ctx.restore();
    }
    
    function drawTic(ticLabel, offset){
-      if(ticLabel == "--") {ticLabel = "No Label"}
+      if(ticLabel == "--") {ticLabel = "No Label";}
       ctx.fillText(ticLabel, -5, offset + 5);
       ctx.beginPath();
       ctx.moveTo(0, offset);  
@@ -650,7 +654,7 @@ Dave_js.chart = function(name) {
    
    function drawLinesPoints(){
       var x = 0, y = 0; //screen coordinate for the plotted point
-      var timer = (new Date).getTime();
+      var timer = (new Date()).getTime();
 
       var legendOffset = 10;
       
@@ -724,7 +728,7 @@ Dave_js.chart = function(name) {
       //return to the canvas origin
       ctx.translate(0, -1 * chart.sizes.height);
 
-      timer = (new Date).getTime() - timer;
+      timer = (new Date()).getTime() - timer;
       console.log("Draw Time = " + timer/1000);
    }
    
@@ -1005,12 +1009,12 @@ Dave_js.chart = function(name) {
 
    self.setCanvasHolder = function(canvasHolderID){
       elms.canvasBox = document.getElementById(canvasHolderID);
-   }
+   };
    
    self.setOrigin = function(x,y){
       chart.origin.x = x;
       chart.origin.y = y;
-   }
+   };
    
    self.setCanvasSize = function(height, width, margin){
       chart.sizes.canvas.height = height;
@@ -1020,9 +1024,9 @@ Dave_js.chart = function(name) {
       chart.sizes.height = height - chart.sizes.canvas.margin;
       chart.sizes.width = width - chart.sizes.canvas.margin;
       
-      chart.sizes.radius = Math.max(width, height)  
-         - (chart.sizes.canvas.margin) / 2;
-   }
+      chart.sizes.radius = 
+         Math.max(width, height) - (chart.sizes.canvas.margin) / 2;
+   };
    
    self.setChartSize = function(height, width){
       chart.sizes.height = height;
@@ -1032,11 +1036,11 @@ Dave_js.chart = function(name) {
       chart.sizes.canvas.width = width + chart.sizes.canvas.margin;
       
       chart.sizes.radius = Math.max(width, height) / 2;
-   }
+   };
    
    self.setColor = function(type, color){
       colors[type] = color;
-   }
+   };
    
    self.setData = function(xDataArr, yDataArr, dataSetLabel, id){
       //if no id is set, just use use the next open slot
@@ -1053,7 +1057,7 @@ Dave_js.chart = function(name) {
       dataSetLabels = null;
       
       return id;
-   }
+   };
    
    self.setDataRange = function(start, stop){
       //make sure the index range is within the data set and save it
@@ -1062,15 +1066,15 @@ Dave_js.chart = function(name) {
       
       //figure out how manys data points we have
       data.range.numOfPts = data.range.stop - data.range.start + 1;
-   }
+   };
    
    self.setSubPlot = function(bool){
       flags.subPlot = bool;
-   }
+   };
    
    self.setCoordDisp = function(bool){
       flags.showCoords = bool;
-   }
+   };
    
    //first argument is an array containing the name of each tracker. 
    //each aditional argument is an array containing tracker data
@@ -1079,7 +1083,7 @@ Dave_js.chart = function(name) {
       for(var array_i = 1 ; array_i < arguments.length; array_i){
          data.trackers[array_i] = arguments[array_i].slice(0);
       }
-   }
+   };
    
    //sets the chart lables
    self.setLabels = function(title,xaxis,yaxis){
@@ -1092,7 +1096,7 @@ Dave_js.chart = function(name) {
          chart.labels.dep = yaxis;
          flags.axis = true;
       }
-   }
+   };
 
    //sets the type of chart to be drawn
    self.setType = function(type){
@@ -1127,7 +1131,7 @@ Dave_js.chart = function(name) {
       if(chart.type.indexOf("point") != -1){
          flags.points = true;
       }
-   }
+   };
 
    //set the data to be scaled in some way
    self.setScale = function(scale){
@@ -1137,7 +1141,7 @@ Dave_js.chart = function(name) {
       
       chart.scale.type = scaleParams[0];
       chart.scale.value = parseInt(scaleParams[1]);
-   }
+   };
    
    //set the min and max values for the yaxis
    self.setLimits = function(min,max){
@@ -1148,11 +1152,11 @@ Dave_js.chart = function(name) {
       }else{
          alert("Plot limits could not be set.");
       }
-   }
+   };
 
    self.setLineWidth = function(width){
       chart.sizes.lineWidth = width;
-   }
+   };
    
    self.setPointSize = function(width){
       //stop from auto calculating point size
@@ -1160,47 +1164,47 @@ Dave_js.chart = function(name) {
 
       //make sure the supplied point size is not too small
       chart.sizes.pointSize = Math.max(1, width);
-   }
+   };
    
    self.setHistBars = function(ratio){
       chart.histBarRatio = ratio;
-   }
+   };
    
    self.setBorderColor = function(color){
       colors.borderColor = color;
-   }
+   };
    
    self.setBackgroundColor = function(color){
       colors.bgColor = color;
-   }
+   };
    
    self.setBackgroundImage = function(id){
       chart.bgImg = document.getElementById(id);  
-   }
+   };
    
    self.setGrid = function(){
       flags.grid = true;
-   }
+   };
    
    self.setLegend = function(){
       flags.legend = true;
-   }
+   };
    
    self.setZoomable = function(){
       flags.zoomable = true;
-   }
+   };
    
    self.getData = function(){
       return data;
-   }
+   };
    
    self.getPlotElements = function(){
       return elms;
-   }
+   };
    
    self.getChartProps = function(){
       return chart;
-   }
+   };
 
 
    //////////////////////////Public Methods////////////////////////// 
@@ -1208,8 +1212,8 @@ Dave_js.chart = function(name) {
    self.buildPlot = function(start, stop){
       //determine if start and stop indicies were set
       //if not, set for full range
-      if(start == undefined){start = 0;}
-      if(stop == undefined){stop = data.indep.length - 1;}
+      if(start === undefined){start = 0;}
+      if(stop === undefined){stop = data.indep.length - 1;}
       
       //set the start and stop indecies for all the loops
       self.setDataRange(start, stop);
@@ -1267,5 +1271,5 @@ Dave_js.chart = function(name) {
          
          drawHistBars();
       }
-   }  
-}
+   };
+};

@@ -39,29 +39,29 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
    
    self.getZoomMask = function(){
       return mask;
-   }
+   };
    self.setMousedown = function(b){
       mousedown = b;
-   }
+   };
    self.getMousedown = function(){
       return mousedown;
-   }
+   };
    self.setStart = function(p){
       startPnt = parseInt(p);
-   }
+   };
    self.getStart = function(){
       return startPnt;
-   }
+   };
    self.getPlotInstance = function(){
       return plot;
-   }
+   };
    self.getPlotElement = function(){
       var retObj = els;
       for(var arg_i = 0; arg_i < arguments.length; arg_i++){
          retObj = retObj[arguments[arg_i]];
       }
       return retObj;
-   }
+   };
    self.getChartProp = function(){
       var retObj = chart;
       
@@ -70,7 +70,7 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
       }
       
       return retObj;
-   }
+   };
    
    self.getData = function(){
       var retObj = data;
@@ -80,12 +80,12 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
       }
       
       return retObj;
-   }
+   };
    
    self.getChartOffset = function(){
       return chartOffset;
-   }
-}
+   };
+};
 
 /*Dave_js.chart_zoom.prototype.getDataIndex = function(e){
    var self = this;
@@ -113,7 +113,7 @@ Dave_js.chart_zoom.prototype.start = function(i){
    
    self.setMousedown(true);
    self.setStart(i);
-}
+};
 
 Dave_js.chart_zoom.prototype.stop = function(i, x){
    var self = this;
@@ -144,7 +144,7 @@ Dave_js.chart_zoom.prototype.stop = function(i, x){
          Math.min(self.getStart(), i), Math.max(self.getStart(), i)
       );
    }
-}
+};
 
 Dave_js.chart_zoom.prototype.moveMask = function(x){
    var self = this;
@@ -181,19 +181,18 @@ Dave_js.chart_zoom.prototype.moveMask = function(x){
             self.getChartProp("sizes", "width")
          ) + "px";
    }
-}
+};
 
 Dave_js.chart_zoom.prototype.destroy = function(){
    var self = this;
    
-   mask = self.getZoomMask()
+   mask = self.getZoomMask();
    
-   if(mask.l.parentNode != undefined){
+   if(mask.l.parentNode !== undefined){
       mask.l.parentNode.removeChild(mask.l);
       mask.r.parentNode.removeChild(mask.r);
    }
    mask = null;
    
-   
    return null;
-}
+};

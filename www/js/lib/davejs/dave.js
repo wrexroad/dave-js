@@ -18,4 +18,4 @@ var Dave_js = {
    setLibRoot : function(path){
       Dave_js.libRoot = path;
    }
-}
+};

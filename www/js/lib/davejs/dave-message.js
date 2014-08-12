@@ -14,7 +14,7 @@ Dave_js.message = function(){
    var closeButton = document.createElement("button");
    closeButton.className = "daveMessageClose";
    closeButton.innerHTML = "X";
-   closeButton.onclick = function(){self.hideMessage(self);}
+   closeButton.onclick = function(){self.hideMessage(self);};
    self.box.appendChild(closeButton);
    
    //add a dive to hold message content
@@ -24,7 +24,7 @@ Dave_js.message = function(){
    self.setSize = function(width, height){
       self.box.style.width = width + "px";
       self.box.style.height = height + "px";
-   }
+   };
    
    self.showMessage = function(message, x, y){
       self.box.style.top = (y || 0) + "px";
@@ -33,11 +33,11 @@ Dave_js.message = function(){
       messageDiv.innerHTML = message;
       
       self.box.hidden = false;
-   }
+   };
    
    self.hideMessage = function(messageBox){
       messageBox.box.hidden = true; 
-   }
-}
+   };
+};
 
 

@@ -13,7 +13,7 @@ Dave_js.data_filters = {
    //Output:
    //   Returns the filtered dataset
    movingAve : function(numOfSamples, dataSet){
-      var out = new Array();
+      var out = [];
       var sum, negOff, posOff, cnt;
 
       for(var pt_i = 0; pt_i < dataSet.length; pt_i++){
@@ -38,6 +38,4 @@ Dave_js.data_filters = {
       }
       return out;
    }
-}
-
-
+};
