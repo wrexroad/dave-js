@@ -1,4 +1,4 @@
-Dave_js.chart = function(name) { 
+Dave_js.chart = function(name) {
    var self = this;
    
    //////////////////////////Private Members//////////////////////////////
@@ -13,7 +13,7 @@ Dave_js.chart = function(name) {
       type : "",
       
       //default canvas size
-      sizes : { 
+      sizes : {
          canvas : {
             //drawable area height and width
             width : 0,
@@ -46,12 +46,12 @@ Dave_js.chart = function(name) {
       cssFont : '14px sans-serif',
       labels : {
          title : "",
-         indep : "", 
+         indep : "",
          dep : ""
       },
       
       //Default number of y tics to skip
-      skipTics : {dep : 1, indep : 1 }, 
+      skipTics : {dep : 1, indep : 1 },
       
       //number of pixels per point in each dimension
       pntSpacing : {dep : 1, indep : 1},
@@ -63,8 +63,8 @@ Dave_js.chart = function(name) {
       scale : {"type" : "lin", "value" : 1},
       
       //histogram bar width plus margin
-      histBarTotal : undefined, 
-      histBarWidth : undefined, 
+      histBarTotal : undefined,
+      histBarWidth : undefined,
       histBarMargin : undefined,
       
       //default 90% histogram bar width
@@ -72,7 +72,7 @@ Dave_js.chart = function(name) {
       
       //direction of increasing angles in polar plots
       // -1 = anticlockwise; 1 = clockwise
-      polarRot : -1, 
+      polarRot : -1,
       
       //where 0 degrees is located on the polar plot
       zeroAngle : 0
@@ -87,10 +87,10 @@ Dave_js.chart = function(name) {
    };
    
    //holds the different colors used for in the plot
-   var colors = { 
+   var colors = {
       // default colors
-      activePoint : "#00FF00", 
-      text : "black",                                    
+      activePoint : "#00FF00",
+      text : "black",
       grid : "gray",
       data : ['Red','Blue','Green', 'Yellow'],
       borderColor : '#000000',
@@ -104,10 +104,10 @@ Dave_js.chart = function(name) {
    var elms = {
       //element reference for a div that will hold the canvas element. 
       //If not specified, canvas will be generated in the "body" tag.
-      canvasBox : document.getElementsByTagName("body")[0], 
+      canvasBox : document.getElementsByTagName("body")[0],
       
       //element reference to the canvas we will draw to
-      canvas : undefined, 
+      canvas : undefined,
       
       //divs to hold the pointer coordinats. 
       //Coord event listener will not be created without both of these
@@ -122,24 +122,24 @@ Dave_js.chart = function(name) {
       replot : false,
       
       //set this to indicate a polar
-      polar : false, 
+      polar : false,
       
       //draw a bar from zero up to the point value
-      hist : false, 
+      hist : false,
       
       //rectangular box for an xy plot
       xy : false,
       
       //setting this true indicates we are drawing on top of an existing plot.
       //Frame, background, axis labels, tics, and limits are all skipped.
-      subPlot : false, 
+      subPlot : false,
       
       //setting this true will add an event listener to the plot 
       //so we can display exact mouseover plot values
-      showCoords : true, 
+      showCoords : true,
       
       //values will be connected with a line
-      lines : false, 
+      lines : false,
       
       //values will be represented by a point
       points : false,
@@ -148,17 +148,17 @@ Dave_js.chart = function(name) {
       fixedPtSize : false,
  
       //convert angular/radial values to longitude/lattitude
-      map : false, 
+      map : false,
       
       //scale the data before plotting
-      scaled : false, 
+      scaled : false,
       
       //false for fitting the y axis to the data, 
       //true to use pre defined axis limits
       limits : false,
       
       //draw a background grid (only for polar plots right now)
-      grid : false, 
+      grid : false,
       
       axis : false,
       
@@ -174,7 +174,7 @@ Dave_js.chart = function(name) {
    };
    
    //contains user provided data for plotting
-   var data = { 
+   var data = {
       dep : [],
       indep : [],
       varLabels : [],
@@ -186,12 +186,12 @@ Dave_js.chart = function(name) {
    //////////////////////////Private Methods//////////////////////////////
 
    //method to test the browser's ability to display HTML5 canvas
-   function browserTest(){ 
+   function browserTest(){
       //set special values based on browser
       var userAgent=navigator.userAgent;
       if (userAgent.indexOf("MSIE") != -1){
-         if (parseInt(navigator.appVersion) < 9){
-            alert( 
+         if (parseInt(navigator.appVersion, 10) < 9){
+            alert(
                'Internet Explorer does not support HTML5 canvas. ' +
                'Please use Google Chrome, Firefox, Opera, or Safari'
             );
@@ -199,8 +199,8 @@ Dave_js.chart = function(name) {
          }
       }
       else if(userAgent.indexOf("Firefox") != -1){
-         if (parseInt(navigator.appVersion) < 3){
-            alert( 
+         if (parseInt(navigator.appVersion, 10) < 3){
+            alert(
                "Firefox 3.0 or later required for proper display"
             );
          }
@@ -239,25 +239,25 @@ Dave_js.chart = function(name) {
       if(!flags.subplot){
          //draw background and border
          if(chart.bgImg){
-            ctx.drawImage( chart.bgImg, 0, 0 );   
+            ctx.drawImage( chart.bgImg, 0, 0 );
          }
          else{
             ctx.fillStyle = colors.bgColor;
-            ctx.fillRect( 
-               0, 0, 
-               chart.sizes.width, chart.sizes.height 
+            ctx.fillRect(
+               0, 0,
+               chart.sizes.width, chart.sizes.height
             );
          }
          ctx.strokeStyle = colors.borderColor;
          ctx.strokeRect(0, 0, chart.sizes.width, chart.sizes.height);
          
          //print title (bold)
-         if(flags.title){ 
+         if(flags.title){
             ctx.textAlign = "center";
             ctx.fillStyle = colors.text;
             ctx.font = "bold " + chart.cssFont;
             ctx.fillText(
-               chart.labels.title, 
+               chart.labels.title,
                (chart.sizes.width / 2), -5
             );
          }
@@ -268,12 +268,12 @@ Dave_js.chart = function(name) {
             ctx.fillStyle = colors.text;
             ctx.textAlign = "start";
             ctx.fillText(
-               chart.labels.indep, 
+               chart.labels.indep,
                -50, (chart.sizes.height + 40)
             );
             ctx.save();
             ctx.translate(-45, (chart.sizes.height / 2) );
-            ctx.rotate(1.5 * Math.PI);  
+            ctx.rotate(1.5 * Math.PI);
             ctx.textAlign = "center";
             ctx.fillText(chart.labels.dep, 0, -20);
             ctx.restore();
@@ -304,7 +304,7 @@ Dave_js.chart = function(name) {
       e.stopPropagation();
       
       //create zoom object if one does not yet exist
-      if(Dave_js.chart_zoom && flags.zoomable){ 
+      if(Dave_js.chart_zoom && flags.zoomable){
          if(chart.zoom === null){
             chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
          }
@@ -399,7 +399,7 @@ Dave_js.chart = function(name) {
             negOffset = posOffset = coord_i;
             while(1){
                //try to step back
-               if(negOffset >= 0){ 
+               if(negOffset >= 0){
                   yCoord = data.dep[plt_i][negOffset];
                }
                //try to step forward
@@ -430,8 +430,8 @@ Dave_js.chart = function(name) {
                yCoord = yCoord.toFixed(3);
             }
             
-            message += 
-               "<br />" + data.varLabels[plt_i] + " = " + yCoord;  
+            message +=
+               "<br />" + data.varLabels[plt_i] + " = " + yCoord;
          }
          
          elms.coordMsg.showMessage(
@@ -455,7 +455,7 @@ Dave_js.chart = function(name) {
 
             for(pnt_i = 0; pnt_i <= data.indep.length; pnt_i++){
                if(y_data[pnt_i] !== 0 && !isNaN(y_data[pnt_i])){
-                  y_data[pnt_i] = 
+                  y_data[pnt_i] =
                      Math.log(y_data[pnt_i]) / Math.log(scale_val);
                }
             }
@@ -482,7 +482,7 @@ Dave_js.chart = function(name) {
       var timer = (new Date()).getTime();
       var plt_i, pnt_i;
 
-      if(!flags.limits){ 
+      if(!flags.limits){
          //user has not defined limits, so take the max and  of the data set
          
          //make sure the min and max values are numbers
@@ -528,14 +528,14 @@ Dave_js.chart = function(name) {
          //the user has predefined data limits, so apply to each subset
          for(plt_i = 0; plt_i < data.dep; plt_i++){
             for(pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
-               data.dep[plt_i][pnt_i] = 
+               data.dep[plt_i][pnt_i] =
                   Math.min(
                      data.dep[plt_i][pnt_i + data.range.start],
                      chart.limits.max
                   );
-               data.dep[plt_i][pnt_i] = 
+               data.dep[plt_i][pnt_i] =
                   Math.max(
-                     data.dep[plt_i][pnt_i + data.range.start], 
+                     data.dep[plt_i][pnt_i + data.range.start],
                      chart.limits.min
                   );
             }
@@ -544,9 +544,9 @@ Dave_js.chart = function(name) {
       
       //Make sure the ymax and min are not the same value
       if(chart.limits.min == chart.limits.max){
-         chart.limits.min -= 
+         chart.limits.min -=
             chart.sizes.height / 2;
-         chart.limits.max += 
+         chart.limits.max +=
             chart.sizes.height / 2;
       }
       
@@ -561,14 +561,14 @@ Dave_js.chart = function(name) {
    }
    
    function configSpacing(){
-      var depRange = 
+      var depRange =
          Math.abs(chart.limits.max - chart.limits.min);
          
-      chart.skipTics.indep = 
-         Math.max(1, parseInt(20 * data.range.numOfPts / chart.sizes.width));
+      chart.skipTics.indep =
+         Math.max(1, parseInt((20 * data.range.numOfPts / chart.sizes.width), 10));
       
-      chart.skipTics.dep = 
-         Math.max(1, parseInt(20 * depRange / chart.sizes.height));
+      chart.skipTics.dep =
+         Math.max(1, parseInt((20 * depRange / chart.sizes.height), 10));
       
       if(flags.polar){//polar plots only need spacing in the radial direction
          chart.pntSpacing.dep = chart.sizes.radius / chart.limits.max;
@@ -583,12 +583,12 @@ Dave_js.chart = function(name) {
       //draw yAxis tic marks and labels
       ctx.textAlign = "end";
       for(
-         var i = chart.limits.min; 
-         i <= chart.limits.max; 
+         var i = chart.limits.min;
+         i <= chart.limits.max;
          i += chart.skipTics.dep
       ){
          ticHeight = i - chart.limits.min;
-         offset = 
+         offset =
             chart.sizes.height - (ticHeight * chart.pntSpacing.dep);
          
          ticLabel = i;
@@ -647,8 +647,8 @@ Dave_js.chart = function(name) {
       if(ticLabel == "--") {ticLabel = "No Label";}
       ctx.fillText(ticLabel, -5, offset + 5);
       ctx.beginPath();
-      ctx.moveTo(0, offset);  
-      ctx.lineTo(5, offset);  
+      ctx.moveTo(0, offset);
+      ctx.lineTo(5, offset);
       ctx.stroke();
    }
    
@@ -677,7 +677,7 @@ Dave_js.chart = function(name) {
          
          //initial point height.
          //heights must be negative to move up in the plot
-         y = parseInt((chart_min - y_data[data.range.start]) *  y_spacing);
+         y = parseInt(((chart_min - y_data[data.range.start]) * y_spacing), 10);
          
          //if we are drawing a line, set the line origin and start the line
          if(flags.lines){
@@ -705,7 +705,7 @@ Dave_js.chart = function(name) {
             
             if(flags.lines){ctx.lineTo(x, y);}
             if(flags.points){plotPnt(x, y);}
-         } 
+         }
 
          if(flags.lines){ctx.stroke();}
          
@@ -742,8 +742,8 @@ Dave_js.chart = function(name) {
 
    function configHistBars(){
       //figure out total possible bar size
-      chart.histBarTotal = 
-         parseInt(chart.sizes.width / data.indep.length);   
+      chart.histBarTotal =
+         parseInt((chart.sizes.width / data.indep.length), 10);
       
       if(chart.histBarTotal < 1){
          chart.histBarTotal = 1;
@@ -751,15 +751,15 @@ Dave_js.chart = function(name) {
          chart.histBarMargin = 0;
       }
       else{
-         chart.histBarWidth = 
-            parseInt(chart.histBarTotal * chart.histBarRatio);
-         chart.histBarMargin = 
+         chart.histBarWidth =
+            parseInt((chart.histBarTotal * chart.histBarRatio), 10);
+         chart.histBarMargin =
             chart.histBarTotal - chart.histBarWidth;
       }
    }
    
    function drawHistBars(){
-      var baseLineOffset, barHeight; 
+      var baseLineOffset, barHeight;
       
       //set bar width
       ctx.lineWidth = chart.histBarWidth;
@@ -777,12 +777,12 @@ Dave_js.chart = function(name) {
       }
       
       //loop once for each array stored in data.dep
-      for(var plt_i = 0; plt_i < data.dep.length; plt_i++){    
+      for(var plt_i = 0; plt_i < data.dep.length; plt_i++){
          //set stroke color
          ctx.strokeStyle = colors.data[plt_i];
          
          //loop through each sub array
-         for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){ 
+         for(var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
             try{
                barHeight =  -1 * data.dep[plt_i][pnt_i + data.range.start];
                
@@ -848,10 +848,10 @@ Dave_js.chart = function(name) {
          for(var radius_i = 0; radius_i < grid.radii.length; radius_i++){
             ctx.beginPath();
             ctx.arc(
-               0, 0, chart.pntSpacing.dep * grid.radii[radius_i], 
-               0,2 * Math.PI, 
+               0, 0, chart.pntSpacing.dep * grid.radii[radius_i],
+               0,2 * Math.PI,
                true
-            ); 
+            );
             ctx.closePath();
             ctx.stroke();
             
@@ -871,11 +871,11 @@ Dave_js.chart = function(name) {
          }
          
          //Draw 6 angle markers
-         if(flags.map){ 
+         if(flags.map){
             //grid angles for map should be -180 to 180, 
             //angles for a polar plot should be 0  to 360
             grid.angles = [
-               0, 
+               0,
                Math.PI / 4,
                Math.PI / 2,
                3 * Math.PI / 4,
@@ -900,12 +900,12 @@ Dave_js.chart = function(name) {
          
          ctx.textAlign="start";
          for(var angle_i = 0; angle_i < grid.angles.length; angle_i++){
-            ctx.beginPath();  
+            ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.save();
             
             //rotate the coordinate system and draw a straight line
-            ctx.rotate(chart.polarRot * grid.angles[angle_i]); 
+            ctx.rotate(chart.polarRot * grid.angles[angle_i]);
             ctx.lineTo(
                chart.limits.max * chart.pntSpacing.dep , 0
             );
@@ -919,7 +919,7 @@ Dave_js.chart = function(name) {
                chart.sizes.radius, 0
             );
             ctx.restore();
-         }  
+         }
       }
    }
    
@@ -963,8 +963,8 @@ Dave_js.chart = function(name) {
                if(flags.points){
                   //rotate coord system, plot point, rotate back
                   ctx.fillRect(
-                     radius * chart.pntSpacing.dep + pntOffset, 
-                     pntOffset, 
+                     radius * chart.pntSpacing.dep + pntOffset,
+                     pntOffset,
                      chart.sizes.pointSize, chart.sizes.pointSize
                   );
                }
@@ -993,7 +993,7 @@ Dave_js.chart = function(name) {
             ctx.moveTo(chart.pntSpacing.dep * radius, 0);
             ctx.lineTo( (chart.sizes.radius + 5), 0 );
             ctx.fillText(
-               data.varLabels[plt_i], 
+               data.varLabels[plt_i],
                (chart.sizes.radius + 5), 0
             );
             ctx.stroke();
@@ -1024,7 +1024,7 @@ Dave_js.chart = function(name) {
       chart.sizes.height = height - chart.sizes.canvas.margin;
       chart.sizes.width = width - chart.sizes.canvas.margin;
       
-      chart.sizes.radius = 
+      chart.sizes.radius =
          Math.max(width, height) - (chart.sizes.canvas.margin) / 2;
    };
    
@@ -1078,7 +1078,7 @@ Dave_js.chart = function(name) {
    
    //first argument is an array containing the name of each tracker. 
    //each aditional argument is an array containing tracker data
-   self.setTrackers = function(){ 
+   self.setTrackers = function(){
       data.trackLabels = arguments[0].slice(0);
       for(var array_i = 1 ; array_i < arguments.length; array_i){
          data.trackers[array_i] = arguments[array_i].slice(0);
@@ -1103,7 +1103,7 @@ Dave_js.chart = function(name) {
       chart.type = type;
       
       //set xy or polar plot flags
-      if(chart.type.indexOf("xy") != -1){ 
+      if(chart.type.indexOf("xy") != -1){
          //found a rectangular plot type set the flag and check the subtype.
          flags.xy = true;
       }
@@ -1140,7 +1140,7 @@ Dave_js.chart = function(name) {
       var scaleParams = scale.split("_");
       
       chart.scale.type = scaleParams[0];
-      chart.scale.value = parseInt(scaleParams[1]);
+      chart.scale.value = parseInt((scaleParams[1]), 10);
    };
    
    //set the min and max values for the yaxis
@@ -1179,7 +1179,7 @@ Dave_js.chart = function(name) {
    };
    
    self.setBackgroundImage = function(id){
-      chart.bgImg = document.getElementById(id);  
+      chart.bgImg = document.getElementById(id);
    };
    
    self.setGrid = function(){
@@ -1221,11 +1221,11 @@ Dave_js.chart = function(name) {
       //figure out the point size
       if(!flags.fixedPtSize){
          //take a best guess at point size
-         chart.sizes.pointSize = 
-            parseInt(chart.sizes.width / data.range.numOfPts / 2);
+         chart.sizes.pointSize =
+            parseInt((chart.sizes.width / data.range.numOfPts / 2), 10);
 
          //make sure the point is between 2 and 8
-         chart.sizes.pointSize = 
+         chart.sizes.pointSize =
             Math.max(1, Math.min(8, chart.sizes.pointSize));
       }
  
@@ -1247,7 +1247,7 @@ Dave_js.chart = function(name) {
          configSpacing();
          callYTics();
          callXTics();
-         drawLinesPoints();   
+         drawLinesPoints();
       }
       
       if(flags.polar){

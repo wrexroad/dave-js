@@ -1,5 +1,5 @@
 //add the main zoom function to the chart object
-Dave_js.chart_zoom = function(plot, data, els, chart) { 
+Dave_js.chart_zoom = function(plot, data, els, chart) {
    var self = this;
    
    var startPnt; //stores the coordinate of the mouse at mousedown event
@@ -9,7 +9,7 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
    var mask =
       (function(){
          var l = document.createElement("div");
-         var r = document.createElement("div");  
+         var r = document.createElement("div");
          
          l.className = r.className = "daveMask";
          
@@ -47,7 +47,7 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
       return mousedown;
    };
    self.setStart = function(p){
-      startPnt = parseInt(p);
+      startPnt = parseInt(p, 10);
    };
    self.getStart = function(){
       return startPnt;
@@ -161,7 +161,8 @@ Dave_js.chart_zoom.prototype.moveMask = function(x){
       Math.min( //make sure the right mask is never larger than the plot width
          Math.max( //make sure the right mask width is never negative
             (
-               self.getChartProp("sizes", "width") - parseInt(mask.r.style.left) +
+               self.getChartProp("sizes", "width") -
+               parseInt((mask.r.style.left), 10) +
                canvas.offsetLeft + self.getChartProp("origin", "x")
             ),
             0

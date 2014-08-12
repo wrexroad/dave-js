@@ -11,7 +11,7 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      banner: 
+      banner:
         '/*! <%= buildName %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
       src: '<%= pkg.outputDir %><%= buildName %>.concat.js',
       dest: '<%= pkg.outputDir %><%= buildName %>.min.js'
@@ -34,4 +34,4 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
-}
+};

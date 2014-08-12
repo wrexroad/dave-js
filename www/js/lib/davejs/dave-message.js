@@ -36,7 +36,7 @@ Dave_js.message = function(){
    };
    
    self.hideMessage = function(messageBox){
-      messageBox.box.hidden = true; 
+      messageBox.box.hidden = true;
    };
 };
 

@@ -1,4 +1,4 @@
-Dave_js.colorPallet = function(t, n) { 
+Dave_js.colorPallet = function(t, n) {
    var self = this;
    
    //make sure we have valid input
@@ -7,8 +7,8 @@ Dave_js.colorPallet = function(t, n) {
    //   "redblue", "rev-redblue",
    //   "blackwhite", "rev-blackwhite",
    if(
-      t.indexOf("rainbow") == -1 && 
-      t.indexOf("redblue") == -1 && 
+      t.indexOf("rainbow") == -1 &&
+      t.indexOf("redblue") == -1 &&
       t.indexOf("blackwhite") == -1
    ){
       t = "rainbow";
@@ -17,7 +17,7 @@ Dave_js.colorPallet = function(t, n) {
    if(isNaN(n) || n === "" || n <= 0){ n = 1;}
    else if(n > 255){ n = 255; }
    
-   var type = t; 
+   var type = t;
    var numOfColors = n;
    
    //define color object
@@ -34,7 +34,7 @@ Dave_js.colorPallet = function(t, n) {
                "8", "9", "A", "B", "C", "D", "E", "F"];
             
             var upper = num % 16;
-            var lower = parseInt(num / 16);
+            var lower = parseInt(num / 16, 10);
             
             return hexRef[upper] + "" + hexRef[lower];
          }
@@ -83,7 +83,7 @@ Dave_js.colorPallet.prototype.buildPallet = function(){
       midpoint = Math.floor(num / 2);
       
       //reduce the loop by two because we manually set the last color
-      num -= 1; 
+      num -= 1;
       
       for(color_i = 0; color_i < midpoint; color_i++){
          self.putPalletVal(

@@ -1,6 +1,6 @@
 var Dave_js = {
    //autoload the style sheet.
-   init : function(){ 
+   init : function(){
       var bodyEl = document.getElementsByTagName("body")[0];
       var style = document.createElement("link");
       style.rel = "stylesheet";
