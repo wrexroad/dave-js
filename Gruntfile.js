@@ -18,7 +18,7 @@ module.exports = function(grunt) {
     },
     
     jshint: {
-      files: ['<%= pkg.davePath %>/*.js']
+      files: ['<%= pkg.davePath %>*.js']
     },
 
     watch: {
