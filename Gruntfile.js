@@ -1,14 +1,27 @@
 module.exports = function(grunt) {
+  var
+    pkg = grunt.file.readJSON('package.json'),
+    srcFiles =
+      (function buildSrcList(){
+        var
+          fileList = [pkg.davePath + 'dave.js'],
+          length = pkg.daveMods.length;
+        while(length--){
+          fileList.push(pkg.davePath + pkg.daveMods.pop());
+        }
+
+        return fileList;
+      })();
 
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: pkg,
     buildName: '<%= pkg.name %>-<%= pkg.version%>',
     concatFile: '<%= pkg.outputDir %><%= buildName %>.concat.js',
     uglyFile: '<%= pkg.outputDir %><%= buildName %>.min.js',
 
     concat: {
       build: {
-        src: [].concat('<%= pkg.davePath %>dave.js', '<%= pkg.daveMods %>'),
+        src: srcFiles,
         dest: '<%= concatFile %>'
       }
     },
@@ -38,5 +51,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['jshint', 'concat:build', 'uglify:build']);
+  grunt.registerTask('build', ['jshint', 'concat:build', 'uglify:build']);
+  grunt.registerTask('default', ['build']);
 };

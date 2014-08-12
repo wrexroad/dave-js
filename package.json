@@ -7,11 +7,11 @@
   "outputDir": "build/",
 
   "daveMods": [
-    "www/js/lib/davejs/dave-chart.js",
-    "www/js/lib/davejs/dave-chart_zoom.js",
-    "www/js/lib/davejs/dave-colorPallet.js",
-    "www/js/lib/davejs/dave-data_filters.js",
-    "www/js/lib/davejs/dave-messages.js"
+    "dave-chart.js",
+    "dave-chart_zoom.js",
+    "dave-colorPallet.js",
+    "dave-data_filters.js",
+    "dave-messages.js"
   ],
 
   "dependencies": {},
