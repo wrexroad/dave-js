@@ -3,8 +3,11 @@
   "version": "0.0.1",
 
   "davePath": "www/js/lib/davejs/",
+  "appPath": "www/js/app/",
+  "htmlPath": "www/html/",
 
-  "outputDir": "build/",
+  "buildPath": "build/",
+  "distPath": "dist/",
 
   "daveMods": [
     "dave-chart.js",
@@ -17,6 +20,7 @@
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",
+    "grunt-contrib-copy": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-watch": "*",

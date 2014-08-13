@@ -1,4 +1,6 @@
 module.exports = function(grunt) {
+
+  //add the davePath string to the begenning of each module name
   var
     pkg = grunt.file.readJSON('package.json'),
     srcFiles =
@@ -16,13 +18,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: pkg,
     buildName: '<%= pkg.name %>-<%= pkg.version%>',
-    concatFile: '<%= pkg.outputDir %><%= buildName %>.concat.js',
-    uglyFile: '<%= pkg.outputDir %><%= buildName %>.min.js',
+    concatFile: '<%= buildName %>.concat.js',
+    uglyFile: '<%= buildName %>.min.js',
 
     concat: {
       build: {
         src: srcFiles,
-        dest: '<%= concatFile %>'
+        dest: '<%= pkg.buildPath%><%= concatFile %>'
       }
     },
 
@@ -30,13 +32,32 @@ module.exports = function(grunt) {
       banner:
         '/*! <%= buildName %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
       build: {
-        src: '<%= concatFile %>',
-        dest: '<%= uglyFile %>'
+        src: '<%= pkg.buildPath%><%= concatFile %>',
+        dest: '<%= pkg.buildPath%><%= uglyFile %>'
       }
     },
-    
+
+    copy: {
+      dave:{
+        files: [{
+          expand: true,
+          cwd: '<%= pkg.buildPath%>',
+          src: '**',
+          dest: '<%= pkg.distPath %><%= pkg.davePath %>'
+        }]
+      },
+      app: {
+        src: '<%= pkg.appPath%>/**',
+        dest: '<%= pkg.distPath %>'
+      },
+      html: {
+        src: '<%= pkg.htmlPath%>/**',
+        dest: '<%= pkg.distPath %>'
+      }
+    },
+
     jshint: {
-      files: ['<%= pkg.davePath %>*.js']
+      files: ['<%= pkg.davePath %>/*.js']
     },
 
     watch: {
@@ -49,8 +70,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('build', ['jshint', 'concat:build', 'uglify:build']);
+  grunt.registerTask('dist', ['build', 'copy:dave', 'copy:app', 'copy:html']);
   grunt.registerTask('default', ['build']);
 };
