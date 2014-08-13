@@ -305,7 +305,7 @@ Dave_js.chart = function(name) {
       
       //create zoom object if one does not yet exist
       if(Dave_js.chart_zoom && flags.zoomable){
-         if(chart.zoom === null){
+         if(chart.zoom === undefined){
             chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
          }
       }
@@ -338,7 +338,7 @@ Dave_js.chart = function(name) {
       );
       
       //remove the masking divs
-      if(chart.zoom !== null){chart.zoom = chart.zoom.destroy();}
+      if(chart.zoom !== (undefined || null)){chart.zoom = chart.zoom.destroy();}
       
       //remove the coordinate message
       if(flags.showCoords && elms.coordMsg.box.parentNode){
