@@ -186,8 +186,7 @@ Dave_js.chart_zoom.prototype.moveMask = function(x){
 
 Dave_js.chart_zoom.prototype.destroy = function(){
    var self = this;
-   
-   mask = self.getZoomMask();
+   var mask = self.getZoomMask();
    
    if(mask.l.parentNode !== undefined){
       mask.l.parentNode.removeChild(mask.l);
