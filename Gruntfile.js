@@ -15,11 +15,14 @@ module.exports = function(grunt) {
         return fileList;
       })();
 
+  //create the filename for the minified version of DaveJS
+  var uglyName = pkg.name + '-' + pkg.version + '.min.js';
+
   grunt.initConfig({
     pkg: pkg,
     buildName: '<%= pkg.name %>-<%= pkg.version%>',
     concatFile: '<%= buildName %>.concat.js',
-    uglyFile: '<%= buildName %>.min.js',
+    uglyFile: uglyName,
 
     concat: {
       build: {
@@ -42,7 +45,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= pkg.buildPath%>',
-          src: '**',
+          src: '<%= uglyFile %>',
           dest: '<%= pkg.distPath %><%= pkg.davePath %>'
         }]
       },
@@ -52,7 +55,12 @@ module.exports = function(grunt) {
       },
       html: {
         src: '<%= pkg.htmlPath%>/**',
-        dest: '<%= pkg.distPath %>'
+        dest: '<%= pkg.distPath %>',
+        options: {
+          process: function (content, srcpath) {
+            return content.replace('dave.js', uglyName);
+          }
+        }
       }
     },
 
