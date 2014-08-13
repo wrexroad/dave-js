@@ -6,7 +6,7 @@ Dave_js.prototype.init = function init(){
   var style = document.createElement("link");
   style.rel = "stylesheet";
   style.type = "text/css";
-  style.href = "dave-js.css";
+  style.href = "../css/dave-js.css";
   bodyEl.appendChild(style);
 }();
 

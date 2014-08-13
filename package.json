@@ -5,6 +5,7 @@
   "davePath": "www/js/lib/davejs/",
   "appPath": "www/js/app/",
   "htmlPath": "www/html/",
+  "cssPath": "www/css/",
 
   "buildPath": "build/",
   "distPath": "dist/",

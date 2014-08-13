@@ -53,6 +53,10 @@ module.exports = function(grunt) {
         src: '<%= pkg.appPath%>/**',
         dest: '<%= pkg.distPath %>'
       },
+      css: {
+        src: '<%= pkg.cssPath%>/**',
+        dest: '<%= pkg.distPath %>'
+      },
       html: {
         src: '<%= pkg.htmlPath%>/**',
         dest: '<%= pkg.distPath %>',
@@ -82,6 +86,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('build', ['jshint', 'concat:build', 'uglify:build']);
-  grunt.registerTask('dist', ['build', 'copy:dave', 'copy:app', 'copy:html']);
+  grunt.registerTask('dist', ['build', 'copy']);
   grunt.registerTask('default', ['build']);
 };
