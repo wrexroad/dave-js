@@ -15,7 +15,7 @@
     "dave-chart_zoom.js",
     "dave-colorPallet.js",
     "dave-data_filters.js",
-    "dave-messages.js"
+    "dave-message.js"
   ],
 
   "dependencies": {},
