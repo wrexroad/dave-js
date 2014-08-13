@@ -496,10 +496,9 @@ Dave_js.chart = function(name) {
          var max = [];
          var min = [];
 
-         
          for(plt_i = 0; plt_i < data.dep.length; plt_i++){
             //find first real data point for initial min/max
-            for(pnt_i; pnt_i < data.range.numOfPts; pnt_i++){
+            for(pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++){
                if(!isNaN(data.dep[plt_i][pnt_i + data.range.start])){
                   min[plt_i] = max[plt_i] =
                      parseFloat(data.dep[plt_i][pnt_i + data.range.start]);
@@ -732,7 +731,7 @@ Dave_js.chart = function(name) {
       ctx.translate(0, -1 * chart.sizes.height);
 
       timer = (new Date()).getTime() - timer;
-      console.log("Draw Time = " + timer/1000);
+      console.log("Draw Time = " + timer / 1000);
    }
    
    function plotPnt(x, y){
