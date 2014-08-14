@@ -1,6 +1,6 @@
-(function loadDemo(){
+(function loadDemo() {
   //check if the main plotter has be built into DaveJS
-  if(typeof Dave_js !== 'object' || !Dave_js.chart){
+  if (typeof Dave_js !== 'object' || !Dave_js.chart) {
     window.alert("DaveJS plotter has not been built correctly.");
     return;
   }
@@ -39,8 +39,8 @@
   plot.buildPlot();
   
   //demo the message module that has been built
-  (function messageDemo(){
-    if(!Dave_js.message){
+  (function messageDemo() {
+    if (!Dave_js.message) {
       return;
     }
     var width = 200;
@@ -55,8 +55,8 @@
   }());
   
   //demo the color pallet that has been built
-  (function colorDemo(){
-    if(!Dave_js.colorPallet){
+  (function colorDemo() {
+    if (!Dave_js.colorPallet) {
       return;
     }
 
