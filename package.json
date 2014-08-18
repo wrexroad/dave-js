@@ -11,11 +11,11 @@
   "distPath": "dist/",
 
   "daveMods": [
-    "dave-chart.js",
-    "dave-chart_zoom.js",
-    "dave-colorPallet.js",
-    "dave-data_filters.js",
-    "dave-message.js"
+    "Chart.js",
+    "Zoom.js",
+    "ColorPallet.js",
+    "DataFilters.js",
+    "Message.js"
   ],
 
   "dependencies": {},
