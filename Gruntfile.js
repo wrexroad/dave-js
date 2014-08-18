@@ -1,14 +1,13 @@
 module.exports = function(grunt) {
-
   //add the davePath string to the begenning of each module name
   var
     pkg = grunt.file.readJSON('package.json'),
     srcFiles =
-      (function buildSrcList(){
+      (function buildSrcList() {
         var
           fileList = [pkg.davePath + 'dave.js'],
           length = pkg.daveMods.length;
-        while(length--){
+        while (length--) {
           fileList.push(pkg.davePath + pkg.daveMods.pop());
         }
 

@@ -6,16 +6,16 @@ Dave_js.colorPallet = function(t, n) {
   //   "rainbow", rev-rainbow" (reverse rainbow),
   //   "redblue", "rev-redblue",
   //   "blackwhite", "rev-blackwhite",
-  if(
+  if (
     t.indexOf("rainbow") == -1 &&
     t.indexOf("redblue") == -1 &&
     t.indexOf("blackwhite") == -1
-  ){
+  ) {
     t = "rainbow";
   }
   //make sure the number of colors is between 1 and 255
-  if(isNaN(n) || n === "" || n <= 0){ n = 1;}
-  else if(n > 255){ n = 255; }
+  if (isNaN(n) || n === "" || n <= 0) { n = 1;}
+  else if (n > 255) { n = 255; }
   
   var type = t;
   var numOfColors = n;
@@ -81,20 +81,20 @@ Dave_js.colorPallet.prototype.buildPallet = function(){
   var num = self.getNumOfColors();
   var color_i, stepSize, midpoint;
 
-  if(self.getType().indexOf("rainbow") != -1){
+  if (self.getType().indexOf("rainbow") != -1) {
     stepSize = Math.floor(2 * (255 / num));
     midpoint = Math.floor(num / 2);
     
     //reduce the loop by two because we manually set the last color
     num -= 1;
     
-    for(color_i = 0; color_i < midpoint; color_i++){
+    for (color_i = 0; color_i < midpoint; color_i++) {
        self.putPalletVal(
           (255 - (color_i * stepSize)), (color_i * stepSize), 0
        );
     }
     
-    for(color_i = midpoint; color_i < num; color_i++){
+    for (color_i = midpoint; color_i < num; color_i++) {
        self.putPalletVal(
           0,
           (255 - ((color_i - midpoint) * stepSize)),
@@ -104,25 +104,23 @@ Dave_js.colorPallet.prototype.buildPallet = function(){
     
     //get last color
     self.putPalletVal(0, 0, 255);
-  }
-  else if(self.getType().indexOf("redblue") != -1){
+  } else if (self.getType().indexOf("redblue") != -1) {
     stepSize = Math.floor(255 / num);
      
-    for(color_i = 0; color_i < num; color_i++){
+    for (color_i = 0; color_i < num; color_i++) {
       self.putPalletVal((255 - (color_i * stepSize)), 0, (color_i * stepSize));
     }
-  }
-  else if(self.getType().indexOf("blackwhite") != -1){
+  } else if (self.getType().indexOf("blackwhite") != -1) {
     stepSize = Math.floor(255 / num);
      
-    for(color_i = 0; color_i < num; color_i++){
+    for (color_i = 0; color_i < num; color_i++) {
       self.putPalletVal(
         (color_i * stepSize), (color_i * stepSize), (color_i * stepSize)
       );
     }
   }
   
-  if(self.getType().indexOf("rev") != -1){
+  if (self.getType().indexOf("rev") != -1) {
      self.reversePallet();
   }
 };
@@ -137,23 +135,19 @@ Dave_js.colorPallet.prototype.displayColors = function(
   var num = self.getNumOfColors();
   
   //check for a good size
-  if(width === 0 || isNaN(width)){
-    width = 5;
-  }
-  if(height === 0 || isNaN(height)){
-    height = 5;
-  }
+  if (width === 0 || isNaN(width)) {width = 5;}
+  if (height === 0 || isNaN(height)) {height = 5;}
   
   //make a valid border size
-  if(isNaN(border)){border = 0;}
+  if (isNaN(border)) {border = 0;}
   
   //make sure a valid div element was given
-  if(divEl.tagName != "DIV"){return;}
+  if (divEl.tagName != "DIV") {return;}
   
   try{
     var tmpEl;
      
-    for(var color_i = 0; color_i < num; color_i++){
+    for (var color_i = 0; color_i < num; color_i++) {
       tmpEl = document.createElement("div");
       tmpEl.style.backgroundColor = pallet[color_i].toRgbStr();
       tmpEl.style.border = "solid";
@@ -180,8 +174,8 @@ Dave_js.colorPallet.prototype.getPallet = function(f){
   var num = self.getNumOfColors();
   var out = new Array(num);
    
-  for(var color_i = 0; color_i < num; color_i++){
-    if(f == "hex") {
+  for (var color_i = 0; color_i < num; color_i++) {
+    if (f == "hex") {
       out[color_i] = pallet[color_i].toHexStr();
     } else {
       out[color_i] = pallet[color_i].toRgbStr();

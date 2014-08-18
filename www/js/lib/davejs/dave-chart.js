@@ -576,7 +576,7 @@ function buildCanvas() {
     var ticHeight, offset, ticLabel;
     //draw yAxis tic marks and labels
     ctx.textAlign = "end";
-    for(
+    for (
       var i = chart.limits.min;
       i <= chart.limits.max;
       i += chart.skipTics.dep
@@ -1067,7 +1067,7 @@ function buildCanvas() {
   //each aditional argument is an array containing tracker data
   self.setTrackers = function() {
     data.trackLabels = arguments[0].slice(0);
-    for(var array_i = 1 ; array_i < arguments.length; array_i){
+    for (var array_i = 1 ; array_i < arguments.length; array_i) {
       data.trackers[array_i] = arguments[array_i].slice(0);
     }
   };

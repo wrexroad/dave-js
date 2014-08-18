@@ -7,7 +7,7 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
   
   //set up the masking divs
   var mask =
-    (function(){
+    (function() {
       var l = document.createElement("div");
       var r = document.createElement("div");
       
@@ -36,57 +36,57 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
     "y": (chart.origin.y - els.canvasBox.offsetTop)
   };
   
-  self.getZoomMask = function(){
+  self.getZoomMask = function() {
     return mask;
   };
-  self.setMousedown = function(b){
+  self.setMousedown = function(b) {
     mousedown = b;
   };
-  self.getMousedown = function(){
+  self.getMousedown = function() {
     return mousedown;
   };
-  self.setStart = function(p){
+  self.setStart = function(p) {
     startPnt = parseInt(p, 10);
   };
-  self.getStart = function(){
+  self.getStart = function() {
     return startPnt;
   };
-  self.getPlotInstance = function(){
+  self.getPlotInstance = function() {
     return plot;
   };
-  self.getPlotElement = function(){
+  self.getPlotElement = function() {
     var retObj = els;
-    for(var arg_i = 0; arg_i < arguments.length; arg_i++){
+    for (var arg_i = 0; arg_i < arguments.length; arg_i++) {
       retObj = retObj[arguments[arg_i]];
     }
     return retObj;
   };
-  self.getChartProp = function(){
+  self.getChartProp = function() {
     var retObj = chart;
      
-    for(var arg_i = 0; arg_i < arguments.length; arg_i++){
+    for (var arg_i = 0; arg_i < arguments.length; arg_i++) {
       retObj = retObj[arguments[arg_i]];
     }
 
     return retObj;
   };
   
-  self.getData = function(){
+  self.getData = function() {
     var retObj = data;
     
-    for(var arg_i = 0; arg_i < arguments.length; arg_i++){
+    for (var arg_i = 0; arg_i < arguments.length; arg_i++) {
       retObj = retObj[arguments[arg_i]];
     }
      
     return retObj;
   };
   
-  self.getChartOffset = function(){
+  self.getChartOffset = function() {
     return chartOffset;
   };
 };
 
-/*Dave_js.chart_zoom.prototype.getDataIndex = function(e){
+/*Dave_js.chart_zoom.prototype.getDataIndex = function(e) {
   var self = this;
   
   //figure out the conversion of horiz pixel location to data point index
@@ -104,7 +104,7 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
 }
 */
 
-Dave_js.chart_zoom.prototype.start = function(i){
+Dave_js.chart_zoom.prototype.start = function(i) {
   var self = this;
 
   //make sure the calculated index is within the currently displayed range
@@ -115,11 +115,11 @@ Dave_js.chart_zoom.prototype.start = function(i){
   self.setStart(i);
 };
 
-Dave_js.chart_zoom.prototype.stop = function(i, x){
+Dave_js.chart_zoom.prototype.stop = function(i, x) {
   var self = this;
   
   //ignore mouseup events unless the mouse was just down
-  if(!self.getMousedown()){return;}
+  if (!self.getMousedown()) {return;}
   
   //make sure the calculated index is within the currently displayed range
   i = Math.max(self.getData("range", "start"), i);
@@ -132,10 +132,10 @@ Dave_js.chart_zoom.prototype.stop = function(i, x){
   
   //remove the coordinate display
   var message = self.getPlotElement("coordMsg");
-  if(message){message.box.parentNode.removeChild(message.box);}
+  if (message) {message.box.parentNode.removeChild(message.box);}
   
   //zoom to fit selected points
-  if(self.getStart() == i){
+  if (self.getStart() == i) {
     //did not select any points, unzoom
     self.getPlotInstance().buildPlot();
   } else {
@@ -146,7 +146,7 @@ Dave_js.chart_zoom.prototype.stop = function(i, x){
   }
 };
 
-Dave_js.chart_zoom.prototype.moveMask = function(x){
+Dave_js.chart_zoom.prototype.moveMask = function(x) {
   var self = this;
   
   var canvas = self.getPlotElement("canvas");
@@ -171,7 +171,7 @@ Dave_js.chart_zoom.prototype.moveMask = function(x){
     ) + "px";
   
   //only calculate the left mask if the mouse button is not down
-  if(!self.getMousedown()){
+  if (!self.getMousedown()) {
     mask.l.style.left =
       canvas.offsetLeft + self.getChartProp("origin", "x") + "px";
     mask.l.style.width =
@@ -184,11 +184,11 @@ Dave_js.chart_zoom.prototype.moveMask = function(x){
   }
 };
 
-Dave_js.chart_zoom.prototype.destroy = function(){
+Dave_js.chart_zoom.prototype.destroy = function() {
   var self = this;
   var mask = self.getZoomMask();
   
-  if(mask.l.parentNode !== undefined){
+  if (mask.l.parentNode !== undefined) {
     mask.l.parentNode.removeChild(mask.l);
     mask.r.parentNode.removeChild(mask.r);
   }
