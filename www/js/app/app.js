@@ -1,43 +1,55 @@
 (function loadDemo() {
+
   //check if the main plotter has be built into DaveJS
   if (typeof Dave_js !== 'object' || !Dave_js.chart) {
     window.alert("DaveJS plotter has not been built correctly.");
     return;
   }
+
+  //demo how to load a plot that has the data written directly in the js code
+  (function hardcodedData() {
+    
+    
+    var plot = new Dave_js.chart("plot");
+    var xVals, yVals;
+
+    //add dataset called "first"
+    xVals = [50,60,190,-135];
+    yVals = [0,10,50,45];
+    plot.setData(xVals, yVals, "first");
+    
+    //add dataset called "second"
+    xVals = [0,10,90,25];
+    yVals = [10,20,30,40];
+    plot.setData(xVals, yVals, "second");
+    
+    plot.setChartSize(300,300);
+    
+    //name of the div that will hold the new canvas
+    plot.setCanvasHolder("canvasHolder");
+
+    //arguments for lables are the plot title, x-axis, and y-axis
+    plot.setLabels("hardcoded data","x","y");
+
+    plot.setColor("data",["green","black"]);
+
+    plot.setGrid();
+
+    plot.setLegend();
+
+    //plot.setType("hist");
+    //plot.setType("polar-points-line");
+    plot.setType("xy-points-line");
+
+    plot.buildPlot();
+  }());
+
+  //demo creating a plot from a remote file
+  (function remoteData() {
+    
+  }());
   
-  var plot = new Dave_js.chart("plot");
-  var xVals, yVals;
 
-  //add dataset called "first"
-  xVals = [50,60,190,-135];
-  yVals = [0,10,50,45];
-  plot.setData(xVals, yVals, "first");
-  
-  //add dataset called "second"
-  xVals = [0,10,90,25];
-  yVals = [10,20,30,40];
-  plot.setData(xVals, yVals, "second");
-  
-  plot.setChartSize(300,300);
-  
-  //name of the div that will hold the new canvas
-  plot.setCanvasHolder("canvasHolder");
-
-  //arguments for lables are the plot title, x-axis, and y-axis
-  plot.setLabels("title","x","y");
-
-  plot.setColor("data",["green","black"]);
-
-  plot.setGrid();
-
-  plot.setLegend();
-
-  //plot.setType("hist");
-  //plot.setType("polar-points-line");
-  plot.setType("xy-points-line");
-
-  plot.buildPlot();
-  
   //demo the message module that has been built
   (function messageDemo() {
     if (!Dave_js.message) {
