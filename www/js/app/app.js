@@ -47,6 +47,40 @@
   //demo creating a plot from a remote file
   (function remoteData() {
     
+    var
+      plot = new Dave_js.chart("plot"),
+      data = new Dave_js.DataCollector();
+
+
+    //we need to add an event listener to the body element to know when the 
+    //data have been loaded
+    window.document.getElementsByTagName('body')[0].
+      addEventListener('dataLoaded', function () { 
+        plot.buildPlot(); 
+      }, false);
+    
+    plot.setData(xVals, yVals, "first");
+    plot.setChartSize(300,300);
+    //name of the div that will hold the new canvas
+    plot.setCanvasHolder("canvasHolder");
+    //arguments for lables are the plot title, x-axis, and y-axis
+    plot.setLabels("remote data","x","y");
+    plot.setColor("data",["green","black"]);
+    plot.setGrid();
+    plot.setLegend();
+    plot.setType("xy-points-line");
+
+    //start the data request
+    data.config({
+      'url': 'http://soc1.ucsc.edu/soc-nas/payload2T/.lc140108',
+      'dataFormat': 'table',
+      'tableOpts': {
+        'delim': ',',
+        'header': 'true',
+        'commentChar': '#'
+      }
+    });
+    data.fetchData();
   }());
   
 
