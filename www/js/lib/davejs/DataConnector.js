@@ -66,7 +66,7 @@ Dave_js.DataCollector.prototype.fetchData = function fetchData() {
       } else {
         console.log(
           'Could not load data from ' +
-          this.settings.url + ' : ' +
+          self.settings.url + ' : ' +
           xhr.status);
       }
     }
