@@ -361,8 +361,8 @@ function buildCanvas() {
     
     //calculate the data point index we are closest to
     coord_i =
-    Math.round(x * (data.range.numOfPts - 1) / chart.sizes.width) +
-    data.range.start;
+      Math.round(x * (data.range.numOfPts - 1) / chart.sizes.width) +
+      data.range.start;
     
     //make sure the coord_i is within the data set
     coord_i = Math.min(coord_i, (data.indep.length - 1));

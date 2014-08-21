@@ -78,23 +78,21 @@ Dave_js.DataCollector.prototype.fetchData = function fetchData(callback) {
 
 Dave_js.DataCollector.prototype.getDataField = function getDataField() {
   var
-    args = arguments,
+    arg,
+    args = Array.prototype.slice.call(arguments, 0),
     argLength = arguments.length,
-    arg_i,
     result;
 
   if (argLength === 0) {return;}
   
-  result = data;
+  result = this.data;
 
-  arg_i = 0;
-  while (arg_i < argLength) {
-    if (result[args[arg_i]]) {
-      result = result[args[arg_i]];
-    }else {
+  while ((arg = args.shift())) {
+    if (result[arg]) {
+      result = result[arg];
+    } else {
       console.log("Could not follow full reference chain:");
       console.log("DataCollector.data" + args);
-
       break;
     }
   }
@@ -129,7 +127,6 @@ Dave_js.DataCollector.prototype.processTableData = function processTableData(d){
     for(field_i = 0; field_i < fields.length; field_i++){
       fieldNames[field_i] = fields[field_i];
       data[fieldNames[field_i]] = [];
-      console.log(fieldNames[field_i]);
     }
   } else {
     for (field_i = 0; field_i < fields.length; field_i++) {

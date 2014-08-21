@@ -24,7 +24,8 @@
     plot.setData(xVals, yVals, "second");
     
     plot.setChartSize(300,300);
-    
+    plot.setLineWidth(1);
+    plot.setPointSize(6);
     //name of the div that will hold the new canvas
     plot.setCanvasHolder("canvasHolder");
 
@@ -54,11 +55,12 @@
     //get the plot configured
     plot.setChartSize(300,300);
     plot.setCanvasHolder("canvasHolder");
-    plot.setLabels("remote data","x","y");
-    plot.setColor("data",["green","black"]);
+    plot.setLabels("remote data","Time","Data");
+    plot.setColor("data","green");
     plot.setGrid();
     plot.setLegend();
-    plot.setType("xy-points-line");
+    plot.setType("xy-points");
+    plot.setPointSize(1);
 
     //start the data request
     data.config({
@@ -71,9 +73,9 @@
       }
     });
 
-
     data.fetchData(function dataCallback() {
-      console.log(data.data);
+      plot.setData(data.getDataField('LC1'), data.getDataField('LC1'), "LC1");
+      plot.buildPlot();
     });
   }());
   
