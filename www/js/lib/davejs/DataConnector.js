@@ -5,10 +5,8 @@ data collector for DaveJS. However its use is not required.
 */
 
 Dave_js.DataCollector = function DataCollector() {
-  var
-    settings,
-    dataLoadEvent = new Event('dataLoaded'),
-    data = {};
+  this.settings = {};
+  this.data = {};
 
   //default settings
   settings = {
@@ -26,7 +24,7 @@ Dave_js.DataCollector = function DataCollector() {
     }
   };
 
-  return {'data': data};
+  return this;
 };
 
 Dave_js.DataCollector.prototype.config = function config(s){
@@ -37,7 +35,7 @@ Dave_js.DataCollector.prototype.config = function config(s){
   }
 };
 
-Dave_js.DataCollector.prototype.fetchData = function fetchData() {
+Dave_js.DataCollector.prototype.fetchData = function fetchData(callback) {
   var
     self = this,
     xhr;
@@ -60,9 +58,11 @@ Dave_js.DataCollector.prototype.fetchData = function fetchData() {
           self.data = xhr.response;
           console.log('Unknown data format was specified: ' + self.dataFormat);
         }
+        
+        if (typeof callback === 'function') {
+          callback();
+        }
 
-        window.document.getElementsByTagName('body')[0].
-          dispatchEvent(this.dataLoadEvent);
       } else {
         console.log(
           'Could not load data from ' +
