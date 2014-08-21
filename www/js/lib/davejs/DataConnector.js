@@ -64,7 +64,10 @@ Dave_js.DataCollector.prototype.fetchData = function fetchData() {
         window.document.getElementsByTagName('body')[0].
           dispatchEvent(this.dataLoadEvent);
       } else {
-        console.log('Could not load data: ' + xhr.status);
+        console.log(
+          'Could not load data from ' +
+          this.settings.url + ' : ' +
+          xhr.status);
       }
     }
   };
