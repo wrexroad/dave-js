@@ -62,7 +62,7 @@
 
     //start the data request
     data.config({
-      'url': 'data/test.txt',
+      'url': 'test.data',
       'dataFormat': 'table',
       'tableOpts': {
         'delim': ',',

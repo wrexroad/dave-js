@@ -38,6 +38,7 @@ Dave_js.DataCollector.prototype.config = function config(s){
 Dave_js.DataCollector.prototype.fetchData = function fetchData(callback) {
   var
     self = this,
+    dataFormat = this.settings.dataFormat,
     xhr;
 
   if (this.settings.url === '') {
@@ -46,17 +47,17 @@ Dave_js.DataCollector.prototype.fetchData = function fetchData(callback) {
   }
   
   xhr = new XMLHttpRequest();
-  xhr.open('GET', this.settings.url, true);
+  xhr.open('GET', './'+this.settings.url, true);
   xhr.onreadystatechange = function onreadystatechange(){
     if (xhr.readyState == 4) {
-      if (xhr.staus == 200) {
-        if (self.dataFormat.toLowerCase() == 'table') {
+      if (xhr.status == 200) {
+        if ((dataFormat + '').toLowerCase() == 'table') {
           self.processTableData(xhr.response);
-        } else if (self.dataFormat.toLowerCase() == 'json') {
+        } else if ((dataFormat + '').toLowerCase() == 'json') {
           self.data = xhr.response;
         } else {
           self.data = xhr.response;
-          console.log('Unknown data format was specified: ' + self.dataFormat);
+          console.log('Unknown data format was specified: ' + dataFormat);
         }
         
         if (typeof callback === 'function') {
@@ -104,43 +105,49 @@ Dave_js.DataCollector.prototype.getDataField = function getDataField() {
 Dave_js.DataCollector.prototype.processTableData = function processTableData(d){
   var
     line,
-    lines,
+    lines = d.split('\n'),
+    lineNumber,
     field_i,
-    fields,
-    fieldNames,
+    fields = [],
+    fieldNames = [],
     data = this.data,
     tableOpts = this.settings.tableOpts;
+
+  if(!lines){
+    console.log('Empty dataset from ' + this.settings.url);
+    return;
+  }
 
   if (tableOpts.delim === '') {
     console.log('No table delimiter set. Can\'t process data');
   }
 
-  //figure out what to name each column of data
+  //Get column names and initialize arrays
   fields = (tableOpts.header ? lines.shift() : lines[0]).split(tableOpts.delim);
 
   if (tableOpts.header) {
     for(field_i = 0; field_i < fields.length; field_i++){
       fieldNames[field_i] = fields[field_i];
+      data[fieldNames[field_i]] = [];
+      console.log(fieldNames[field_i]);
     }
   } else {
     for (field_i = 0; field_i < fields.length; field_i++) {
       fieldNames[field_i] = 'var' + field_i;
+      data[fieldNames[field_i]] = [];
     }
   }
   
-  lines = d.split('\n');
   lineNumber = 0;
-  do {
-    line = lines.shift();
-
+  while ((line = lines.shift())) {
     if (line.charAt(0) !== tableOpts.commentChar){
       fields = line.split(tableOpts.delim);
     }
 
-    for(field_i = 0; field_i < fields.length; field_i++){
+    for(field_i = 0; field_i < fieldNames.length; field_i++){
       data[fieldNames[field_i]].push(fields[field_i]);
     }
 
-    line_i++;
-  } while (lines);
+    lineNumber++;
+  }
 };
