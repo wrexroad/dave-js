@@ -50,7 +50,7 @@
     
     var
       plot = new Dave_js.chart("plot"),
-      data = new Dave_js.DataCollector();
+      data = new Dave_js.AjaxDataConnector();
 
     //get the plot configured
     plot.setChartSize(300,300);
@@ -59,7 +59,7 @@
     plot.setColor("data","green");
     plot.setGrid();
     plot.setLegend();
-    plot.setType("xy-points");
+    plot.setType("xy-points-line");
     plot.setPointSize(1);
 
     //start the data request

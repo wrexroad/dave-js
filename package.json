@@ -15,7 +15,7 @@
     "Zoom.js",
     "ColorPallet.js",
     "DataFilters.js",
-    "DataConnector.js",
+    "AjaxDataConnector.js",
     "Message.js"
   ],
 

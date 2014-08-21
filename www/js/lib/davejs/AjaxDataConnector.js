@@ -1,10 +1,10 @@
 /*
-DataCollector defines how DaveJS will collect the data it is meant to plot.
+AjaxDataConnector defines how DaveJS will collect the data it is meant to plot.
 This is a very simple module just meant to demonstrate how to write a custom 
 data collector for DaveJS. However its use is not required.
 */
 
-Dave_js.DataCollector = function DataCollector() {
+Dave_js.AjaxDataConnector = function AjaxDataConnector() {
   this.settings = {};
   this.data = {};
 
@@ -27,7 +27,7 @@ Dave_js.DataCollector = function DataCollector() {
   return this;
 };
 
-Dave_js.DataCollector.prototype.config = function config(s){
+Dave_js.AjaxDataConnector.prototype.config = function config(s){
   for(var opt in s){
     if(s[opt] !== null){
       this.settings[opt] = s[opt];
@@ -35,14 +35,14 @@ Dave_js.DataCollector.prototype.config = function config(s){
   }
 };
 
-Dave_js.DataCollector.prototype.fetchData = function fetchData(callback) {
+Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
   var
     self = this,
     dataFormat = this.settings.dataFormat,
     xhr;
 
   if (this.settings.url === '') {
-    console.log("No URL set for DataCollector");
+    console.log("No URL set for AjaxDataConnector");
     return;
   }
   
@@ -76,7 +76,7 @@ Dave_js.DataCollector.prototype.fetchData = function fetchData(callback) {
   xhr.send();
 };
 
-Dave_js.DataCollector.prototype.getDataField = function getDataField() {
+Dave_js.AjaxDataConnector.prototype.getDataField = function getDataField() {
   var
     arg,
     args = Array.prototype.slice.call(arguments, 0),
@@ -92,7 +92,7 @@ Dave_js.DataCollector.prototype.getDataField = function getDataField() {
       result = result[arg];
     } else {
       console.log("Could not follow full reference chain:");
-      console.log("DataCollector.data" + args);
+      console.log("AjaxDataConnector.data" + args);
       break;
     }
   }
@@ -100,7 +100,7 @@ Dave_js.DataCollector.prototype.getDataField = function getDataField() {
   return result;
 };
 
-Dave_js.DataCollector.prototype.processTableData = function processTableData(d){
+Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData(d){
   var
     line,
     lines = d.split('\n'),
