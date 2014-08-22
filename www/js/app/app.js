@@ -59,8 +59,8 @@
     plot.setColor("data","green");
     plot.setGrid();
     plot.setLegend();
-    plot.setType("xy-points-line");
-    plot.setPointSize(1);
+    plot.setType("xy-points");
+    plot.setPointSize(2);
 
     //start the data request
     data.config({

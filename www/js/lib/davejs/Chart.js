@@ -30,6 +30,7 @@ Dave_js.chart = function(name) {
       
       lineWidth : 3,
       pointSize : 6,
+      halfPointSize : 3,
     },
 
     //default x and y origins for the canvas coordinate system   
@@ -657,7 +658,8 @@ function buildCanvas() {
 
     //move to the plot origin
     ctx.translate(0, chart.sizes.height);
-     
+
+    ctx.lineWidth = chart.sizes.lineWidth;
     for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
       //cache the data set for this plot
       var y_data = data.dep[plt_i];
@@ -673,7 +675,6 @@ function buildCanvas() {
       
       //if we are drawing a line, set the line origin and start the line
       if (flags.lines) {
-        ctx.lineWidth = chart.sizes.lineWidth;
         if (isNaN(y)) {y = 0;}
         ctx.beginPath();
         ctx.moveTo(0, y);
@@ -724,10 +725,12 @@ function buildCanvas() {
   }
 
   function plotPnt(x, y) {
+    var
+      pointSize = chart.sizes.pointSize,
+      halfPointSize = chart.sizes.halfPointSize;
+
     ctx.fillRect(
-      x - chart.sizes.pointSize / 2,
-      y - (chart.sizes.pointSize / 2),
-      chart.sizes.pointSize, chart.sizes.pointSize
+      x - halfPointSize, y - halfPointSize, pointSize, pointSize
     );
   }
 
@@ -919,7 +922,9 @@ function buildCanvas() {
     //rotate the plot so zero lines up with where the use wants
     ctx.save();
     ctx.rotate( -1 * chart.polarRot * chart.zeroAngle);
-    
+    ctx.lineWidth = chart.sizes.lineWidth;
+    pntOffset = -1 * chart.sizes.halfPointSize;
+
     //Draw lines and points      
     for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
       //set colors
@@ -931,7 +936,6 @@ function buildCanvas() {
        
       //start line path
       if (flags.lines) {
-        ctx.lineWidth = chart.sizes.lineWidth;
         ctx.save();
         ctx.rotate(chart.polarRot * angle);
         ctx.beginPath();
@@ -944,7 +948,6 @@ function buildCanvas() {
         //get the angle and radius of the next point
         angle = data.indep[pnt_i + data.rang.start] * Math.PI / 180;
         radius = data.dep[plt_i][pnt_i + data.rang.start];
-        pntOffset = -1 * chart.sizes.pointSize / 2;
         angle -= 90 * Math.PI / 180;
         ctx.save();
         ctx.rotate(chart.polarRot * angle);
@@ -953,10 +956,9 @@ function buildCanvas() {
           if (flags.points) {
             //rotate coord system, plot point, rotate back
             ctx.fillRect(
-              radius * chart.pntSpacing.dep + pntOffset,
-                pntOffset,
-                chart.sizes.pointSize, chart.sizes.pointSize
-              );
+              radius * chart.pntSpacing.dep + pntOffset, pntOffset,
+              chart.sizes.pointSize, chart.sizes.pointSize
+            );
           }
           if (flags.lines) {
             //rotate coord system, plot point, rotate back
@@ -1148,6 +1150,7 @@ function buildCanvas() {
 
     //make sure the supplied point size is not too small
     chart.sizes.pointSize = Math.max(1, width);
+    chart.sizes.halfPointSize = parseInt((chart.sizes.pointSize / 2), 10);
   };
 
   self.setHistBars = function(ratio) {
@@ -1205,12 +1208,14 @@ function buildCanvas() {
     //figure out the point size
     if (!flags.fixedPtSize) {
       //take a best guess at point size
-      chart.sizes.pointSize =
-        parseInt((chart.sizes.width / data.range.numOfPts / 2), 10);
+      this.setPointSize(
+        parseInt((chart.sizes.width / data.range.numOfPts / 2), 10)
+      );
 
       //make sure the point is between 2 and 8
-      chart.sizes.pointSize =
-        Math.max(1, Math.min(8, chart.sizes.pointSize));
+      this.setPointSize(
+        Math.max(1, Math.min(8, chart.sizes.pointSize))
+      );
     }
 
     //Adjust the data as needed
