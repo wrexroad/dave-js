@@ -6,10 +6,35 @@
     return;
   }
 
+  //demo the message module that has been built
+  (function messageDemo() {
+    if (!Dave_js.message) {
+      return;
+    }
+    var width = 200;
+    var height = 200;
+
+    var x = (window.innerWidth - width ) / 2;
+    var y = (window.innerHeight  - height ) / 2;
+
+    var message = new Dave_js.message();
+    message.setSize(width, height);
+    message.showMessage("test", x, y);
+  }());
+  
+  //demo the color pallet that has been built
+  (function colorDemo() {
+    if (!Dave_js.colorPallet) {
+      return;
+    }
+
+    var pallet = new Dave_js.colorPallet("rainbow", 10);
+    pallet.buildPallet();
+    pallet.displayColors(document.getElementById("pallet"), 10, 10);
+  })();
+
   //demo how to load a plot that has the data written directly in the js code
-  (function hardcodedData() {
-    
-    
+  function hardcodedData() {
     var plot = new Dave_js.chart("plot");
     var xVals, yVals;
 
@@ -43,11 +68,10 @@
     plot.setType("xy-points-line");
 
     plot.buildPlot();
-  }());
+  }
 
   //demo creating a plot from a remote file
-  (function remoteData() {
-    
+  function remoteData() {
     var
       plot = new Dave_js.chart("plot"),
       data = new Dave_js.AjaxDataConnector();
@@ -77,33 +101,9 @@
       plot.setData(data.getDataField('LC1'), data.getDataField('LC1'), "LC1");
       plot.buildPlot();
     });
-  }());
-  
+  }
 
-  //demo the message module that has been built
-  (function messageDemo() {
-    if (!Dave_js.message) {
-      return;
-    }
-    var width = 200;
-    var height = 200;
-
-    var x = (window.innerWidth - width ) / 2;
-    var y = (window.innerHeight  - height ) / 2;
-
-    var message = new Dave_js.message();
-    message.setSize(width, height);
-    message.showMessage("test", x, y);
-  }());
-  
-  //demo the color pallet that has been built
-  (function colorDemo() {
-    if (!Dave_js.colorPallet) {
-      return;
-    }
-
-    var pallet = new Dave_js.colorPallet("rainbow", 10);
-    pallet.buildPallet();
-    pallet.displayColors(document.getElementById("pallet"), 10, 10);
-  })();
+  //draw the plots asynchronously
+  setTimeout(hardcodedData, 100);
+  setTimeout(remoteData, 100);
 })();
