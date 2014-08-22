@@ -32,6 +32,10 @@ Dave_js.DataStore = (function DataStoreFactory() {
     }
   };
 
+  DataStore.prototype.dataDump = function dataDump(name) {
+    return JSON.parse(JSON.stringify(stores[this.id].dataSets));
+  };
+
   DataStore.prototype.addDataSet = function addDataSet(name, data, force) {
     var
       store = stores[this.id];
