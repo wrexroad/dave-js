@@ -1,3 +1,4 @@
+var dataStore;
 (function loadDemo() {
 
   //check if the main plotter has be built into DaveJS
@@ -32,6 +33,13 @@
     pallet.buildPallet();
     pallet.displayColors(document.getElementById("pallet"), 10, 10);
   })();
+
+  //create a place to store data
+  
+  if(Dave_js.DataStore){
+    dataStore = new Dave_js.DataStore();
+    console.log(dataStore);
+  }
 
   //demo how to load a plot that has the data written directly in the js code
   function hardcodedData() {
