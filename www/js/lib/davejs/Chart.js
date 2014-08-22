@@ -1032,7 +1032,44 @@ function buildCanvas() {
     colors[type] = color;
   };
   
-  self.setData = function(xDataArr, yDataArr, dataSetLabel, id) {
+  self.setData = function(){
+
+    if (!arguments) {
+      //no data were passed in
+      console.log("Could not set data: null");
+      return;
+    }
+console.log(arguments[0].toString());
+    if (
+      arguments[0].toString() === '[object Array]' &&
+      arguments[1].toString() === '[object Array]'
+    ) {
+      //looks like data are manually being set
+      return self.setManualData(arguments);
+    }
+
+    if (typeof arguments[0] === 'object' && !arguments[1]){
+      //we should try to import this object
+      self.importDataSet(arguments[1]);
+    }
+  };
+
+  self.importDataSet = function(dataSet) {
+    if (typeof dataSet !== 'object') {
+      console.log(
+        "Could not import data set. Should be object not " +
+        (typeof dataset)
+      );
+      return;
+    }
+
+    var setName;
+    for(setName in dataSets){
+
+    }
+  };
+
+  self.setManualData = function(xDataArr, yDataArr, dataSetLabel, id) {
     //if no id is set, just use use the next open slot
     if (!id) {id = data.dep.length;}
     
