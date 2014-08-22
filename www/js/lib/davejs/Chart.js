@@ -780,14 +780,15 @@ function buildCanvas() {
           barHeight =  -1 * data.dep[plt_i][pnt_i + data.range.start];
 
           ctx.beginPath();
-           ctx.moveTo(
-              chart.histBarTotal * ( pnt_i + 0.5 ),
-              (baseLineOffset * chart.pntSpacing.dep)
-            );
-           ctx.lineTo(
-              chart.histBarTotal * (pnt_i + 0.5),
-              (barHeight * chart.pntSpacing.dep)
-            );
+
+          ctx.moveTo(
+            chart.histBarTotal * ( pnt_i + 0.5 ),
+            (baseLineOffset * chart.pntSpacing.dep)
+          );
+          ctx.lineTo(
+            chart.histBarTotal * (pnt_i + 0.5),
+            (barHeight * chart.pntSpacing.dep)
+          );
           ctx.stroke();
         } catch(err) {
           continue;
@@ -854,7 +855,7 @@ function buildCanvas() {
         if (flags.map) {
           ctx.fillText(
             90 - grid.radii[radius_i] + "\u00B0",
-            0,    chart.pntSpacing.dep * grid.radii[radius_i] - 5
+            0, chart.pntSpacing.dep * grid.radii[radius_i] - 5
           );
         } else {
           ctx.fillText(
@@ -891,7 +892,7 @@ function buildCanvas() {
         ];
       }
 
-      ctx.textAlign="start";
+      ctx.textAlign = "start";
       for (var angle_i = 0; angle_i < grid.angles.length; angle_i++) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
