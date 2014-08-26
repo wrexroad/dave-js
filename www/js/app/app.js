@@ -40,7 +40,7 @@
 
   //demo how to load a plot that has the data written directly in the js code
   function hardcodedData() {
-    var plot = new Dave_js.chart("plot");
+    var plot = new Dave_js.chart("plot1");
 
     //add datasets
     dataStore.addDataSet(
@@ -80,7 +80,7 @@
   //demo creating a plot from a remote file
   function remoteData() {
     var
-      plot = new Dave_js.chart("plot"),
+      plot = new Dave_js.chart("plot2"),
       ajax = new Dave_js.AjaxDataConnector();
     
     ajax.config({
