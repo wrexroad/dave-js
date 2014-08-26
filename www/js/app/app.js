@@ -104,7 +104,7 @@
     plot.setPointSize(2);
 
     ajax.fetchData(function dataCallback() {
-      plot.setData(ajax.getDataField('LC1'), ajax.getDataField('LC1'), "LC1");
+      plot.setData(ajax.getDataField('Time'), ajax.getDataField('LC1'), "LC1");
       plot.buildPlot();
     });
   }
