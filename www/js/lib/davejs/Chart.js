@@ -1033,24 +1033,27 @@ function buildCanvas() {
   };
   
   self.setData = function(){
-
+    var objectType = Object.prototype.toString;
     if (!arguments) {
       //no data were passed in
       console.log("Could not set data: null");
       return;
     }
-    
+    console.log();
+
     if (
-      arguments[0].toString() === '[object Array]' &&
-      arguments[1].toString() === '[object Array]'
+      objectType.call(arguments[0]) === '[object Array]' &&
+      objectType.call(arguments[1]) === '[object Array]'
     ) {
       //looks like data are manually being set
-      return self.setManualData(arguments);
+      return self.setManualData(
+        arguments[0], arguments[1], arguments[2], arguments[3]
+      );
     }
 
-    if (typeof arguments[0] === 'object' && !arguments[1]){
+    if (objectType.call(arguments[0]) === '[object Object]' && !arguments[1]){
       //we should try to import this object
-      self.importDataSet(arguments[1]);
+      self.importDataSet(arguments[0]);
     }
   };
 
@@ -1058,13 +1061,13 @@ function buildCanvas() {
     if (typeof dataSet !== 'object') {
       console.log(
         "Could not import data set. Should be object not " +
-        (typeof dataset)
+        (typeof dataSet)
       );
       return;
     }
 
     var setName;
-    for(setName in dataSets){
+    for(setName in dataSet){
 
     }
   };
