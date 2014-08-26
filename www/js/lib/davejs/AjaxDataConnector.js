@@ -81,18 +81,23 @@ Dave_js.AjaxDataConnector.prototype.getDataField = function getDataField() {
     arg,
     args = Array.prototype.slice.call(arguments, 0),
     argLength = arguments.length,
-    result;
+    result,
+    argChain = [];
 
   if (argLength === 0) {return;}
   
   result = this.data;
 
   while ((arg = args.shift())) {
+    argChain.push(arg);
+
     if (result[arg]) {
       result = result[arg];
     } else {
       console.log("Could not follow full reference chain:");
-      console.log("AjaxDataConnector.data" + args);
+      console.log('[' + argChain.join('][') + ']');
+      console.log('DataStore contents:');
+      console.log(this.data);
       break;
     }
   }
