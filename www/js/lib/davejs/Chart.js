@@ -1039,7 +1039,7 @@ function buildCanvas() {
       console.log("Could not set data: null");
       return;
     }
-console.log(arguments[0].toString());
+    
     if (
       arguments[0].toString() === '[object Array]' &&
       arguments[1].toString() === '[object Array]'
