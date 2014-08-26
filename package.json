@@ -16,6 +16,7 @@
     "ColorPallet.js",
     "DataFilters.js",
     "AjaxDataConnector.js",
+    "DataStore.js",
     "Message.js"
   ],
 
