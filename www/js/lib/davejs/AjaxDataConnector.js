@@ -39,15 +39,30 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
   var
     self = this,
     dataFormat = this.settings.dataFormat,
+    path = this.settings.url,
+    qs = this.settings.qs,
+    param,
     xhr;
 
-  if (this.settings.url === '') {
+  if (!path) {
     console.log("No URL set for AjaxDataConnector");
     return;
   }
   
+  if (qs) {
+    path += '?';
+    for (param in qs) {
+      if (qs.hasOwnProperty(param)) {
+        path += param + '=' + qs[param] + '&';
+      }
+    }
+
+    //add a random number to make sure we get fresh data
+    path += Math.random();
+  }
+
   xhr = new XMLHttpRequest();
-  xhr.open('GET', './'+this.settings.url, true);
+  xhr.open('GET', path, true);
   xhr.onreadystatechange = function onreadystatechange(){
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
