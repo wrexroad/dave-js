@@ -1039,7 +1039,6 @@ function buildCanvas() {
       console.log("Could not set data: null");
       return;
     }
-    console.log();
 
     if (
       objectType.call(arguments[0]) === '[object Array]' &&
@@ -1066,10 +1065,9 @@ function buildCanvas() {
       return;
     }
 
-    var setName;
-    for(setName in dataSet){
+    var data = dataSet.data;
+    self.setManualData(data.xVals, data.yVals, dataSet.name, dataSet.id);
 
-    }
   };
 
   self.setManualData = function(xDataArr, yDataArr, dataSetLabel, id) {

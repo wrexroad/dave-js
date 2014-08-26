@@ -62,9 +62,9 @@
     plot.setCanvasHolder("canvasHolder");
 
     //arguments for lables are the plot title, x-axis, and y-axis
-    plot.setLabels("hardcoded data","x","y");
+    plot.setLabels('hardcoded data', 'x', 'y');
 
-    plot.setColor("data",["green","black"]);
+    plot.setColor('data', ['green', 'red', 'black']);
 
     plot.setGrid();
 

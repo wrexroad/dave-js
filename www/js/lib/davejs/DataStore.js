@@ -26,7 +26,9 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
   DataStore.prototype.getDataSet = function getDataSet(name) {
     if (this.hasDataSet(name)) {
-      return {name: stores[this.id].dataSets[name]};
+      return {
+        'name': name,
+        'data': stores[this.id].dataSets[name]};
     } else {
       return false;
     }
