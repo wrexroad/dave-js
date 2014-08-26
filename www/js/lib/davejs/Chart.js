@@ -1032,7 +1032,7 @@ function buildCanvas() {
     colors[type] = color;
   };
   
-  self.setData = function(){
+  self.setData = function() {
     var objectType = Object.prototype.toString;
     if (!arguments) {
       //no data were passed in
@@ -1050,7 +1050,7 @@ function buildCanvas() {
       );
     }
 
-    if (objectType.call(arguments[0]) === '[object Object]' && !arguments[1]){
+    if (objectType.call(arguments[0]) === '[object Object]' && !arguments[1]) {
       //we should try to import this object
       self.importDataSet(arguments[0]);
     }
