@@ -1058,10 +1058,10 @@ function buildCanvas() {
   };
 
   self.importDataSet = function(dataSet) {
-    if (typeof dataSet !== 'object') {
+    if (Object.prototype.toString.call(dataSet) !== '[object Object]') {
       console.log(
         "Could not import data set. Should be object not " +
-        (typeof dataSet)
+        Object.prototype.toString.call(dataSet)
       );
       return;
     }
