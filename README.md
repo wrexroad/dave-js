@@ -1,22 +1,11 @@
 Dave.js
 =======
 
-##Requirements
-This build process is done using Node.js and Grunt. 
-- You will need to have node and npm installed to build Dave.js.
-- You will need to build Dave.js before it can be used.
-- ave.js before it can be used.
-- You may or may not need a beach ball and sand toys to continue.
+Dave.js is a general purpose plotting library written for modern browsers.
 
-##Building
-Type the followig into a terminal to download and build Dave.js
-
-1. `git clone https://github.com/wrexroad/dave-js`
-2. `cd dave-js`
-3. `npm install`
-4. `grunt`
-
-The minified Dave.js should be stored in the dave-js/build directory.
+Many of the Dave.js files rely on each other to work correctly. 
+They are meant to back concated together and minified as is demonstrated in the 
+[dave-app](https://github.com/wrexroad/dave-app) project.
 
 ##Contact
 Send complaints to [wrexroad@gmail.com](mailto:wrexroad@gmail.com)
