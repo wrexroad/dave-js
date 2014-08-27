@@ -1,8 +1,11 @@
 Dave_js.chart = function(name) {
   var self = this;
 
-  //////////////////////////Private Members//////////////////////////////
+  //////////////////////////Private Members////////////////////////////// 
 
+  //keeps track of current index of the data point closest to the mouse
+  var coord_i = 0;
+  
   //contains all of the canvas attributes the user will set
   var chart = {
     //canvas id based on the user specified name
@@ -280,9 +283,6 @@ function buildCanvas() {
 
     //add coordinate display if this is an xy plot and the coord flag is set
     if(flags.xy && flags.showCoords) {
-      //keeps track of current index of the data point closest to the mouse
-      var coord_i = 0;
-      
       //create a message holder 
       elms.coordMsg = new Dave_js.message();
       elms.coordMsg.box.style.opacity = "0.8";
