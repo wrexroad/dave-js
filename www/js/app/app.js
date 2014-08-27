@@ -59,7 +59,7 @@
     plot.setLineWidth(1);
     plot.setPointSize(6);
     //name of the div that will hold the new canvas
-    plot.setCanvasHolder("canvasHolder");
+    plot.setCanvasHolder("canvasHolder1");
 
     //arguments for lables are the plot title, x-axis, and y-axis
     plot.setLabels('hardcoded data', 'x', 'y');
@@ -95,7 +95,7 @@
 
     //get the plot configured
     plot.setChartSize(300,300);
-    plot.setCanvasHolder("canvasHolder");
+    plot.setCanvasHolder("canvasHolder2");
     plot.setLabels("remote data","Time","Data");
     plot.setColor("data","green");
     plot.setGrid();
