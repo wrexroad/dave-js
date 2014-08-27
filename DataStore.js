@@ -38,15 +38,32 @@ Dave_js.DataStore = (function DataStoreFactory() {
     return JSON.parse(JSON.stringify(stores[this.id].dataSets));
   };
 
-  DataStore.prototype.addDataSet = function addDataSet(name, data, force) {
+  DataStore.prototype.addDataSet = function addDataSet(dataSet, force) {
     var
-      store = stores[this.id];
-
-    if (typeof name != 'string') {
-      console.log('Data set name must be a string, not ' + (typeof name));
+      store = stores[this.id],
+      name = dataSet.name,
+      indepVar = dataSet.indepVar,
+      depVar = [].concat(dataSet.depVar),
+      objectType = Object.prototype.toString.call;
+    
+    //make sure the DataSet has the appropriate labels set
+    if (objectType(name) !== '[object String]') {
+      console.log('DataSet.name must be a string, not ' +
+        objectType(name)
+      );
       return;
     }
-
+    if (objectType(indepVar) !== '[object String]') {
+      console.log('DataSet.indepVar must be a string, not ' +
+        objectType(indepVar)
+      );
+      return;
+    }
+    if(depVar.length < 1){
+      console.log('No dependent variables listed in DataSet.depVap.');
+      return;
+    }
+    
     if (this.hasDataSet(name)) {
       //do not overwrite the old dataset unless force is set
       if (force !== true){
@@ -62,7 +79,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
     }
 
     //add the new dataset to the store
-    store.dataSets[name] = data;
+    store.dataSets[name] = dataSet;
     store.setNames.push(name);
 
     //check if we need to remove old data
