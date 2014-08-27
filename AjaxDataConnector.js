@@ -27,11 +27,30 @@ Dave_js.AjaxDataConnector = function AjaxDataConnector() {
 };
 
 Dave_js.AjaxDataConnector.prototype.config = function config(s){
-  for (var opt in s) {
+  var opt;
+
+  for (opt in s) {
     if (s[opt] !== null) {
       this.settings[opt] = s[opt];
     }
   }
+  
+  return (function buildSettingsHash(){
+    var
+      string = JSON.stringify(this.settings),
+      hash = 0,
+      charCode,
+      char_i;
+  
+    for (char_i = 0; char_i < string.length; char_i++) {
+      charCode = string.charCodeAt(char_i);
+      hash = ((hash << 5) - hash) + charCode;
+      hash = hash & hash;
+    }
+
+    return hash;
+  })();
+  
 };
 
 Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
