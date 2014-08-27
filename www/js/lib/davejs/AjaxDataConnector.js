@@ -5,12 +5,11 @@ data collector for DaveJS. However its use is not required.
 */
 
 Dave_js.AjaxDataConnector = function AjaxDataConnector() {
-  this.settings = {};
   this.data = {};
 
   //default settings
-  settings = {
-    'url': '',
+  this.settings = {
+    'url': 'das',
 
     //dataFormat can be 'json' or 'table'.
     //if 'table' is set, a 'tableOpts' must also be set.
@@ -28,8 +27,8 @@ Dave_js.AjaxDataConnector = function AjaxDataConnector() {
 };
 
 Dave_js.AjaxDataConnector.prototype.config = function config(s){
-  for(var opt in s){
-    if(s[opt] !== null){
+  for (var opt in s) {
+    if (s[opt] !== null) {
       this.settings[opt] = s[opt];
     }
   }
@@ -83,7 +82,8 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
         console.log(
           'Could not load data from ' +
           self.settings.url + ' : ' +
-          xhr.status);
+          xhr.status
+        );
       }
     }
   };

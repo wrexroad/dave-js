@@ -15,7 +15,7 @@
     var height = 200;
 
     var x = (window.innerWidth - width ) / 2;
-    var y = (window.innerHeight  - height ) / 2;
+    var y = (window.innerHeight - height ) / 2;
 
     var message = new Dave_js.message();
     message.setSize(width, height);
