@@ -1082,7 +1082,7 @@ function buildCanvas() {
     //empty the original arrays
     xDataArr = null;
     yDataArr = null;
-    dataSetLabels = null;
+    dataSetLabel = null;
     
     return id;
   };
