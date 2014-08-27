@@ -44,12 +44,12 @@ Dave_js.DataStore = (function DataStoreFactory() {
       name = dataSet.name,
       indepVar = dataSet.indepVar,
       depVar = [].concat(dataSet.depVar),
-      objectType = Object.prototype.toString.call;
+      objectType = Object.prototype.toString;
     
     //make sure the DataSet has the appropriate labels set
-    if (objectType(name) !== '[object String]') {
+    if (objectType.call(name) !== '[object String]') {
       console.log('DataSet.name must be a string, not ' +
-        objectType(name)
+        objectType.call(name)
       );
       return;
     }
@@ -107,6 +107,10 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
     //could not find data set
     return false;
+  };
+
+  DataStore.prototype.listDataSets = function listDataSets() {
+    return stores[this.id].names.join(', ');
   };
 
   DataStore.prototype.destroy = function addDataSet() {
