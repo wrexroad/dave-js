@@ -39,30 +39,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
   };
 
   DataStore.prototype.addDataSet = function addDataSet(dataSet, force) {
-    var
-      store = stores[this.id],
-      name = dataSet.name,
-      indepVar = dataSet.indepVar,
-      depVar = [].concat(dataSet.depVar),
-      objectType = Object.prototype.toString;
-    
-    //make sure the DataSet has the appropriate labels set
-    if (objectType.call(name) !== '[object String]') {
-      console.log('DataSet.name must be a string, not ' +
-        objectType.call(name)
-      );
-      return;
-    }
-    if (objectType(indepVar) !== '[object String]') {
-      console.log('DataSet.indepVar must be a string, not ' +
-        objectType(indepVar)
-      );
-      return;
-    }
-    if(depVar.length < 1){
-      console.log('No dependent variables listed in DataSet.depVap.');
-      return;
-    }
+    var store = stores[this.id];
     
     if (this.hasDataSet(name)) {
       //do not overwrite the old dataset unless force is set
