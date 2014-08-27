@@ -35,9 +35,8 @@ Dave_js.AjaxDataConnector.prototype.config = function config(s){
     }
   }
   
-  return (function buildSettingsHash(){
+  return (function buildSettingsHash(string){
     var
-      string = JSON.stringify(this.settings),
       hash = 0,
       charCode,
       char_i;
@@ -49,7 +48,7 @@ Dave_js.AjaxDataConnector.prototype.config = function config(s){
     }
 
     return hash;
-  })();
+  })(JSON.stringify(this.settings));
   
 };
 
