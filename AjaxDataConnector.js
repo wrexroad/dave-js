@@ -5,8 +5,6 @@ data collector for DaveJS. However its use is not required.
 */
 
 Dave_js.AjaxDataConnector = function AjaxDataConnector() {
-  this.data = {};
-
   //default settings
   this.settings = {
     'url': 'das',
@@ -53,7 +51,7 @@ Dave_js.AjaxDataConnector.prototype.config = function config(s) {
 
 Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
   var
-    self = this,
+    response,
     dataFormat = this.settings.dataFormat,
     path = this.settings.url,
     qs = this.settings.qs,
@@ -82,22 +80,25 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
   xhr.onreadystatechange = function onreadystatechange(){
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
+
+        //make sure the data are in json format
         if ((dataFormat + '').toLowerCase() == 'table') {
-          self.processTableData(xhr.response);
+          response = this.processTableData(xhr.response);
         } else if ((dataFormat + '').toLowerCase() == 'json') {
-          self.data = xhr.response;
+          response = xhr.response;
         } else {
-          self.data = xhr.response;
+          response = xhr.response;
           console.log('Unknown data format was specified: ' + dataFormat);
         }
         
+        //run any callback function if it was provided
         if (typeof callback === 'function') {
-          callback();
+          callback(response);
         }
 
       } else {
         console.log(
-          'Could not load data from ' + self.settings.url + ' : ' + xhr.status
+          'Could not load data from ' + this.settings.url + ' : ' + xhr.status
         );
       }
     }
@@ -105,6 +106,9 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
 
   xhr.send();
 };
+
+/*
+this should no longer be used
 
 Dave_js.AjaxDataConnector.prototype.getDataField = function getDataField() {
   var
@@ -134,6 +138,7 @@ Dave_js.AjaxDataConnector.prototype.getDataField = function getDataField() {
 
   return result;
 };
+*/
 
 Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData(d){
   var
@@ -143,16 +148,17 @@ Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData
     field_i,
     fields = [],
     fieldNames = [],
-    data = this.data,
-    tableOpts = this.settings.tableOpts;
+    tableOpts = this.settings.tableOpts,
+    data = {};
 
   if(!lines){
     console.log('Empty dataset from ' + this.settings.url);
-    return;
+    return false;
   }
 
   if (tableOpts.delim === '') {
     console.log('No table delimiter set. Can\'t process data');
+    return false;
   }
 
   //Get column names and initialize arrays
@@ -182,4 +188,6 @@ Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData
 
     lineNumber++;
   }
+
+  return data;
 };
