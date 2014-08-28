@@ -26,7 +26,7 @@ Dave_js.AjaxDataConnector = function AjaxDataConnector() {
   return this;
 };
 
-Dave_js.AjaxDataConnector.prototype.config = function config(s){
+Dave_js.AjaxDataConnector.prototype.config = function config(s) {
   var opt;
 
   for (opt in s) {
@@ -35,7 +35,7 @@ Dave_js.AjaxDataConnector.prototype.config = function config(s){
     }
   }
   
-  return (function buildSettingsHash(string){
+  return (function buildSettingsHash(string) {
     var
       hash = 0,
       charCode,
@@ -49,7 +49,6 @@ Dave_js.AjaxDataConnector.prototype.config = function config(s){
 
     return hash;
   })(JSON.stringify(this.settings));
-  
 };
 
 Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
@@ -98,9 +97,7 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
 
       } else {
         console.log(
-          'Could not load data from ' +
-          self.settings.url + ' : ' +
-          xhr.status
+          'Could not load data from ' + self.settings.url + ' : ' + xhr.status
         );
       }
     }
