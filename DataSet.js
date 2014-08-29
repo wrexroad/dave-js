@@ -1,13 +1,22 @@
-Dave_js.DataSet = (function DataSetFactory() {
+Dave_js.DataStore.DataSet = (function DataSetFactory() {
 
   var sets = {};
     
-  function DataSet(id, force) {
-    this.id = id;
-
+  function DataSet(id, data, force) {
     if(!id){
       console.log(
         'No DataSet ID specified.'
+      );
+      
+      return null;
+    }
+
+    if(
+      Object.prototype.toString.call(data) !== '[object Array]' ||
+      data.lenth === 0
+    ){
+      console.log(
+        'Empty dataset.'
       );
       
       return null;
@@ -21,17 +30,15 @@ Dave_js.DataSet = (function DataSetFactory() {
       return null;
     }
     
-    sets[this.id] = {
-      'id' : id,
-      'labels' : {
-        'title' : '',
-        'indepVar' : '',
-        'depVars' : []
-      },
-      'data' : {}
-    };
+    sets[id] = data.slice();
+    
+    this.id = id;
+    
+    return this;
   }
 
+
+  //should be moved to DataStore
   DataSet.prototype.addJSONData = function addJSONData(d) {
     var
       var_i,
@@ -44,6 +51,7 @@ Dave_js.DataSet = (function DataSetFactory() {
     }
   };
 
+  //should be moved to DataStore
   DataSet.prototype.listVars = function listVars() {
     var
       var_i,
@@ -59,18 +67,22 @@ Dave_js.DataSet = (function DataSetFactory() {
     return vars;
   };
 
+  //should be moved to DataStore
   DataSet.prototype.setIndependentVar = function setIndependentVar(varName) {
     sets[this.id].labels.indepVar = varName;
   };
 
+  //should be moved to DataStore
   DataSet.prototype.setDependentVars = function setDependentVars() {
     sets[this.id].labels.depVars = [].concat(arguments);
   };
-
+  
+  //should be moved to DataStore
   DataSet.prototype.setTitle = function setTitle(title) {
     sets[this.id].labels.title = title;
   };
-
+  
+  //should be moved to DataStore
   Dave_js.DataSet.prototype.verify = function verify() {
     var
       dataSet = sets[this.id],
