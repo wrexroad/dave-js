@@ -59,7 +59,7 @@ Dave_js.chart = function(name) {
     //number of pixels per point in each dimension
     pntSpacing : {dep : 1, indep : 1},
     
-    //min and max values for dependant variables
+    //min and max values for dependent variables
     limits : {min : 0, max : 0},
     
     //default settings for plot scale
@@ -177,6 +177,7 @@ var flags = {
 };
 
 //contains user provided data for plotting
+/*
 var data = {
   dep : [],
   indep : [],
@@ -184,6 +185,12 @@ var data = {
   trackers : [],
   trackLabels : [],
   range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
+};
+*/
+var data = {
+  dependentName : "",
+  independentNames : [],
+  variables : []
 };
 
 //////////////////////////Private Methods//////////////////////////////
@@ -476,7 +483,7 @@ function buildCanvas() {
     console.log("Scale Data = " + timer / 1000);
   }
 
-  //either apply limits to dependant data, or generate axis limits from it
+  //either apply limits to dependent data, or generate axis limits from it
   function doLimits() {
     var timer = (new Date()).getTime();
     var plt_i, pnt_i;
@@ -1031,60 +1038,16 @@ function buildCanvas() {
   self.setColor = function(type, color) {
     colors[type] = color;
   };
-  
-  self.setData = function() {
-    var objectType = Object.prototype.toString;
-    if (!arguments) {
-      //no data were passed in
-      console.log("Could not set data: null");
-      return;
+
+  self.setData = function(dataIn) {
+    //make sure each variable has a name
+    var
+      vars = dataIn.variables,
+      numVars = vars ? vars.length : 0;
+
+    while(numVars--){
+      console.log(vars[numVars].name);
     }
-
-    if (
-      objectType.call(arguments[0]) === '[object Array]' &&
-      objectType.call(arguments[1]) === '[object Array]'
-    ) {
-      //looks like data are manually being set
-      return self.setManualData(
-        arguments[0], arguments[1], arguments[2], arguments[3]
-      );
-    }
-
-    if (objectType.call(arguments[0]) === '[object Object]' && !arguments[1]) {
-      //we should try to import this object
-      self.importDataSet(arguments[0]);
-    }
-  };
-
-  self.importDataSet = function(dataSet) {
-    if (Object.prototype.toString.call(dataSet) !== '[object Object]') {
-      console.log(
-        "Could not import data set. Should be object not " +
-        Object.prototype.toString.call(dataSet)
-      );
-      return;
-    }
-
-    var data = dataSet.data;
-    self.setManualData(data.xVals, data.yVals, dataSet.name, dataSet.id);
-
-  };
-
-  self.setManualData = function(xDataArr, yDataArr, dataSetLabel, id) {
-    //if no id is set, just use use the next open slot
-    if (!id) {id = data.dep.length;}
-    
-    //copies the array rather than taking a reference to it
-    data.indep = xDataArr.slice(0);
-    data.dep[id] = yDataArr.slice(0) ;
-    data.varLabels[id] = dataSetLabel;
-    
-    //empty the original arrays
-    xDataArr = null;
-    yDataArr = null;
-    dataSetLabel = null;
-    
-    return id;
   };
 
   self.setDataRange = function(start, stop) {
@@ -1268,7 +1231,7 @@ function buildCanvas() {
     buildCanvas();
     
     //figure out axis and radii lengths
-    // or limit dependant data sets
+    // or limit dependent data sets
     doLimits();
 
     //determine what type of plot we are generating
