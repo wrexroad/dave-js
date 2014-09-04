@@ -34,7 +34,7 @@ Dave_js.DataSet = (function DataSetFactory() {
       var_i,
       vars = [],
       dataSetVars = sets[this.id].vars;
-      
+
     for (var_i in dataSetVars) {
       if (dataSetVars.hasOwnProperty(var_i)) {
         vars.push(var_i);
@@ -48,8 +48,12 @@ Dave_js.DataSet = (function DataSetFactory() {
     return sets[this.id].vars[varName] ? true : false;
   };
 
-  DataSet.prototype.getVar = function getVar(varName) {
-    return this.hasVar(varName) ? sets[this.id].vars[varName] : null;
+  DataSet.prototype.getVarData = function getVarData(varName) {
+    return this.hasVar(varName) ? sets[this.id].vars[varName].data : null;
+  };
+
+  DataSet.prototype.getVarID = function getVarID(varName) {
+    return this.hasVar(varName) ? sets[this.id].vars[varName].id : null;
   };
 
   DataSet.prototype.setVarID = function setVarID(varName, id) {
