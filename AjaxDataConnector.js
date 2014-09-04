@@ -55,6 +55,7 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
     dataFormat = this.settings.dataFormat,
     path = this.settings.url,
     qs = this.settings.qs,
+    self = this,
     param,
     xhr;
 
@@ -83,7 +84,7 @@ Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
 
         //make sure the data are in json format
         if ((dataFormat + '').toLowerCase() == 'table') {
-          response = this.processTableData(xhr.response);
+          response = self.processTableData(xhr.response);
         } else if ((dataFormat + '').toLowerCase() == 'json') {
           response = xhr.response;
         } else {

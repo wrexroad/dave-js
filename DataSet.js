@@ -1,65 +1,42 @@
-Dave_js.DataStore.DataSet = (function DataSetFactory() {
+Dave_js.DataSet = (function DataSetFactory() {
+  var sets = [];
+  
+  function DataSet() {
+    this.id = sets.length;
 
-  var sets = {};
-    
-  function DataSet(id, data, force) {
-    if(!id){
-      console.log(
-        'No DataSet ID specified.'
-      );
-      
-      return null;
-    }
-
-    if(
-      Object.prototype.toString.call(data) !== '[object Array]' ||
-      data.lenth === 0
-    ){
-      console.log(
-        'Empty dataset.'
-      );
-      
-      return null;
-    }
-
-    if(sets[id] && !force){
-      console.log(
-        'DataSet with ID "' + id + '" already exists. Set "force" to overwrite'
-      );
-
-      return null;
-    }
-    
-    sets[id] = data.slice();
-    
-    this.id = id;
-    
-    return this;
+    //initialize the data set
+    sets[this.id] = {
+      'name' : '',
+      'vars' : {}
+    };
   }
 
+  DataSet.prototype.setName = function setName(name) {
+    sets[this.id].name = name;
+  };
 
-  //should be moved to DataStore
-  DataSet.prototype.addJSONData = function addJSONData(d) {
+  DataSet.prototype.addJSONData = function addJSONData(data) {
     var
       var_i,
-      data = sets[this.id].data;
+      dataSetVars = sets[this.id].vars;
 
-    for(var_i in d){
-      if(data.hasOwnProperty(var_i)){
-        data[var_i] = d[var_i].slice(0);
+    for (var_i in data) {
+      if (data.hasOwnProperty(var_i)) {
+        dataSetVars[var_i] = {};
+        dataSetVars[var_i].data = data[var_i].slice(0);
+        dataSetVars[var_i].id = '';
       }
     }
   };
 
-  //should be moved to DataStore
   DataSet.prototype.listVars = function listVars() {
     var
       var_i,
       vars = [],
-      data = sets[this.id].data;
-
-    for(var_i in data){
-      if(data.hasOwnProperty(var_i)){
+      dataSetVars = sets[this.id].vars;
+      
+    for (var_i in dataSetVars) {
+      if (dataSetVars.hasOwnProperty(var_i)) {
         vars.push(var_i);
       }
     }
@@ -67,80 +44,27 @@ Dave_js.DataStore.DataSet = (function DataSetFactory() {
     return vars;
   };
 
-  //should be moved to DataStore
-  DataSet.prototype.setIndependentVar = function setIndependentVar(varName) {
-    sets[this.id].labels.indepVar = varName;
+  DataSet.prototype.hasVar = function hasVar(varName) {
+    return sets[this.id].vars[varName] ? true : false;
   };
 
-  //should be moved to DataStore
-  DataSet.prototype.setDependentVars = function setDependentVars() {
-    sets[this.id].labels.depVars = [].concat(arguments);
+  DataSet.prototype.getVar = function getVar(varName) {
+    return this.hasVar(varName) ? sets[this.id].vars[varName] : null;
   };
-  
-  //should be moved to DataStore
-  DataSet.prototype.setTitle = function setTitle(title) {
-    sets[this.id].labels.title = title;
-  };
-  
-  //should be moved to DataStore
-  Dave_js.DataSet.prototype.verify = function verify() {
-    var
-      dataSet = sets[this.id],
-      labels = dataSet.lables,
-      depVars = labels.depVars,
-      indepVar = labels.indepVar,
-      numOfPnts = dataSet.data[indepVar].length,
-      var_i,
-      depVarData;
 
-    //test independent variable
-    if (!indepVar) {
-      console.log('DataSet.indepVar must be set.');
+  DataSet.prototype.setVarID = function setVarID(varName, id) {
+    if (this.hasVar(varName)) {
+      sets[this.id].vars[varName].id = id;
 
-      return false;
-    }
-    if(!numOfPnts){
+      return true;
+    } else {
       console.log(
-        'DataSet.' + indepVar + ' is listed as DataSet.indepVar, ' +
-        'but does not exist.'
+        'Can not set variable ID. ' +
+        'DataSet ' + this.id + ' does not contain ' + varName + '.'
       );
 
       return false;
     }
-
-    //test dependent variables
-    if (depVars.length < 1) {
-      console.log('No dependent variables listed in DataSet.depVars.');
-
-      return false;
-    } else {
-      for (var_i = 0; var_i < depVars.length; var_i++) {
-        depVarData = dataSet.data[depVars[var_i]];
-
-        //make sure the specified variables are set
-        if (!depVarData) {
-          console.log(
-            'DataSet.' + depVars[var_i] + ' is listed in DataSet.depVars, ' +
-            'but does not exist.'
-          );
-
-          return false;
-        }
-
-        //make sure all the variables are the same length
-        if(depVarData.length !== numOfPnts){
-           console.log(
-            'DataSet.' + depVars[var_i] + ' has a length of ' +
-            depVarData.length + ' but DataSet.' + indepVar +
-            ' has set the variable length to ' + numOfPnts + '.'
-          );
-
-          return false;
-        }
-      }
-    }
-
-    return true;
   };
 
   DataSet.prototype.destroy = function destroy() {
