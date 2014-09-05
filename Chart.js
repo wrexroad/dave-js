@@ -78,7 +78,10 @@ Dave_js.chart = function(name) {
     polarRot : -1,
     
     //where 0 degrees is located on the polar plot
-    zeroAngle : 0
+    zeroAngle : 0,
+
+    //define plot range
+    range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
   };
 
  //holds all of the info for the coordinat display
@@ -173,10 +176,7 @@ var flags = {
   legend : false,
   
   //makes plot zoomable by clicking and dragging over the desired area
-  zoomable : true,
-
-  //define plot range
-  range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
+  zoomable : true
 };
 
 var vars = {
@@ -360,21 +360,25 @@ function buildCanvas() {
   }
 
   function mouseMove(e) {
-    //x coordinate of cursor relative to canvas
-    var x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft;
+    var
+      //x coordinate of cursor relative to canvas
+      x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft,
+      range = chart.range,
+      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarLength = indepVarData.length;
     
     //calculate the data point index we are closest to
     coord_i =
-      Math.round(x * (data.range.numOfPts - 1) / chart.sizes.width) +
-      data.range.start;
+      Math.round(x * (range.numOfPts - 1) / chart.sizes.width) + range.start;
     
     //make sure the coord_i is within the data set
-    coord_i = Math.min(coord_i, (data.indep.length - 1));
+    coord_i = Math.min(coord_i, (indepVarLength - 1));
     coord_i = Math.max(coord_i, 0);
 
     if(Dave_js.message && flags.showCoords) {
       showCoord(coord_i, e.pageX, e.pageY);
     }
+
     if(Dave_js.chart_zoom && flags.zoomable) { //stop tracking mouse
       if(!chart.zoom) {
 
@@ -384,79 +388,97 @@ function buildCanvas() {
   }
 
   function showCoord(coord_i, x, y) {
-    var message, yCoord, xCoord;
+    var
+      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarLength = indepVarData.length,
+      depVarNames = vars.deps | [],
+      numDepVars = vars.deps.length,
+      depVarData,
+      depVarLength,
+      message,
+      yCoord,
+      xCoord,
+      plt_i,
+      negOffset,
+      taposOffset;
     
     //make sure the coordinate box is visible
     elms.coordMsg.box.hidden = false;
     
     //create message and show message if we are within the plot
-    if(data.indep[coord_i] !== undefined){
-      xCoord = data.indep[coord_i];
-      message = chart.labels.indep + " = " + xCoord;
-
-      for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
-        //make sure the yCoord is a number
-        //try stepping backwards and forwards until a number is found ,
-        //or the end of the dataset is reached
-        var negOffset, posOffset;
-        negOffset = posOffset = coord_i;
-        while (1) {
-          //try to step back
-          if (negOffset >= 0) {
-            yCoord = data.dep[plt_i][negOffset];
-          }
-          //try to step forward
-          if (isNaN(yCoord) && posOffset < data.dep.length) {
-            yCoord = data.dep[plt_i][posOffset];
-          }
-          //check to see if it is time to break
-          if (
-            !isNaN(yCoord) || (negOffset < 0 && posOffset > data.dep.length)
-          ) {
-            break;
-          }
-
-          negOffset--;
-          posOffset++;
-        }
-
-        //unscale the yCoord if needed
-        if (flags.scaled) {
-          if (chart.scale.type == "log") {
-            yCoord = Math.pow(chart.scale.value, yCoord);
-          } else if(chart.scale.type == "lin") {
-            yCoord /= chart.scale.value;
-          }
-        }
-        
-        //drop values past 3 decimal places
-        if (((yCoord % 1) !== 0) && (typeof yCoord == "function")) {
-          yCoord = yCoord.toFixed(3);
-        }
-        
-        message += "<br />" + data.varLabels[plt_i] + " = " + yCoord;
-      }
-
-        elms.coordMsg.showMessage(
-          message, (x + 10), (y + 10)
-        );
-      }
+    if((xCoord = indepVarData[coord_i]) === undefined){
+      return;
     }
 
- //Scales the data set by either a linear value or logrithmically 
- function scaler() {
-   var timer = (new Date()).getTime();
+    message = chart.labels.indep + " = " + xCoord;
 
-   var scale_type = chart.scale.type;
-   var scale_val = chart.scale.value;
+    for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+      depVarData = dataStore.getVarData(depVarNames[plt_i]);
 
-   var plt_i, pnt_i, y_data;
+      //make sure the yCoord is a number
+      //try stepping backwards and forwards until a number is found ,
+      //or the end of the dataset is reached
+      negOffset = posOffset = coord_i;
+      while (1) {
+        //try to step back
+        if (negOffset >= 0) {
+          yCoord = depVarData[negOffset];
+        }
+        //try to step forward
+        if (isNaN(yCoord) && posOffset < numDepVars) {
+          yCoord = depVarData[posOffset];
+        }
+        //check to see if it is time to break
+        if (!isNaN(yCoord) || (negOffset < 0 && posOffset > numDepVars)) {
+          break;
+        }
+
+        negOffset--;
+        posOffset++;
+      }
+
+      //unscale the yCoord if needed
+      if (flags.scaled) {
+        if (chart.scale.type == "log") {
+          yCoord = Math.pow(chart.scale.value, yCoord);
+        } else if(chart.scale.type == "lin") {
+          yCoord /= chart.scale.value;
+        }
+      }
+      
+      //drop values past 3 decimal places
+      if (((yCoord % 1) !== 0) && (typeof yCoord == "function")) {
+        yCoord = yCoord.toFixed(3);
+      }
+      
+      message += "<br />" + depVarNames[plt_i] + " = " + yCoord;
+    }
+
+    elms.coordMsg.showMessage(
+      message, (x + 10), (y + 10)
+    );
+  }
+   
+  //Scales the data set by either a linear value or logrithmically 
+  function scaler() {
+    var
+      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarLength = indepVarData.length,
+      depVarNames = vars.deps | [],
+      numDepVars = vars.deps.length,
+      message,
+      timer = (new Date()).getTime(),
+      scale_type = chart.scale.type,
+      scale_val = chart.scale.value,
+      plt_i,
+      pnt_i,
+      y_data;
 
     if (scale_type == "log") { //log plot
-      for (plt_i = 0; plt_i < data.dep.length; plt_i++) {
-        y_data = data.dep[plt_i];
+      for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+        y_data = dataStore.getVarData(dapVarNames[plt_i]);
 
-        for (pnt_i = 0; pnt_i <= data.indep.length; pnt_i++) {
+        for (pnt_i = 0; pnt_i <= indepVarLength; pnt_i++) {
           if (y_data[pnt_i] !== 0 && !isNaN(y_data[pnt_i])) {
             y_data[pnt_i] =
             Math.log(y_data[pnt_i]) / Math.log(scale_val);
@@ -464,10 +486,10 @@ function buildCanvas() {
         }
       }
     } else if (scale_type == "lin") { //linear plot
-      for (plt_i = 0; plt_i < data.dep.length; plt_i++) {
-        y_data = data.dep[plt_i];
+      for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+        y_data = dataStore.getVarData(dapVarNames[plt_i]);
 
-        for (pnt_i = 0; pnt_i <= data.indep.length; pnt_i++) {
+        for (pnt_i = 0; pnt_i <= indepVarLength; pnt_i++) {
           if (!isNaN(y_data[pnt_i])) {
             y_data[pnt_i] *= scale_val;
           }
@@ -481,8 +503,20 @@ function buildCanvas() {
 
   //either apply limits to dependent data, or generate axis limits from it
   function doLimits() {
-    var timer = (new Date()).getTime();
-    var plt_i, pnt_i;
+    var
+      start = chart.range.start,
+      stop = chart.range.stop,
+      numOfPts = chart.range.numOfPts,
+      timer = (new Date()).getTime(),
+      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarLength = indepVarData.length,
+      depVarNames = vars.deps | [],
+      numDepVars = vars.deps.length,
+      depVarData,
+      plt_i,
+      pnt_i,
+      max,
+      min;
 
     if (!flags.limits) {
       //user has not defined limits, so take the max and  of the data set
@@ -492,32 +526,32 @@ function buildCanvas() {
       chart.limits.max = parseFloat(chart.limits.max);
       
       //create an array of max and mins for each subset
-      var max = [];
-      var min = [];
+      max = [];
+      min = [];
 
-      for (plt_i = 0; plt_i < data.dep.length; plt_i++) {
+      for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+        depVarData = dataStore.getVarData(depVarNames[plt_i]);
+
         //find first real data point for initial min/max
-        for (pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++) {
-          if (!isNaN(data.dep[plt_i][pnt_i + data.range.start])) {
+        for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
+          if (!isNaN(depVarData[pnt_i + start])) {
             min[plt_i] = max[plt_i] =
-            parseFloat(data.dep[plt_i][pnt_i + data.range.start]);
+              parseFloat(depVarData[pnt_i + start]);
             break;
           }
         }
          
         //go through the rest of the data points looking for min/max
-        for (pnt_i; pnt_i < data.range.numOfPts; pnt_i++) {
-          if (isNaN(data.dep[plt_i][pnt_i + data.range.start])) {
+        for (pnt_i; pnt_i < numOfPts; pnt_i++) {
+          if (isNaN(depVarData[pnt_i + start])) {
             continue;
           }
+
           min[plt_i] =
-          Math.min(
-            data.dep[plt_i][pnt_i + data.range.start], min[plt_i]
-          );
+            Math.min(depVarData[pnt_i + start], min[plt_i]);
+
           max[plt_i] =
-          Math.max(
-            data.dep[plt_i][pnt_i + data.range.start], max[plt_i]
-          );
+            Math.max(depVarData[pnt_i + start], max[plt_i]);
         }
       }
 
@@ -526,18 +560,15 @@ function buildCanvas() {
       chart.limits.max = Math.max.apply(null, max);
     } else {
       //the user has predefined data limits, so apply to each subset
-      for (plt_i = 0; plt_i < data.dep; plt_i++) {
-        for (pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++) {
-          data.dep[plt_i][pnt_i] =
-          Math.min(
-            data.dep[plt_i][pnt_i + data.range.start],
-            chart.limits.max
-          );
-          data.dep[plt_i][pnt_i] =
-          Math.max(
-            data.dep[plt_i][pnt_i + data.range.start],
-            chart.limits.min
-          );
+      for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+        depVarData = dataStore.getVarData(depVarNames[plt_i]);
+
+        for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
+          depVarData[pnt_i] =
+            Math.min( depVarData[pnt_i + start], chart.limits.max );
+
+          depVarData[pnt_i] =
+            Math.max( depVarData[pnt_i + start], chart.limits.min );
         }
       }
     }
@@ -559,11 +590,12 @@ function buildCanvas() {
   }
 
   function configSpacing() {
-    var depRange =
-    Math.abs(chart.limits.max - chart.limits.min);
+    var
+      numOfPts = chart.range.numOfPts,
+      depRange = Math.abs(chart.limits.max - chart.limits.min);
 
     chart.skipTics.indep =
-    Math.max(1, parseInt((20 * data.range.numOfPts / chart.sizes.width), 10));
+    Math.max(1, parseInt((20 * numOfPts / chart.sizes.width), 10));
     
     chart.skipTics.dep =
     Math.max(1, parseInt((20 * depRange / chart.sizes.height), 10));
@@ -571,7 +603,7 @@ function buildCanvas() {
     if (flags.polar) {//polar plots only need spacing in the radial direction
       chart.pntSpacing.dep = chart.sizes.radius / chart.limits.max;
     } else { // all other plots are rectangular and need x/y spacing
-      chart.pntSpacing.indep = chart.sizes.width / (data.range.numOfPts - 1);
+      chart.pntSpacing.indep = chart.sizes.width / (numOfPts - 1);
       chart.pntSpacing.dep = chart.sizes.height / depRange;
     }
   }
@@ -609,7 +641,16 @@ function buildCanvas() {
   }
 
   function callXTics() {
-    var offset, ticLabel, spacing, textShift;
+    var
+      indepVarData = dataStore.getVarData(vars.indep) | [],
+      numOfPts = chart.range.numOfPts,
+      start = chart.range.start,
+      offset,
+      ticLabel,
+      spacing,
+      textShift,
+      pnt_i;
+
     if (flags.hist) {
       spacing =  chart.histBarTotal;
        
@@ -626,13 +667,9 @@ function buildCanvas() {
     ctx.translate(0, chart.sizes.height);
     ctx.rotate(1.5 * Math.PI);
     
-    for (
-      var pnt_i = 0;
-      pnt_i < data.range.numOfPts;
-      pnt_i += chart.skipTics.indep
-    ) {
+    for (pnt_i = 0; pnt_i < numOfPts; pnt_i += chart.skipTics.indep) {
       offset = (pnt_i * spacing) + textShift;
-      ticLabel = data.indep[pnt_i + data.range.start];
+      ticLabel = indepVarData[pnt_i + start];
 
       //only draw the tic mark if it is defined
       if (ticLabel !== undefined) {drawTic(ticLabel, offset);}
@@ -650,23 +687,29 @@ function buildCanvas() {
   }
 
   function drawLinesPoints() {
-    var x = 0, y = 0; //screen coordinate for the plotted point
-    var timer = (new Date()).getTime();
-    var legendOffset = 10;
-    
-    var range_start = data.range.start;
-    var chart_min = chart.limits.min;
-    var y_spacing = chart.pntSpacing.dep;
-    var x_spacing = chart.pntSpacing.indep;
+    var
+      x = 0,
+      y = 0, //screen coordinate for the plotted point
+      timer = (new Date()).getTime(),
+      legendOffset = 10,
+      range_start = chart.range.start,
+      chart_min = chart.limits.min,
+      y_spacing = chart.pntSpacing.dep,
+      x_spacing = chart.pntSpacing.indep,
+      x_data = dataStore.getVarData(vars.indep) | [],
+      depVarNames = vars.deps | [],
+      numDepVars = depVarNames.length,
+      numOfPts = chart.range.numOfPts,
+      y_data,
+      plt_i;
 
     //move to the plot origin
     ctx.translate(0, chart.sizes.height);
 
     ctx.lineWidth = chart.sizes.lineWidth;
-    for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
+    for (plt_i = 0; plt_i < numDepVars; plt_i++) {
       //cache the data set for this plot
-      var y_data = data.dep[plt_i];
-      var x_data = data.indep[plt_i];
+      y_data = dataStore.getVarData(numDepVars[plt_i]) | [];
 
       //set colors for this plot
       ctx.fillStyle = colors.data[plt_i];
@@ -674,7 +717,7 @@ function buildCanvas() {
       
       //initial point height.
       //heights must be negative to move up in the plot
-      y = parseInt(((chart_min - y_data[data.range.start]) * y_spacing), 10);
+      y = parseInt(((chart_min - y_data[chart.range.start]) * y_spacing), 10);
       
       //if we are drawing a line, set the line origin and start the line
       if (flags.lines) {
@@ -689,7 +732,7 @@ function buildCanvas() {
       }
       
       //step through the data points
-      for (var pnt_i = 1; pnt_i < data.range.numOfPts; pnt_i++) {
+      for (var pnt_i = 1; pnt_i < numOfPts; pnt_i++) {
         //try to plot the point
         //make sure we have a numerical value to plot
         if (isNaN(y_data[pnt_i + range_start])) {continue;}
@@ -716,7 +759,7 @@ function buildCanvas() {
         ctx.fillStyle = colors.data[plt_i];
         ctx.textAlign = "start";
         ctx.fillText(
-          data.varLabels[plt_i], chart.sizes.width + legendOffset, y
+          depVarNames[plt_i], chart.sizes.width + legendOffset, y
         );
       }
     }
@@ -738,9 +781,12 @@ function buildCanvas() {
   }
 
   function configHistBars() {
+    var
+      numOfPts = (dataStore.getVarData(vars.indep) | []).length;
+
     //figure out total possible bar size
     chart.histBarTotal =
-    parseInt((chart.sizes.width / data.indep.length), 10);
+      parseInt((chart.sizes.width / numOfPts), 10);
     
     if (chart.histBarTotal < 1) {
       chart.histBarTotal = 1;
@@ -755,7 +801,16 @@ function buildCanvas() {
   }
 
   function drawHistBars() {
-    var baseLineOffset, barHeight;
+    var
+      numOfPts = chart.range.numOfPts,
+      start = chart.range.start,
+      depVarNames = vars.deps | [],
+      numDepVars = depVarNames.length,
+      depVarData,
+      baseLineOffset,
+      barHeight,
+      plt_i,
+      pnt_i;
     
     //set bar width
     ctx.lineWidth = chart.histBarWidth;
@@ -773,14 +828,16 @@ function buildCanvas() {
     }
     
     //loop once for each array stored in data.dep
-    for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
+    for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+      depVarData = dataStore.getVarData(depVarNames[plt_i]);
+
       //set stroke color
       ctx.strokeStyle = colors.data[plt_i];
-       
+      
       //loop through each sub array
-      for (var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++) {
+      for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
         try {
-          barHeight =  -1 * data.dep[plt_i][pnt_i + data.range.start];
+          barHeight =  -1 * depVarData[pnt_i + start];
 
           ctx.beginPath();
 
@@ -806,20 +863,36 @@ function buildCanvas() {
   }
 
   function configPolar() {
+    var
+      numOfPts = chart.range.numOfPts,
+      start = chart.range.start,
+      depVarNames = vars.deps | [],
+      numDepVars = depVarNames.length,
+      depVarData,
+      plt_i,
+      pnt_i;
+
     //move to center of plot 
     ctx.translate((chart.sizes.width) / 2, (chart.sizes.height) / 2);
     
     //convert radius values to angles if this is a map
     if (flags.map) {
-      for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
-        for (var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++) {
-          data.dep[plt_i][pnt_i + data.range.start] -= 90;
+      for (plt_i = 0; plt_i < numDepVars; plt_i++) {
+        depVarData = dataStore.getVarData(depVarNames[plt_i]);
+
+        for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
+          depVarData[pnt_i + start] -= 90;
         }
       }
     }
   }
 
   function drawPolarGrid() {
+    var
+      grid,
+      radius_i,
+      angle_i;
+
     //rotate the plot
     ctx.rotate(chart.zeroAngle);
     
@@ -829,7 +902,7 @@ function buildCanvas() {
     
     //Draw a set of radius circles and angle markers if flag is set
     if(flags.grid) {
-      var grid = {
+      grid = {
         "radii": [],
         "angles": []
       };
@@ -844,7 +917,7 @@ function buildCanvas() {
 
       ctx.textAlign = "end";
       
-      for (var radius_i = 0; radius_i < grid.radii.length; radius_i++) {
+      for (radius_i = 0; radius_i < grid.radii.length; radius_i++) {
         ctx.beginPath();
         ctx.arc(
           0, 0, chart.pntSpacing.dep * grid.radii[radius_i],
@@ -896,7 +969,7 @@ function buildCanvas() {
       }
 
       ctx.textAlign = "start";
-      for (var angle_i = 0; angle_i < grid.angles.length; angle_i++) {
+      for (angle_i = 0; angle_i < grid.angles.length; angle_i++) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.save();
@@ -921,7 +994,17 @@ function buildCanvas() {
   }
 
   function drawPolarPlot() {
-    var angle, radius;
+    var
+      indepVarData = dataStore.getVarData(vars.indep),
+      numOfPts = chart.range.numOfPts,
+      start = chart.range.start,
+      depVarNames = vars.deps | [],
+      numDepVars = depVarNames.length,
+      depVarData,
+      angle,
+      radius,
+      plt_i,
+      pnt_i;
 
     //rotate the plot so zero lines up with where the use wants
     ctx.save();
@@ -930,7 +1013,7 @@ function buildCanvas() {
     pntOffset = -1 * chart.sizes.halfPointSize;
 
     //Draw lines and points      
-    for (var plt_i = 0; plt_i < data.dep.length; plt_i++) {
+    for (plt_i = 0; plt_i < numDepVars; plt_i++) {
       //set colors
       if (!colors.data[plt_i]) {
         colors.data[plt_i] = "Black";
@@ -948,10 +1031,12 @@ function buildCanvas() {
         ctx.restore();
       }
        
-      for (var pnt_i = 0; pnt_i < data.range.numOfPts; pnt_i++) {
+      depVarData = dataStore.getVarData(depVarNames[plt_i]);
+
+      for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
         //get the angle and radius of the next point
-        angle = data.indep[pnt_i + data.rang.start] * Math.PI / 180;
-        radius = data.dep[plt_i][pnt_i + data.rang.start];
+        angle = indepVarData[pnt_i + start] * Math.PI / 180;
+        radius = depVarData[pnt_i + start];
         angle -= 90 * Math.PI / 180;
         ctx.save();
         ctx.rotate(chart.polarRot * angle);
@@ -988,7 +1073,7 @@ function buildCanvas() {
         ctx.beginPath();
         ctx.moveTo(chart.pntSpacing.dep * radius, 0);
         ctx.lineTo( (chart.sizes.radius + 5), 0 );
-        ctx.fillText(data.varLabels[plt_i], (chart.sizes.radius + 5), 0);
+        ctx.fillText(depVarNames[plt_i], (chart.sizes.radius + 5), 0);
         ctx.stroke();
         ctx.restore();
       }
@@ -1034,10 +1119,6 @@ function buildCanvas() {
   self.setColor = function(type, color) {
     colors[type] = color;
   };
-
-  self.setDataStore = function setDataStore(ds) {
-    dataStore = ds;
-  };
   
   self.setVars = function setVars(v) {
     vars.indep = v.independent;
@@ -1051,8 +1132,8 @@ function buildCanvas() {
       range = chart.range;
 
     //make sure the index range is within the data set and save it
-    range.start = Math.max(start, 0);
-    range.stop = Math.min(stop, indepVarLength - 1);
+    range.start = Math.max(range.start, 0);
+    range.stop = Math.min(range.stop, indepVarLength - 1);
     
     //figure out how manys data points we have
     range.numOfPts = range.stop - range.start + 1;
@@ -1069,9 +1150,9 @@ function buildCanvas() {
   //first argument is an array containing the name of each tracker. 
   //each aditional argument is an array containing tracker data
   self.setTrackers = function() {
-    data.trackLabels = arguments[0].slice(0);
+    vars.trackLabels = arguments[0].slice(0);
     for (var array_i = 1 ; array_i < arguments.length; array_i) {
-      data.trackers[array_i] = arguments[array_i].slice(0);
+      vars.trackers[array_i] = arguments[array_i].slice(0);
     }
   };
  
@@ -1182,8 +1263,12 @@ function buildCanvas() {
     flags.zoomable = true;
   };
 
-  self.getData = function() {
-    return data;
+  self.getDataStore = function() {
+    return dataStore;
+  };
+
+  self.setDataStore = function setDataStore(ds) {
+    dataStore = ds;
   };
 
   self.getPlotElements = function() {
@@ -1198,10 +1283,13 @@ function buildCanvas() {
   //////////////////////////Public Methods////////////////////////// 
 
   self.buildPlot = function(start, stop) {
+    var
+      indepVarLength = (dataStore.getVarData(vars.indep) | []).length;
+
     //determine if start and stop indicies were set
     //if not, set for full range
     if (start === undefined) {start = 0;}
-    if (stop === undefined) {stop = data.indep.length - 1;}
+    if (stop === undefined) {stop = indepVarLength - 1;}
     
     //set the start and stop indecies for all the loops
     self.setDataRange(start, stop);
@@ -1210,7 +1298,7 @@ function buildCanvas() {
     if (!flags.fixedPtSize) {
       //take a best guess at point size
       this.setPointSize(
-        parseInt((chart.sizes.width / data.range.numOfPts / 2), 10)
+        parseInt((chart.sizes.width / chart.range.numOfPts / 2), 10)
       );
 
       //make sure the point is between 2 and 8
