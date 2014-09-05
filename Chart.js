@@ -173,25 +173,21 @@ var flags = {
   legend : false,
   
   //makes plot zoomable by clicking and dragging over the desired area
-  zoomable : true
-};
+  zoomable : true,
 
-//contains user provided data for plotting
-/*
-var data = {
-  dep : [],
-  indep : [],
-  varLabels : [],
-  trackers : [],
-  trackLabels : [],
+  //define plot range
   range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
 };
-*/
-var data = {
-  dependentName : "",
-  independentNames : [],
-  variables : []
+
+var vars = {
+  indep : "",
+  deps : [],
+  trackers : [],
+  trackLabels : []
 };
+
+//Contains a reference to the data store we will be using
+var dataStore;
 
 //////////////////////////Private Methods//////////////////////////////
 
@@ -1039,24 +1035,27 @@ function buildCanvas() {
     colors[type] = color;
   };
 
-  self.setData = function(dataIn) {
-    //make sure each variable has a name
-    var
-      vars = dataIn.variables,
-      numVars = vars ? vars.length : 0;
-
-    while(numVars--){
-      console.log(vars[numVars].name);
-    }
+  self.setDataStore = function setDataStore(ds) {
+    dataStore = ds;
+  };
+  
+  self.setVars = function setVars(v) {
+    vars.indep = v.independent;
+    vars.deps = [].concat(v.dependent);
   };
 
   self.setDataRange = function(start, stop) {
+    var
+      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarLength = indepVarData.length,
+      range = chart.range;
+
     //make sure the index range is within the data set and save it
-    data.range.start = Math.max(start, 0);
-    data.range.stop = Math.min(stop, data.indep.length - 1);
+    range.start = Math.max(start, 0);
+    range.stop = Math.min(stop, indepVarLength - 1);
     
     //figure out how manys data points we have
-    data.range.numOfPts = data.range.stop - data.range.start + 1;
+    range.numOfPts = range.stop - range.start + 1;
   };
 
   self.setSubPlot = function(bool) {
