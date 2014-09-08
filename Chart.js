@@ -1161,12 +1161,19 @@ function buildCanvas() {
   };
  
   //sets the chart lables
-  self.setLabels = function(title,xaxis,yaxis) {
-    if (title) {
+  self.setLabels = function(labels) {
+    if (labels.title) {
       chart.labels.title = title;
       flags.title = true;
     }
-    if (xaxis && yaxis) {
+
+    if (labels.independent) {
+      chart.labels.indep = xaxis;
+      chart.labels.dep = yaxis;
+      flags.axis = true;
+    }
+
+    if (labels.dependent) {
       chart.labels.indep = xaxis;
       chart.labels.dep = yaxis;
       flags.axis = true;
