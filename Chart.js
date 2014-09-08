@@ -81,7 +81,11 @@ Dave_js.chart = function(name) {
     zeroAngle : 0,
 
     //define plot range
-    range: {"start" : 0, "stop" : 0, "numOfPts" : 0}
+    range: {
+      "start" : Number.NEGATIVE_INFINITY,
+      "stop" : Number.POSITIVE_INFINITY,
+      "numOfPts" : 0
+    }
   };
 
  //holds all of the info for the coordinat display
