@@ -1136,9 +1136,9 @@ function buildCanvas() {
       range = chart.range;
 
     //make sure the index range is within the data set and save it
-    range.start = Math.max(range.start, 0);
-    range.stop = Math.min(range.stop, indepVarLength - 1);
-    
+    range.start = Math.max(start, 0);
+    range.stop = Math.min(stop, indepVarLength - 1);
+
     //figure out how manys data points we have
     range.numOfPts = range.stop - range.start + 1;
   };
