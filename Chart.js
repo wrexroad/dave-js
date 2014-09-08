@@ -306,7 +306,7 @@ function buildCanvas() {
     //create zoom object if one does not yet exist
     if(Dave_js.chart_zoom && flags.zoomable) {
       if (!chart.zoom) {
-        chart.zoom = new Dave_js.chart_zoom(self, data, elms, chart);
+        chart.zoom = new Dave_js.chart_zoom(self, dataStore, elms, chart);
       }
     }
     

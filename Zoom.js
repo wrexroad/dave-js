@@ -1,5 +1,5 @@
 //add the main zoom function to the chart object
-Dave_js.chart_zoom = function(plot, data, els, chart) {
+Dave_js.chart_zoom = function(plot, dataStore, els, chart) {
   var self = this;
   
   var startPnt; //stores the coordinate of the mouse at mousedown event
@@ -36,6 +36,8 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
     "y": (chart.origin.y - els.canvasBox.offsetTop)
   };
   
+  this.chartRange = chart.range;
+
   self.getZoomMask = function() {
     return mask;
   };
@@ -71,16 +73,6 @@ Dave_js.chart_zoom = function(plot, data, els, chart) {
     return retObj;
   };
   
-  self.getData = function() {
-    var retObj = data;
-    
-    for (var arg_i = 0; arg_i < arguments.length; arg_i++) {
-      retObj = retObj[arguments[arg_i]];
-    }
-     
-    return retObj;
-  };
-  
   self.getChartOffset = function() {
     return chartOffset;
   };
@@ -108,8 +100,8 @@ Dave_js.chart_zoom.prototype.start = function(i) {
   var self = this;
 
   //make sure the calculated index is within the currently displayed range
-  i = Math.max(self.getData("range", "start"), i);
-  i = Math.min(self.getData("range", "stop"), i);
+  i = Math.max(self.chartRange.start, i);
+  i = Math.min(self.chartRange.stop, i);
   
   self.setMousedown(true);
   self.setStart(i);
@@ -122,8 +114,8 @@ Dave_js.chart_zoom.prototype.stop = function(i, x) {
   if (!self.getMousedown()) {return;}
   
   //make sure the calculated index is within the currently displayed range
-  i = Math.max(self.getData("range", "start"), i);
-  i = Math.min(self.getData("range", "stop"), i);
+  i = Math.max(self.chartRange.start, i);
+  i = Math.min(self.chartRange.stop, i);
   
   self.setMousedown(false);
   
