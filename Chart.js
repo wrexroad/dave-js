@@ -364,7 +364,7 @@ function buildCanvas() {
       //x coordinate of cursor relative to canvas
       x = e.pageX - chart.origin.x - elms.canvasBox.offsetLeft,
       range = chart.range,
-      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarData = dataStore.getVarData(vars.indep) || [],
       indepVarLength = indepVarData.length;
     
     //calculate the data point index we are closest to
@@ -389,9 +389,9 @@ function buildCanvas() {
 
   function showCoord(coord_i, x, y) {
     var
-      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarData = dataStore.getVarData(vars.indep) || [],
       indepVarLength = indepVarData.length,
-      depVarNames = vars.deps | [],
+      depVarNames = vars.deps || [],
       numDepVars = vars.deps.length,
       depVarData,
       depVarLength,
@@ -462,9 +462,9 @@ function buildCanvas() {
   //Scales the data set by either a linear value or logrithmically 
   function scaler() {
     var
-      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarData = dataStore.getVarData(vars.indep) || [],
       indepVarLength = indepVarData.length,
-      depVarNames = vars.deps | [],
+      depVarNames = vars.deps || [],
       numDepVars = vars.deps.length,
       message,
       timer = (new Date()).getTime(),
@@ -508,9 +508,9 @@ function buildCanvas() {
       stop = chart.range.stop,
       numOfPts = chart.range.numOfPts,
       timer = (new Date()).getTime(),
-      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarData = dataStore.getVarData(vars.indep) || [],
       indepVarLength = indepVarData.length,
-      depVarNames = vars.deps | [],
+      depVarNames = vars.deps || [],
       numDepVars = vars.deps.length,
       depVarData,
       plt_i,
@@ -642,7 +642,7 @@ function buildCanvas() {
 
   function callXTics() {
     var
-      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarData = dataStore.getVarData(vars.indep) || [],
       numOfPts = chart.range.numOfPts,
       start = chart.range.start,
       offset,
@@ -696,8 +696,8 @@ function buildCanvas() {
       chart_min = chart.limits.min,
       y_spacing = chart.pntSpacing.dep,
       x_spacing = chart.pntSpacing.indep,
-      x_data = dataStore.getVarData(vars.indep) | [],
-      depVarNames = vars.deps | [],
+      x_data = dataStore.getVarData(vars.indep) || [],
+      depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       numOfPts = chart.range.numOfPts,
       y_data,
@@ -709,7 +709,7 @@ function buildCanvas() {
     ctx.lineWidth = chart.sizes.lineWidth;
     for (plt_i = 0; plt_i < numDepVars; plt_i++) {
       //cache the data set for this plot
-      y_data = dataStore.getVarData(numDepVars[plt_i]) | [];
+      y_data = dataStore.getVarData(depVarNames[plt_i]) || [];
 
       //set colors for this plot
       ctx.fillStyle = colors.data[plt_i];
@@ -717,8 +717,8 @@ function buildCanvas() {
       
       //initial point height.
       //heights must be negative to move up in the plot
-      y = parseInt(((chart_min - y_data[chart.range.start]) * y_spacing), 10);
-      
+      y = parseInt(((chart_min - y_data[range_start]) * y_spacing), 10);
+
       //if we are drawing a line, set the line origin and start the line
       if (flags.lines) {
         if (isNaN(y)) {y = 0;}
@@ -782,7 +782,7 @@ function buildCanvas() {
 
   function configHistBars() {
     var
-      numOfPts = (dataStore.getVarData(vars.indep) | []).length;
+      numOfPts = (dataStore.getVarData(vars.indep) || []).length;
 
     //figure out total possible bar size
     chart.histBarTotal =
@@ -804,7 +804,7 @@ function buildCanvas() {
     var
       numOfPts = chart.range.numOfPts,
       start = chart.range.start,
-      depVarNames = vars.deps | [],
+      depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       depVarData,
       baseLineOffset,
@@ -866,7 +866,7 @@ function buildCanvas() {
     var
       numOfPts = chart.range.numOfPts,
       start = chart.range.start,
-      depVarNames = vars.deps | [],
+      depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       depVarData,
       plt_i,
@@ -998,7 +998,7 @@ function buildCanvas() {
       indepVarData = dataStore.getVarData(vars.indep),
       numOfPts = chart.range.numOfPts,
       start = chart.range.start,
-      depVarNames = vars.deps | [],
+      depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       depVarData,
       angle,
@@ -1127,7 +1127,7 @@ function buildCanvas() {
 
   self.setDataRange = function(start, stop) {
     var
-      indepVarData = dataStore.getVarData(vars.indep) | [],
+      indepVarData = dataStore.getVarData(vars.indep) || [],
       indepVarLength = indepVarData.length,
       range = chart.range;
 
@@ -1284,7 +1284,7 @@ function buildCanvas() {
 
   self.buildPlot = function(start, stop) {
     var
-      indepVarLength = (dataStore.getVarData(vars.indep) | []).length;
+      indepVarLength = (dataStore.getVarData(vars.indep) || []).length;
 
     //determine if start and stop indicies were set
     //if not, set for full range
