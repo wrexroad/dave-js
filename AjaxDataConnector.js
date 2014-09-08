@@ -47,6 +47,7 @@ Dave_js.AjaxDataConnector.prototype.config = function config(s) {
 
     return hash;
   })(JSON.stringify(this.settings));
+
 };
 
 Dave_js.AjaxDataConnector.prototype.fetchData = function fetchData(callback) {
