@@ -88,174 +88,172 @@ Dave_js.chart = function(name) {
     }
   };
 
- //holds all of the info for the coordinat display
- var coordDisp = {
-  xId : undefined,
-  yId : undefined,
-  oldIndex : 0,
-  index : 0
- };
+  //holds all of the info for the coordinat display
+  var coordDisp = {
+    xId : undefined,
+    yId : undefined,
+    oldIndex : 0,
+    index : 0
+  };
  
- //holds the different colors used for in the plot
- var colors = {
-  // default colors
-  activePoint : "#00FF00",
-  text : "black",
-  grid : "gray",
-  data : ['Red','Blue','Green', 'Yellow'],
-  borderColor : '#000000',
-  bgColor : '#CCCCCC',
-};
+  //holds the different colors used for in the plot
+  var colors = {
+    // default colors
+    activePoint : "#00FF00",
+    text : "black",
+    grid : "gray",
+    data : ['Red','Blue','Green', 'Yellow'],
+    borderColor : '#000000',
+    bgColor : '#CCCCCC',
+  };
 
-//canvas context used for drawing
-var ctx = null;
- 
-//contains all of the page elements that the plotter will use
-var elms = {
-  //element reference for a div that will hold the canvas element. 
-  //If not specified, canvas will be generated in the "body" tag.
-  canvasBox : document.getElementsByTagName("body")[0],
-  
-  //element reference to the canvas we will draw to
-  canvas : undefined,
-  
-  //divs to hold the pointer coordinats. 
-  //Coord event listener will not be created without both of these
-  xCoordBox : undefined,
-  yCoordBox : undefined
-};
-
-//contains flags that may be set to govern the plotter's behavior
-var flags = {
-  //set true if the data has been plotted once. 
-  //Prevents scaling data multiple times
-  replot : false,
-  
-  //set this to indicate a polar
-  polar : false,
-  
-  //draw a bar from zero up to the point value
-  hist : false,
-  
-  //rectangular box for an xy plot
-  xy : false,
-  
-  //setting this true indicates we are drawing on top of an existing plot.
-  //Frame, background, axis labels, tics, and limits are all skipped.
-  subPlot : false,
-  
-  //setting this true will add an event listener to the plot 
-  //so we can display exact mouseover plot values
-  showCoords : true,
-  
-  //values will be connected with a line
-  lines : false,
-  
-  //values will be represented by a point
-  points : false,
- 
-  //the user sets a fixed point width
-  fixedPtSize : false,
- 
-  //convert angular/radial values to longitude/lattitude
-  map : false,
-  
-  //scale the data before plotting
-  scaled : false,
-  
-  //false for fitting the y axis to the data, 
-  //true to use pre defined axis limits
-  limits : false,
-  
-  //draw a background grid (only for polar plots right now)
-  grid : false,
-  
-  axis : false,
-  
-  title : false,
-  
-  //on xy plots this lists variable names in their color along the top, 
-  //in polar plots, this draws a line from a colored variable name to 
-  //the last drawn point
-  legend : false,
-  
-  //makes plot zoomable by clicking and dragging over the desired area
-  zoomable : true
-};
-
-var vars = {
-  indep : "",
-  deps : [],
-  trackers : [],
-  trackLabels : []
-};
-
-//Contains a reference to the data store we will be using
-var dataStore;
-
-//////////////////////////Private Methods//////////////////////////////
-
-//method to test the browser's ability to display HTML5 canvas
-function browserTest() {
-  //set special values based on browser
-  var userAgent=navigator.userAgent;
-  if (userAgent.indexOf("MSIE") != -1) {
-    if (parseInt(navigator.appVersion, 10) < 9) {
-      alert(
-        'Internet Explorer does not support HTML5 canvas. ' +
-        'Please use Google Chrome, Firefox, Opera, or Safari'
-      );
-      return;
-    }
-  } else if(userAgent.indexOf("Firefox") != -1) {
-    if (parseInt(navigator.appVersion, 10) < 3) {
-      alert(
-        "Firefox 3.0 or later required for proper display"
-      );
-    }
-  }
-}
-
-// Add a new canvas to the "canvasBox" element, 
-// gets the canvas context, and draws a skeleton graph
-function buildCanvas() {
-  var timer = (new Date()).getTime();
-
-  //if this is not part of an existing plot, clear the canvas
-  if(flags.subplot != 1) {
-    //remove old canvas element
-    if(elms.canvas) {
-      elms.canvasBox.removeChild(elms.canvas);
-      elms.canvas = null;
-    }
-    //create a canvas and insert it into the canvasBox
-    elms.canvas = document.createElement("canvas");
-    elms.canvas.id = chart.id;
-    elms.canvas.width = chart.sizes.canvas.width;
-    elms.canvas.height = chart.sizes.canvas.height;
-    elms.canvasBox.appendChild(elms.canvas);
-  }
-
-  //initialize canvas context
-  ctx = null;
-  ctx = elms.canvas.getContext("2d");
-  
-  //move coord origin to the upper left corner of plot area
-  ctx.translate(
-    chart.origin.x, chart.origin.y
-  );
+  //canvas context used for drawing
+  var ctx = null;
+   
+  //contains all of the page elements that the plotter will use
+  var elms = {
+    //element reference for a div that will hold the canvas element. 
+    //If not specified, canvas will be generated in the "body" tag.
+    canvasBox : document.getElementsByTagName("body")[0],
     
-  if (!flags.subplot) {
-    //draw background and border
-    if (chart.bgImg) {
-      ctx.drawImage( chart.bgImg, 0, 0 );
-    } else {
-      ctx.fillStyle = colors.bgColor;
-      ctx.fillRect(
-        0, 0,
-        chart.sizes.width, chart.sizes.height
+    //element reference to the canvas we will draw to
+    canvas : undefined,
+    
+    //divs to hold the pointer coordinats. 
+    //Coord event listener will not be created without both of these
+    xCoordBox : undefined,
+    yCoordBox : undefined
+  };
+
+  //contains flags that may be set to govern the plotter's behavior
+  var flags = {
+    //set true if the data has been plotted once. 
+    //Prevents scaling data multiple times
+    replot : false,
+    
+    //set this to indicate a polar
+    polar : false,
+    
+    //draw a bar from zero up to the point value
+    hist : false,
+    
+    //rectangular box for an xy plot
+    xy : false,
+    
+    //setting this true indicates we are drawing on top of an existing plot.
+    //Frame, background, axis labels, tics, and limits are all skipped.
+    subPlot : false,
+    
+    //setting this true will add an event listener to the plot 
+    //so we can display exact mouseover plot values
+    showCoords : true,
+    
+    //values will be connected with a line
+    lines : false,
+    
+    //values will be represented by a point
+    points : false,
+   
+    //the user sets a fixed point width
+    fixedPtSize : false,
+   
+    //convert angular/radial values to longitude/lattitude
+    map : false,
+    
+    //scale the data before plotting
+    scaled : false,
+    
+    //false for fitting the y axis to the data, 
+    //true to use pre defined axis limits
+    limits : false,
+    
+    //draw a background grid (only for polar plots right now)
+    grid : false,
+    
+    axis : false,
+    
+    title : false,
+    
+    //on xy plots this lists variable names in their color along the top, 
+    //in polar plots, this draws a line from a colored variable name to 
+    //the last drawn point
+    legend : false,
+    
+    //makes plot zoomable by clicking and dragging over the desired area
+    zoomable : true
+  };
+
+  var vars = {
+    indep : "",
+    deps : [],
+    trackers : [],
+    trackLabels : []
+  };
+
+  //Contains a reference to the data store we will be using
+  var dataStore;
+
+  //////////////////////////Private Methods//////////////////////////////
+
+  //method to test the browser's ability to display HTML5 canvas
+  function browserTest() {
+    //set special values based on browser
+    var userAgent=navigator.userAgent;
+    if (userAgent.indexOf("MSIE") != -1) {
+      if (parseInt(navigator.appVersion, 10) < 9) {
+        alert(
+          'Internet Explorer does not support HTML5 canvas. ' +
+          'Please use Google Chrome, Firefox, Opera, or Safari'
+        );
+        return;
+      }
+    } else if(userAgent.indexOf("Firefox") != -1) {
+      if (parseInt(navigator.appVersion, 10) < 3) {
+        alert(
+          "Firefox 3.0 or later required for proper display"
         );
       }
+    }
+  }
+
+  // Add a new canvas to the "canvasBox" element, 
+  // gets the canvas context, and draws a skeleton graph
+  function buildCanvas() {
+    var timer = (new Date()).getTime();
+
+    //if this is not part of an existing plot, clear the canvas
+    if(flags.subplot != 1) {
+      //remove old canvas element
+      if(elms.canvas) {
+        elms.canvasBox.removeChild(elms.canvas);
+        elms.canvas = null;
+      }
+      //create a canvas and insert it into the canvasBox
+      elms.canvas = document.createElement("canvas");
+      elms.canvas.id = chart.id;
+      elms.canvas.width = chart.sizes.canvas.width;
+      elms.canvas.height = chart.sizes.canvas.height;
+      elms.canvasBox.appendChild(elms.canvas);
+    }
+
+    //initialize canvas context
+    ctx = null;
+    ctx = elms.canvas.getContext("2d");
+    
+    //move coord origin to the upper left corner of plot area
+    ctx.translate(
+      chart.origin.x, chart.origin.y
+    );
+    
+    if (!flags.subplot) {
+      //draw background and border
+      if (chart.bgImg) {
+        ctx.drawImage( chart.bgImg, 0, 0 );
+      } else {
+        ctx.fillStyle = colors.bgColor;
+        ctx.fillRect( 0, 0, chart.sizes.width, chart.sizes.height );
+      }
+      
       ctx.strokeStyle = colors.borderColor;
       ctx.strokeRect(0, 0, chart.sizes.width, chart.sizes.height);
       
