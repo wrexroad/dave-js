@@ -60,7 +60,8 @@ Dave_js.LinePlot = function LinePlot(dataStore, vars, chart){
         yData = dataStore.getVarData(yVarNames[var_i]) || [];
 
         for(pnt_i = start; pnt_i <= stop; pnt_i++){
-          mappedVars[yVarNames[var_i]][pnt_i] = yData[pnt_i] * ySpacing;
+          mappedVars[yVarNames[var_i]][pnt_i] =
+            (chart.limits.min - yData[pnt_i]) * ySpacing;
         }
       }
 
