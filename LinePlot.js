@@ -18,15 +18,18 @@ Dave_js.LinePlot = function LinePlot(dataStore, vars, chart){
     chart.range.start || 0;
   stop =
     chart.range.stop ||
-    ((dataStore.getVarData(vars.independent) || []).length - 1);
+    ((dataStore.getVarData(vars.indep) || []).length - 1);
 
   //get info about the y variables we are going to plot
-  yVarNames = vars.dependent || [];
-  numVars = depVars.length;
+  yVarNames = vars.deps || [];
+  numVars = yVarNames.length;
   
   //figure out the value to pixel conversion
-  xSpacing = (chart.sizes.width / (stop - start + 1)) >> 0;
-  ySpacing = (chart.sizes.height / (chart.limits.max - chart.limits.min)) >> 0;
+  //spacing factors can not be less than 1 and are converted to integers
+  xSpacing =
+    Math.max((chart.sizes.width / (stop - start + 1)), 1) >> 0;
+  ySpacing =
+    Math.max((chart.sizes.height / (chart.limits.max - chart.limits.min)), 1) >> 0;
   
   //calculate the pixel maping
   return {
@@ -40,6 +43,8 @@ Dave_js.LinePlot = function LinePlot(dataStore, vars, chart){
       for(pnt_i = start; pnt_i <= stop; pnt_i++){
         xMap.push(pnt_i * xSpacing);
       }
+
+      return xMap;
     }()),
 
     //y-axis pixels are based on line height
@@ -50,13 +55,12 @@ Dave_js.LinePlot = function LinePlot(dataStore, vars, chart){
         var_i,
         pnt_i;
 
-      for(var_i in yVarNames){
-        if(yVarNames.hasOwnProperty(var_i)){
-          yData = dataStore.getVarData(var_i) || [];
+      for(var_i = 0; var_i < numVars; var_i++){
+        mappedVars[yVarNames[var_i]] = [];
+        yData = dataStore.getVarData(yVarNames[var_i]) || [];
 
-          for(pnt_i = start; pnt_i <= stop; pnt_i++){
-            mappedVars[var_i][pnt_i] = yData[pnt_i] * ySpacing;
-          }
+        for(pnt_i = start; pnt_i <= stop; pnt_i++){
+          mappedVars[yVarNames[var_i]][pnt_i] = yData[pnt_i] * ySpacing;
         }
       }
 
