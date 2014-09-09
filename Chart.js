@@ -1167,19 +1167,17 @@ Dave_js.chart = function(name) {
   //sets the chart lables
   self.setLabels = function(labels) {
     if (labels.title) {
-      chart.labels.title = title;
+      chart.labels.title = labels.title;
       flags.title = true;
     }
 
     if (labels.independent) {
-      chart.labels.indep = xaxis;
-      chart.labels.dep = yaxis;
+      chart.labels.indep = labels.independent;
       flags.axis = true;
     }
 
     if (labels.dependent) {
-      chart.labels.indep = xaxis;
-      chart.labels.dep = yaxis;
+      chart.labels.dep = labels.dependent;
       flags.axis = true;
     }
   };
