@@ -253,7 +253,7 @@ Dave_js.chart = function(name) {
         ctx.fillStyle = colors.bgColor;
         ctx.fillRect( 0, 0, chart.sizes.width, chart.sizes.height );
       }
-      
+
       ctx.strokeStyle = colors.borderColor;
       ctx.strokeRect(0, 0, chart.sizes.width, chart.sizes.height);
       
@@ -395,6 +395,8 @@ Dave_js.chart = function(name) {
       indepVarLength = indepVarData.length,
       depVarNames = vars.deps || [],
       numDepVars = vars.deps.length,
+      scaleType = chart.scale.type,
+      scaleValue = chart.scale.value,
       depVarData,
       depVarLength,
       message,
@@ -441,10 +443,10 @@ Dave_js.chart = function(name) {
 
       //unscale the yCoord if needed
       if (flags.scaled) {
-        if (chart.scale.type == "log") {
-          yCoord = Math.pow(chart.scale.value, yCoord);
-        } else if(chart.scale.type == "lin") {
-          yCoord /= chart.scale.value;
+        if (scaleType == "log") {
+          yCoord = Math.pow(scaleValue, yCoord);
+        } else if(scaleType == "lin") {
+          yCoord /= scaleValue;
         }
       }
       
@@ -517,19 +519,17 @@ Dave_js.chart = function(name) {
       depVarData,
       plt_i,
       pnt_i,
-      max,
-      min;
+      minLimit,
+      maxLimit,
+      pltMax,
+      pltMin;
 
     if (!flags.limits) {
-      //user has not defined limits, so take the max and  of the data set
-      
-      //make sure the min and max values are numbers
-      chart.limits.min = parseFloat(chart.limits.min);
-      chart.limits.max = parseFloat(chart.limits.max);
-      
+      //user has not defined limits, so take the max and of the data set
+
       //create an array of max and mins for each subset
-      max = [];
-      min = [];
+      pltMax = [];
+      pltMin = [];
 
       for (plt_i = 0; plt_i < numDepVars; plt_i++) {
         depVarData = dataStore.getVarData(depVarNames[plt_i]);
@@ -537,7 +537,7 @@ Dave_js.chart = function(name) {
         //find first real data point for initial min/max
         for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
           if (!isNaN(depVarData[pnt_i + start])) {
-            min[plt_i] = max[plt_i] =
+            pltMin[plt_i] = pltMax[plt_i] =
               parseFloat(depVarData[pnt_i + start]);
             break;
           }
@@ -549,43 +549,49 @@ Dave_js.chart = function(name) {
             continue;
           }
 
-          min[plt_i] =
-            Math.min(depVarData[pnt_i + start], min[plt_i]);
+          pltMin[plt_i] =
+            Math.min(depVarData[pnt_i + start], pltMin[plt_i]);
 
-          max[plt_i] =
-            Math.max(depVarData[pnt_i + start], max[plt_i]);
+          pltMax[plt_i] =
+            Math.max(depVarData[pnt_i + start], pltMax[plt_i]);
         }
       }
 
       //select the extremes from the max and min arrays
-      chart.limits.min = Math.min.apply(null, min);
-      chart.limits.max = Math.max.apply(null, max);
+      minLimit = Math.min.apply(null, pltMin);
+      maxLimit = Math.max.apply(null, pltMax);
     } else {
+      minLimit = +chart.limits.min || 0;
+      maxLimit = +chart.limits.max || 0;
+
       //the user has predefined data limits, so apply to each subset
       for (plt_i = 0; plt_i < numDepVars; plt_i++) {
         depVarData = dataStore.getVarData(depVarNames[plt_i]);
 
         for (pnt_i = 0; pnt_i < numOfPts; pnt_i++) {
           depVarData[pnt_i] =
-            Math.min( depVarData[pnt_i + start], chart.limits.max );
+            Math.min( depVarData[pnt_i + start], maxLimit );
 
           depVarData[pnt_i] =
-            Math.max( depVarData[pnt_i + start], chart.limits.min );
+            Math.max( depVarData[pnt_i + start], minLimit );
         }
       }
     }
 
     //Make sure the ymax and min are not the same value
-    if (chart.limits.min == chart.limits.max) {
-      chart.limits.min -= chart.sizes.height / 2;
-      chart.limits.max += chart.sizes.height / 2;
+    if (minLimit == maxLimit) {
+      minLimit -= chart.sizes.height / 2;
+      maxLimit += chart.sizes.height / 2;
     }
     
     //if we have a log plot, make the y axis start and end at an integer 
     if (flags.scaled && chart.scale.type == "log") {
-      chart.limits.min = Math.floor(chart.limits.min) ;
-      chart.limits.max = Math.ceil(chart.limits.max);
+      minLimit = Math.floor(minLimit);
+      maxLimit = Math.ceil(maxLimit);
     }
+    
+    chart.limits.min = minLimit;
+    chart.limits.max = maxLimit;
 
     timer = (new Date()).getTime() - timer;
     console.log("Limits Calculated = " + timer / 1000);
