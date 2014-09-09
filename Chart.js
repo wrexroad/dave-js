@@ -835,8 +835,9 @@ Dave_js.chart = function(name) {
     ctx.lineWidth = chart.histBarWidth;
     
     //move to the chart origin
-    ctx.translate( 0, chartHeight + minLimit * spacing );
-    
+    //ctx.translate( 0, chartHeight + minLimit * spacing );
+    ctx.save();
+
     //if ymax>0>ymin, we need to find the location of the 0 line to plot from
     if (minLimit < 0 && minLimit > 0) {
       baseLineOffset = minLimit;
@@ -859,13 +860,12 @@ Dave_js.chart = function(name) {
           ctx.beginPath();
 
           ctx.moveTo(
-            chart.histBarTotal * ( pnt_i + 0.5 ),
-            (baseLineOffset * spacing)
+            chart.histBarTotal * ( pnt_i + 0.5 ), (baseLineOffset * spacing)
           );
           ctx.lineTo(
-            chart.histBarTotal * (pnt_i + 0.5),
-            (barHeight * spacing)
+            chart.histBarTotal * ( pnt_i + 0.5 ), (barHeight * spacing)
           );
+
           ctx.stroke();
         } catch(err) {
           continue;
@@ -874,7 +874,8 @@ Dave_js.chart = function(name) {
     }
 
     //translate the coord system back
-    ctx.translate( 0, -1 * (chartHeight + minLimit * spacing) );
+    //ctx.translate( 0, -1 * (chartHeight + minLimit * spacing) );
+    ctx.restore();
   }
 
   function configPolar() {
@@ -907,6 +908,7 @@ Dave_js.chart = function(name) {
       grid,
       radius_i,
       angle_i,
+      spacing = chart.pntSpacing.dep,
       maxLimit = chart.limits.max;
 
     //rotate the plot
@@ -936,7 +938,7 @@ Dave_js.chart = function(name) {
       for (radius_i = 0; radius_i < grid.radii.length; radius_i++) {
         ctx.beginPath();
         ctx.arc(
-          0, 0, chart.pntSpacing.dep * grid.radii[radius_i],
+          0, 0, spacing * grid.radii[radius_i],
           0,2 * Math.PI,
           true
         );
@@ -947,12 +949,12 @@ Dave_js.chart = function(name) {
         if (flags.map) {
           ctx.fillText(
             90 - grid.radii[radius_i] + "\u00B0",
-            0, chart.pntSpacing.dep * grid.radii[radius_i] - 5
+            0, spacing * grid.radii[radius_i] - 5
           );
         } else {
           ctx.fillText(
             grid.radii[radius_i],
-            0, chart.pntSpacing.dep * grid.radii[radius_i] - 5
+            0, spacing * grid.radii[radius_i] - 5
           );
         }
       }
@@ -992,7 +994,7 @@ Dave_js.chart = function(name) {
         
         //rotate the coordinate system and draw a straight line
         ctx.rotate(chart.polarRot * grid.angles[angle_i]);
-        ctx.lineTo(maxLimit * chart.pntSpacing.dep , 0);
+        ctx.lineTo(maxLimit * spacing , 0);
         ctx.stroke();
         
         //move coord system to text location
