@@ -716,7 +716,8 @@ Dave_js.chart = function(name) {
       numDepVars = depVarNames.length,
       numOfPts = chart.range.numOfPts,
       y_data,
-      plt_i;
+      plt_i,
+      pixelData = new Dave_js.LinePlot(dataStore, vars, chart);
 
     //move to the plot origin
     ctx.translate(0, chart.sizes.height);
@@ -724,7 +725,7 @@ Dave_js.chart = function(name) {
     ctx.lineWidth = chart.sizes.lineWidth;
     for (plt_i = 0; plt_i < numDepVars; plt_i++) {
       //cache the data set for this plot
-      y_data = dataStore.getVarData(depVarNames[plt_i]) || [];
+      y_data = pixelData.dependent[depVarNames[plt_i]] || [];
 
       //set colors for this plot
       ctx.fillStyle = colors.data[plt_i];
@@ -732,7 +733,7 @@ Dave_js.chart = function(name) {
       
       //initial point height.
       //heights must be negative to move up in the plot
-      y = parseInt(((chart_min - y_data[range_start]) * y_spacing), 10);
+      y = y_data[range_start];
 
       //if we are drawing a line, set the line origin and start the line
       if (flags.lines) {
@@ -753,8 +754,8 @@ Dave_js.chart = function(name) {
         if (isNaN(y_data[pnt_i + range_start])) {continue;}
         
         //figure out current pixel location
-        y = ((chart_min - y_data[pnt_i + range_start]) * y_spacing);
-        x = (pnt_i * x_spacing);
+        y = y_data[pnt_i + range_start];
+        x = pixelData.independent[pnt_i];
         
         if (flags.lines) {ctx.lineTo(x, y);}
         if (flags.points) {plotPnt(x, y);}
