@@ -1,98 +1,79 @@
-Dave_js.DataStore = (function DataStoreFactory() {
+Dave_js.DataSet = (function DataSetFactory() {
+  var sets = [];
+  
+  function DataSet() {
+    this.id = sets.length;
 
-  var //these variables will keep track of all instances of DataStore
-    stores = {},
-    totalStores = 0;
-    
-  function DataStore() {
-    this.id = totalStores++; //use the total number of stores as the store id
-    
-    var store = stores[this.id] = {};//init the new store to be an empty object
-
-    store.dataSets = {}; //Keeps all of the data sets in this store
-    store.setNames = []; //Name of each data set. The length of this array is 
-                         // limited by maxSets.
-    store.maxSets = 10;  //Total number of old data sets we will store before 
-                         // deleting old ones.
+    //initialize the data set
+    sets[this.id] = {
+      'name' : '',
+      'vars' : {}
+    };
   }
 
-  DataStore.prototype.hasDataSet = function hasDataSet(name) {
-    return stores[this.id].dataSets.hasOwnProperty(name);
+  DataSet.prototype.setName = function setName(name) {
+    sets[this.id].name = name;
   };
 
-  DataStore.prototype.cacheLength = function cacheSize() {
-    return stores[this.id].length;
+  DataSet.prototype.addJSONData = function addJSONData(data) {
+    var
+      var_i,
+      dataSetVars = sets[this.id].vars;
+
+    for (var_i in data) {
+      if (data.hasOwnProperty(var_i)) {
+        dataSetVars[var_i] = {};
+        dataSetVars[var_i].data = data[var_i].slice(0);
+        dataSetVars[var_i].id = '';
+      }
+    }
   };
 
-  DataStore.prototype.getDataSet = function getDataSet(name) {
-    if (this.hasDataSet(name)) {
-      return {
-        'name': name,
-        'data': stores[this.id].dataSets[name]};
+  DataSet.prototype.listVars = function listVars() {
+    var
+      var_i,
+      vars = [],
+      dataSetVars = sets[this.id].vars;
+
+    for (var_i in dataSetVars) {
+      if (dataSetVars.hasOwnProperty(var_i)) {
+        vars.push(var_i);
+      }
+    }
+
+    return vars;
+  };
+
+  DataSet.prototype.hasVar = function hasVar(varName) {
+    return sets[this.id].vars[varName] ? true : false;
+  };
+
+  DataSet.prototype.getVarData = function getVarData(varName) {
+    return this.hasVar(varName) ? sets[this.id].vars[varName].data : null;
+  };
+
+  DataSet.prototype.getVarID = function getVarID(varName) {
+    return this.hasVar(varName) ? sets[this.id].vars[varName].id : null;
+  };
+
+  DataSet.prototype.setVarID = function setVarID(varName, id) {
+    if (this.hasVar(varName)) {
+      sets[this.id].vars[varName].id = id;
+
+      return true;
     } else {
+      console.log(
+        'Can not set variable ID. ' +
+        'DataSet ' + this.id + ' does not contain ' + varName + '.'
+      );
+
       return false;
     }
   };
 
-  DataStore.prototype.dataDump = function dataDump(name) {
-    return JSON.parse(JSON.stringify(stores[this.id].dataSets));
+  DataSet.prototype.destroy = function destroy() {
+    delete sets[this.id];
   };
 
-  DataStore.prototype.addDataSet = function addDataSet(dataSet, force) {
-    var store = stores[this.id];
-    
-    if (this.hasDataSet(name)) {
-      //do not overwrite the old dataset unless force is set
-      if (force !== true){
-        console.log(
-          'DataStore id = ' + this.id +
-          " already has a dataset named " + name + "."
-        );
-        return false;
-      } else {
-        //get ready for new the replacement dataSet
-        this.removeDataSet(name);
-      }
-    }
-
-    //add the new dataset to the store
-    store.dataSets[name] = dataSet;
-    store.setNames.push(name);
-
-    //check if we need to remove old data
-    if(this.cacheLength() > store.maxSets){
-      this.removeSet(store.setNames[0]);
-    }
-
-    return true;
-  };
-
-  DataStore.prototype.removeDataSet = function removeDataSet(name){
-    var
-      names = stores[this.id].setNames,
-      namesLength = names.length,
-      name_i;
-    
-    //remove the name from the list
-    for(name_i = 0; name_i < namesLength; name_i++){
-      if(names[name_i] === name){
-        names.splice(name_i, 1);
-        delete stores[this.id].dataSets[name];
-        return true;
-      }
-    }
-
-    //could not find data set
-    return false;
-  };
-
-  DataStore.prototype.listDataSets = function listDataSets() {
-    return stores[this.id].names.join(', ');
-  };
-
-  DataStore.prototype.destroy = function addDataSet() {
-    delete stores[this.id];
-  };
-
-  return DataStore;
+  return DataSet;
 })();
