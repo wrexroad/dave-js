@@ -1,7 +1,7 @@
-Dave_js.DataSet = (function DataSetFactory() {
+Dave_js.DataStore = (function DataStoreFactory() {
   var sets = [];
   
-  function DataSet() {
+  function DataStore() {
     this.id = sets.length;
 
     //initialize the data set
@@ -11,11 +11,11 @@ Dave_js.DataSet = (function DataSetFactory() {
     };
   }
 
-  DataSet.prototype.setName = function setName(name) {
+  DataStore.prototype.setName = function setName(name) {
     sets[this.id].name = name;
   };
 
-  DataSet.prototype.addJSONData = function addJSONData(data) {
+  DataStore.prototype.addJSONData = function addJSONData(data) {
     var
       var_i,
       dataSetVars = sets[this.id].vars;
@@ -29,7 +29,7 @@ Dave_js.DataSet = (function DataSetFactory() {
     }
   };
 
-  DataSet.prototype.listVars = function listVars() {
+  DataStore.prototype.listVars = function listVars() {
     var
       var_i,
       vars = [],
@@ -44,19 +44,19 @@ Dave_js.DataSet = (function DataSetFactory() {
     return vars;
   };
 
-  DataSet.prototype.hasVar = function hasVar(varName) {
+  DataStore.prototype.hasVar = function hasVar(varName) {
     return sets[this.id].vars[varName] ? true : false;
   };
 
-  DataSet.prototype.getVarData = function getVarData(varName) {
+  DataStore.prototype.getVarData = function getVarData(varName) {
     return this.hasVar(varName) ? sets[this.id].vars[varName].data : null;
   };
 
-  DataSet.prototype.getVarID = function getVarID(varName) {
+  DataStore.prototype.getVarID = function getVarID(varName) {
     return this.hasVar(varName) ? sets[this.id].vars[varName].id : null;
   };
 
-  DataSet.prototype.setVarID = function setVarID(varName, id) {
+  DataStore.prototype.setVarID = function setVarID(varName, id) {
     if (this.hasVar(varName)) {
       sets[this.id].vars[varName].id = id;
 
@@ -64,16 +64,16 @@ Dave_js.DataSet = (function DataSetFactory() {
     } else {
       console.log(
         'Can not set variable ID. ' +
-        'DataSet ' + this.id + ' does not contain ' + varName + '.'
+        'DataStore ' + this.id + ' does not contain ' + varName + '.'
       );
 
       return false;
     }
   };
 
-  DataSet.prototype.destroy = function destroy() {
+  DataStore.prototype.destroy = function destroy() {
     delete sets[this.id];
   };
 
-  return DataSet;
+  return DataStore;
 })();
