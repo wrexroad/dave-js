@@ -617,26 +617,33 @@ Dave_js.chart = function(name) {
   }
 
   function callYTics() {
-    var ticHeight, offset, ticLabel;
+    var
+      maxLimit = chart.limits.max,
+      minLimit = chart.limits.min,
+      skipTics = chart.skipTics.dep,
+      spacing = chart.pntSpacing.dep,
+      chartHeight = chart.sizes.height,
+      scaleValue = chart.scale.value,
+      scaleType = chart.scale.type,
+      ticHeight,
+      offset,
+      ticLabel,
+      i;
+
     //draw yAxis tic marks and labels
     ctx.textAlign = "end";
-    for (
-      var i = chart.limits.min;
-      i <= chart.limits.max;
-      i += chart.skipTics.dep
-    ) {
-      ticHeight = i - chart.limits.min;
-      offset =
-      chart.sizes.height - (ticHeight * chart.pntSpacing.dep);
+    for (i = minLimit; i <= maxLimit; i += skipTics) {
+      ticHeight = i - minLimit;
+      offset = chartHeight - (ticHeight * spacing);
 
       ticLabel = i;
 
       //unscale the y axis value if needed
       if(flags.scaled) {
-        if(chart.scale.type == "log") {
-          ticLabel = Math.pow(chart.scale.value, ticLabel);
-        } else if(chart.scale.type == "lin") {
-          ticLabel /= chart.scale.value;
+        if(scaleType == "log") {
+          ticLabel = Math.pow(scaleValue, ticLabel);
+        } else if(scaleType == "lin") {
+          ticLabel /= scaleValue;
         }
       }
        
@@ -749,11 +756,11 @@ Dave_js.chart = function(name) {
         y = ((chart_min - y_data[pnt_i + range_start]) * y_spacing);
         x = (pnt_i * x_spacing);
         
-        if(flags.lines) {ctx.lineTo(x, y);}
-        if(flags.points) {plotPnt(x, y);}
-        }
+        if (flags.lines) {ctx.lineTo(x, y);}
+        if (flags.points) {plotPnt(x, y);}
+      }
 
-        if (flags.lines) {ctx.stroke();}
+      if (flags.lines) {ctx.stroke();}
 
       //draw legend
       if (flags.legend) {
@@ -771,6 +778,7 @@ Dave_js.chart = function(name) {
         );
       }
     }
+
     //return to the canvas origin
     ctx.translate(0, -1 * chart.sizes.height);
 
@@ -802,9 +810,9 @@ Dave_js.chart = function(name) {
       chart.histBarMargin = 0;
     } else {
       chart.histBarWidth =
-      parseInt((chart.histBarTotal * chart.histBarRatio), 10);
+        parseInt((chart.histBarTotal * chart.histBarRatio), 10);
       chart.histBarMargin =
-      chart.histBarTotal - chart.histBarWidth;
+        chart.histBarTotal - chart.histBarWidth;
     }
   }
 
@@ -814,6 +822,9 @@ Dave_js.chart = function(name) {
       start = chart.range.start,
       depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
+      spacing = chart.pntSpacing.dep,
+      minLimit = chart.limits.min,
+      chartHeight = chart.sizes.height,
       depVarData,
       baseLineOffset,
       barHeight,
@@ -824,13 +835,11 @@ Dave_js.chart = function(name) {
     ctx.lineWidth = chart.histBarWidth;
     
     //move to the chart origin
-    ctx.translate(
-      0, chart.sizes.height + chart.limits.min * chart.pntSpacing.dep
-    );
+    ctx.translate( 0, chartHeight + minLimit * spacing );
     
     //if ymax>0>ymin, we need to find the location of the 0 line to plot from
-    if (chart.limits.min < 0 && chart.limits.min > 0) {
-      baseLineOffset = chart.limits.min;
+    if (minLimit < 0 && minLimit > 0) {
+      baseLineOffset = minLimit;
     } else {
       baseLineOffset = 0;
     }
@@ -851,11 +860,11 @@ Dave_js.chart = function(name) {
 
           ctx.moveTo(
             chart.histBarTotal * ( pnt_i + 0.5 ),
-            (baseLineOffset * chart.pntSpacing.dep)
+            (baseLineOffset * spacing)
           );
           ctx.lineTo(
             chart.histBarTotal * (pnt_i + 0.5),
-            (barHeight * chart.pntSpacing.dep)
+            (barHeight * spacing)
           );
           ctx.stroke();
         } catch(err) {
@@ -865,9 +874,7 @@ Dave_js.chart = function(name) {
     }
 
     //translate the coord system back
-    ctx.translate(
-      0, -1 * (chart.sizes.height + chart.limits.min * chart.pntSpacing.dep)
-    );
+    ctx.translate( 0, -1 * (chartHeight + minLimit * spacing) );
   }
 
   function configPolar() {
@@ -899,7 +906,8 @@ Dave_js.chart = function(name) {
     var
       grid,
       radius_i,
-      angle_i;
+      angle_i,
+      maxLimit = chart.limits.max;
 
     //rotate the plot
     ctx.rotate(chart.zeroAngle);
@@ -917,10 +925,10 @@ Dave_js.chart = function(name) {
 
       //Draw 4 radius circles
       grid.radii = [
-        (0.25 * chart.limits.max),
-        (0.5 * chart.limits.max),
-        (0.75 * chart.limits.max),
-        (chart.limits.max)
+        (0.25 * maxLimit),
+        (0.5 * maxLimit),
+        (0.75 * maxLimit),
+        (maxLimit)
       ];
 
       ctx.textAlign = "end";
@@ -984,9 +992,7 @@ Dave_js.chart = function(name) {
         
         //rotate the coordinate system and draw a straight line
         ctx.rotate(chart.polarRot * grid.angles[angle_i]);
-        ctx.lineTo(
-          chart.limits.max * chart.pntSpacing.dep , 0
-        );
+        ctx.lineTo(maxLimit * chart.pntSpacing.dep , 0);
         ctx.stroke();
         
         //move coord system to text location
@@ -1009,6 +1015,7 @@ Dave_js.chart = function(name) {
       depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       depVarData,
+      spacing = chart.pntSpacing.dep,
       angle,
       radius,
       plt_i,
@@ -1035,7 +1042,7 @@ Dave_js.chart = function(name) {
         ctx.rotate(chart.polarRot * angle);
         ctx.beginPath();
         ctx.rotate(chart.polarRot * angle);
-        ctx.moveTo(radius * chart.pntSpacing.dep);
+        ctx.moveTo(radius * spacing);
         ctx.restore();
       }
        
@@ -1053,13 +1060,13 @@ Dave_js.chart = function(name) {
           if (flags.points) {
             //rotate coord system, plot point, rotate back
             ctx.fillRect(
-              radius * chart.pntSpacing.dep + pntOffset, pntOffset,
+              radius * spacing + pntOffset, pntOffset,
               chart.sizes.pointSize, chart.sizes.pointSize
             );
           }
           if (flags.lines) {
             //rotate coord system, plot point, rotate back
-            ctx.lineTo(radius * chart.pntSpacing.dep, 0);
+            ctx.lineTo(radius * spacing, 0);
           }
         } catch(err) {
           continue;
