@@ -25,11 +25,8 @@ Dave_js.LinePlot = function LinePlot(dataStore, vars, chart){
   numVars = yVarNames.length;
   
   //figure out the value to pixel conversion
-  //spacing factors can not be less than 1 and are converted to integers
-  xSpacing =
-    Math.max((chart.sizes.width / (stop - start + 1)), 1) >> 0;
-  ySpacing =
-    Math.max((chart.sizes.height / (chart.limits.max - chart.limits.min)), 1) >> 0;
+  xSpacing = chart.sizes.width / (stop - start + 1);
+  ySpacing = chart.sizes.height / (chart.limits.max - chart.limits.min);
   
   //calculate the pixel maping
   return {
