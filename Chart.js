@@ -711,13 +711,14 @@ Dave_js.chart = function(name) {
       chart_min = chart.limits.min,
       y_spacing = chart.pntSpacing.dep,
       x_spacing = chart.pntSpacing.indep,
-      x_data = dataStore.getVarData(vars.indep) || [],
+      //x_data = dataStore.getVarData(vars.indep) || [],
       depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       numOfPts = chart.range.numOfPts,
       y_data,
       plt_i,
-      pixelData = new Dave_js.LinePlot(dataStore, vars, chart);
+      pixelData = new Dave_js.LinePlot(dataStore, vars, chart),
+      x_data = pixelData.independent || [];
 
     //move to the plot origin
     ctx.translate(0, chart.sizes.height);
@@ -733,30 +734,32 @@ Dave_js.chart = function(name) {
       
       //initial point height.
       //heights must be negative to move up in the plot
-      y = y_data[range_start];
-
+      //y = y_data[range_start];
+      y = y_data[0];
+      x = x_data[0];
+      
       //if we are drawing a line, set the line origin and start the line
       if (flags.lines) {
         if (isNaN(y)) {y = 0;}
+        if (isNaN(x)) {x = 0;}
         ctx.beginPath();
-        ctx.moveTo(0, y);
+        ctx.moveTo(x, y);
       }
       
       //if we are drawing points, plot the initial point
       if (flags.points) {
-        plotPnt(0, y);
+        plotPnt(x, y);
       }
       
       //step through the data points
-      for (var pnt_i = 1; pnt_i < numOfPts; pnt_i++) {
+      for (var pnt_i = 1; pnt_i < pixelData.independent.length; pnt_i++) {
         //try to plot the point
         //make sure we have a numerical value to plot
-        if (isNaN(y_data[pnt_i + range_start])) {continue;}
+        if (isNaN(y_data[pnt_i])) {continue;}
         
         //figure out current pixel location
-        y = y_data[pnt_i + range_start];
-        x = pixelData.independent[pnt_i];
-        
+        y = y_data[pnt_i];
+        x = x_data[pnt_i];
         if (flags.lines) {ctx.lineTo(x, y);}
         if (flags.points) {plotPnt(x, y);}
       }
