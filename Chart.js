@@ -717,75 +717,13 @@ Dave_js.chart = function(name) {
       numOfPts = chart.range.numOfPts,
       y_data,
       plt_i,
-      plotter = new Dave_js.Plotter.LinePlot(dataStore, vars, chart),
-      pixelData = plotter.getPixelMap(),
-      x_data = pixelData.independent || [];
-
-    //move to the plot origin
-    ctx.translate(0, chart.sizes.height);
-
-    ctx.lineWidth = chart.sizes.lineWidth;
-    for (plt_i = 0; plt_i < numDepVars; plt_i++) {
-      //cache the data set for this plot
-      y_data = pixelData.dependent[depVarNames[plt_i]] || [];
-
-      //set colors for this plot
-      ctx.fillStyle = colors.data[plt_i];
-      ctx.strokeStyle = colors.data[plt_i];
-      
-      //initial point height.
-      //heights must be negative to move up in the plot
-      //y = y_data[range_start];
-      y = y_data[0];
-      x = x_data[0];
-      
-      //if we are drawing a line, set the line origin and start the line
-      if (flags.lines) {
-        if (isNaN(y)) {y = 0;}
-        if (isNaN(x)) {x = 0;}
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-      }
-      
-      //if we are drawing points, plot the initial point
-      if (flags.points) {
-        plotPnt(x, y);
-      }
-      
-      //step through the data points
-      for (var pnt_i = 1; pnt_i < pixelData.independent.length; pnt_i++) {
-        //try to plot the point
-        //make sure we have a numerical value to plot
-        if (isNaN(y_data[pnt_i])) {continue;}
-        
-        //figure out current pixel location
-        y = y_data[pnt_i];
-        x = x_data[pnt_i];
-        if (flags.lines) {ctx.lineTo(x, y);}
-        if (flags.points) {plotPnt(x, y);}
-      }
-
-      if (flags.lines) {ctx.stroke();}
-
-      //draw legend
-      if (flags.legend) {
-        ctx.strokeStyle = colors.data[plt_i];
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(chart.sizes.width, y);
-        ctx.lineTo(chart.sizes.width + legendOffset, y);
-        ctx.stroke();
-
-        ctx.fillStyle = colors.data[plt_i];
-        ctx.textAlign = "start";
-        ctx.fillText(
-          depVarNames[plt_i], chart.sizes.width + legendOffset, y
-        );
-      }
+      plotter = new Dave_js.Plotter.LinePlot(ctx, dataStore, vars, chart);
+    
+    plotter.decorate(labels);
+    plotter.plot();
+    if (flags.legend) {
+      plotter.drawLegend();
     }
-
-    //return to the canvas origin
-    ctx.translate(0, -1 * chart.sizes.height);
 
     timer = (new Date()).getTime() - timer;
     console.log("Draw Time = " + timer / 1000);
