@@ -717,7 +717,8 @@ Dave_js.chart = function(name) {
       numOfPts = chart.range.numOfPts,
       y_data,
       plt_i,
-      pixelData = new Dave_js.LinePlot(dataStore, vars, chart),
+      plotter = new Dave_js.Plotter.LinePlot(dataStore, vars, chart),
+      pixelData = plotter.getPixelMap(),
       x_data = pixelData.independent || [];
 
     //move to the plot origin
