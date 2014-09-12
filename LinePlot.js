@@ -39,12 +39,12 @@ Dave_js.Plotter.LinePlot = function LinePlot(dataStore, vars, chart){
 
 };
 
-Dave_js.Plotters.LinePlot.prototype.decorate = function decorate(){
+Dave_js.Plotter.LinePlot.prototype.decorate = function decorate(){
 
 
 };
 
-Dave_js.Plotters.LinePlot.prototype.getPixelMap = function getPixelMap(){
+Dave_js.Plotter.LinePlot.prototype.getPixelMap = function getPixelMap(){
   return {
     //x-axis pixels are based on array index only
     independent: (function independentVarMap(){
