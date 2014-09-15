@@ -41,7 +41,7 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels){
 };
 
 Dave_js.Cartesian.prototype.plot = function plot(vars){
-  var pnt_i, var_i, xSpacing, ySpacing, limits, coords, numPts;
+  var pnt_i, var_i, xSpacing, ySpacing, limits, coords, numPts, pnts;
 
   if(!vars){
     console.log("Plot variables not set!");
@@ -85,12 +85,14 @@ Dave_js.Cartesian.prototype.plot = function plot(vars){
     this.chart.sizes.height / (limits.yMax - limits.yMin);
   
   //convert all data points to coordinates
+  pnts = coords.x;
   for(pnt_i = 0; pnt_i < numPts; pnt_i++){
-    coords.x[pnt_i] *= xSpacing;
+    pnts[pnt_i] *= xSpacing;
   }
   for(var_i = 0; var_i < coords.y.length; var_i++){
+    pnts = coords.y[var_i];
     for(pnt_i = 0; pnt_i < numPts; pnt_i++){
-      coords.y[var_i][pnt_i] *= ySpacing;
+      pnts[pnt_i] = (limits.yMax - pnts[pnt_i]) * ySpacing;
     }
   }
 
