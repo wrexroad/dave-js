@@ -729,16 +729,6 @@ Dave_js.chart = function(name) {
     console.log("Draw Time = " + timer / 1000);
   }
 
-  function plotPnt(x, y) {
-    var
-      pointSize = chart.sizes.pointSize,
-      halfPointSize = chart.sizes.halfPointSize;
-
-    ctx.fillRect(
-      x - halfPointSize, y - halfPointSize, pointSize, pointSize
-    );
-  }
-
   function configHistBars() {
     var
       numOfPts = (dataStore.getVarData(vars.indep) || []).length;

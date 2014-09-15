@@ -96,91 +96,116 @@ Dave_js.Cartesian.prototype.plot = function plot(vars){
     }
   }
 
-  this.drawLines(coords);
-  this.drawPoints(coords);
+  this.drawLines(coords, this.chart.colors.data[var_i]);
+  this.drawPoints(
+    coords, Dave_js.Cartesian.prototype.dotFactory(10), chart.colors.data[var_i]
+  );
   
 };
 
-Dave_js.Cartesian.prototype.drawLines = function drawLines(xPix, yPix){
-  var onPath = false;
+Dave_js.Cartesian.prototype.drawLines = function drawLines(coords, color){
+  var
+    onPath = false,
+    numPts, pnt_i, xCoords, yCoords;
 
   this.ctx.save();
+
   this.ctx.lineWidth = this.chart.sizes.lineWidth;
 
   //set colors for this plot
-  this.ctx.fillStyle = this.colors.data[plt_i];
-  this.ctx.strokeStyle = colors.data[plt_i];
+  color = color || 'black';
+  this.ctx.fillStyle = color;
+  this.ctx.strokeStyle = color;
   
   //move to the plot origin
   this.ctx.translate(0, this.chart.sizes.height);
-  
+
+  numPts = coords.x.length;
+  xCoords = coords.x;
+  yCoords = coords.y;
+  for(pnt_i = 0; pnt_i < numPts; pnt_i++){
+    //if we hit a data gap, end the current path
+    if(!yCoords[pnt_i]){
+      this.ctx.stroke();
+      onPath = false;
+    } else {
+
+      //make sure we have a current path
+      if (!onPath) {
+        this.ctx.beginPath();
+        onPath = true;
+      }
+      
+      this.ctx.moveTo(xCoords[pnt_i], yCoords[pnt_i]);
+    }
+  }
+
+  this.ctx.stroke();
   this.ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawPoints = function drawPoints(xPix, yPix){
+Dave_js.Cartesian.prototype.drawPoints=function drawPoints(coords, dot, color){
+  var
+    numPts, pnt_i, xCoords, yCoords;
+
   this.ctx.save();
 
-  this.ctx.translate(0, chart.sizes.height);
+  //set colors for this plot
+  color = color || 'black';
+  this.ctx.fillStyle = color;
+  this.ctx.strokeStyle = color;
+
+  numPts = coords.x.length;
+  xCoords = coords.x;
+  yCoords = coords.y;
+  for(pnt_i = 0; pnt_i < numPts; pnt_i++){
+    dot(xCoords, yCoords);
+  }
 
   this.ctx.restore();
 };
 
-    
-    for (plt_i = 0; plt_i < numDepVars; plt_i++) {
-      //cache the data set for this plot
-      y_data = pixelData.dependent[depVarNames[plt_i]] || [];
+Dave_js.Cartesian.prototype.drawLegend = function drawPoints(){
+  var var_i;
 
-      
-      //initial point height.
-      //heights must be negative to move up in the plot
-      //y = y_data[range_start];
-      y = y_data[0];
-      x = x_data[0];
-      
-      //if we are drawing a line, set the line origin and start the line
-      if (flags.lines) {
-        if (isNaN(y)) {y = 0;}
-        if (isNaN(x)) {x = 0;}
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-      }
-      
-      //if we are drawing points, plot the initial point
-      if (flags.points) {
-        plotPnt(x, y);
-      }
-      
-      //step through the data points
-      for (var pnt_i = 1; pnt_i < pixelData.independent.length; pnt_i++) {
-        //try to plot the point
-        //make sure we have a numerical value to plot
-        if (isNaN(y_data[pnt_i])) {continue;}
-        
-        //figure out current pixel location
-        y = y_data[pnt_i];
-        x = x_data[pnt_i];
-        if (flags.lines) {ctx.lineTo(x, y);}
-        if (flags.points) {plotPnt(x, y);}
-      }
+  this.ctx.save();
+  
+  for(var_i = 0; var_i < vars.y; var_i++){
+    //draw legend
+    ctx.strokeStyle = colors.data[plt_i];
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(chart.sizes.width, y);
+    ctx.lineTo(chart.sizes.width + legendOffset, y);
+    ctx.stroke();
 
-      if (flags.lines) {ctx.stroke();}
+    ctx.fillStyle = colors.data[plt_i];
+    ctx.textAlign = "start";
+    ctx.fillText(
+      depVarNames[plt_i], chart.sizes.width + legendOffset, y
+    );
+  }
 
-      //draw legend
-      if (flags.legend) {
-        ctx.strokeStyle = colors.data[plt_i];
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(chart.sizes.width, y);
-        ctx.lineTo(chart.sizes.width + legendOffset, y);
-        ctx.stroke();
+  //return to the canvas origin
+  ctx.translate(0, -1 * chart.sizes.height);
 
-        ctx.fillStyle = colors.data[plt_i];
-        ctx.textAlign = "start";
-        ctx.fillText(
-          depVarNames[plt_i], chart.sizes.width + legendOffset, y
-        );
-      }
-    }
+  this.ctx.restore();
+};
 
-    //return to the canvas origin
-    ctx.translate(0, -1 * chart.sizes.height);
+Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts){
+  //set defaults for missing options
+  opts = opts || {};
+  opts.color = opts.color || 'black';
+  opts.width = +opts.width || 2;
+  opts.halfWidth = opts.width / 2;
+
+  return function dot(x, y) {
+    var
+      pointSize = opts.width;
+      halfPointSize = pointsSize / 2;
+
+    ctx.fillRect(
+      x - halfPointSize, y - halfPointSize, pointSize, pointSize
+    );
+  };
+};
