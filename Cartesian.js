@@ -123,47 +123,6 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(xPix, yPix){
   this.ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.mapXData = function mapXData(){
-  //x-axis pixels are based on array index only
-  var
-    xMap = [],
-    pnt_i;
-    
-  for(pnt_i = 0; pnt_i < this.numPts; pnt_i++){
-    xMap.push(pnt_i * this.xSpacing);
-  }
-
-  return xMap;
-};
-
-Dave_js.Cartesian.prototype.mapYData = function mapYData(){
-  var
-    mappedVars = {},
-    yData,
-    var_i,
-    pnt_i;
-
-  for(var_i = 0; var_i < this.numVars; var_i++){
-    //get a copy of the y axis data for this
-    //variable during the selected range
-    yData =
-      (this.dataStore.getVarData(this.yVarNames[var_i]) || []).
-      slice(this.start, (this.stop + 1));
-
-    for(pnt_i = 0; pnt_i < this.numPts; pnt_i++){
-      //pixel origin is at the upper left corner, so to get to the plot 
-      //origin we need to start at chartMin
-      yData[pnt_i] = (this.chartMin - yData[pnt_i]) * this.ySpacing;
-    }
-
-    mappedVars[this.yVarNames[var_i]] = yData;
-  }
-
-  return mappedVars;
-};
-
-
-
     
     for (plt_i = 0; plt_i < numDepVars; plt_i++) {
       //cache the data set for this plot
