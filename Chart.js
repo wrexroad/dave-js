@@ -85,7 +85,19 @@ Dave_js.chart = function(name) {
       "start" : Number.NEGATIVE_INFINITY,
       "stop" : Number.POSITIVE_INFINITY,
       "numOfPts" : 0
+    },
+
+    //holds the different colors used for in the plot
+    chart.colors: {
+      // default colors
+      activePoint : "#00FF00",
+      text : "black",
+      grid : "gray",
+      data : ['Red','Blue','Green', 'Yellow'],
+      borderColor : '#000000',
+      bgColor : '#CCCCCC',
     }
+
   };
 
   //holds all of the info for the coordinat display
@@ -96,17 +108,6 @@ Dave_js.chart = function(name) {
     index : 0
   };
  
-  //holds the different colors used for in the plot
-  var colors = {
-    // default colors
-    activePoint : "#00FF00",
-    text : "black",
-    grid : "gray",
-    data : ['Red','Blue','Green', 'Yellow'],
-    borderColor : '#000000',
-    bgColor : '#CCCCCC',
-  };
-
   //canvas context used for drawing
   var ctx = null;
    
@@ -250,17 +251,17 @@ Dave_js.chart = function(name) {
       if (chart.bgImg) {
         ctx.drawImage( chart.bgImg, 0, 0 );
       } else {
-        ctx.fillStyle = colors.bgColor;
+        ctx.fillStyle = chart.colors.bgColor;
         ctx.fillRect( 0, 0, chart.sizes.width, chart.sizes.height );
       }
 
-      ctx.strokeStyle = colors.borderColor;
+      ctx.strokeStyle = chart.colors.borderColor;
       ctx.strokeRect(0, 0, chart.sizes.width, chart.sizes.height);
       
       //print title (bold)
       if (flags.title) {
         ctx.textAlign = "center";
-        ctx.fillStyle = colors.text;
+        ctx.fillStyle = chart.colors.text;
         ctx.font = "bold " + chart.cssFont;
         ctx.fillText(
           chart.labels.title,
@@ -271,7 +272,7 @@ Dave_js.chart = function(name) {
       //print axis labels
       if (flags.axis) {
         ctx.font = chart.cssFont;
-        ctx.fillStyle = colors.text;
+        ctx.fillStyle = chart.colors.text;
         ctx.textAlign = "start";
         ctx.fillText(
           chart.labels.indep,
@@ -848,8 +849,8 @@ Dave_js.chart = function(name) {
     ctx.rotate(chart.zeroAngle);
     
     //set colors
-    ctx.strokeStyle = colors.grid;
-    ctx.fillStyle = colors.text;
+    ctx.strokeStyle = chart.colors.grid;
+    ctx.fillStyle = chart.colors.text;
     
     //Draw a set of radius circles and angle markers if flag is set
     if(flags.grid) {
@@ -965,11 +966,11 @@ Dave_js.chart = function(name) {
     //Draw lines and points      
     for (plt_i = 0; plt_i < numDepVars; plt_i++) {
       //set colors
-      if (!colors.data[plt_i]) {
-        colors.data[plt_i] = "Black";
+      if (!chart.colors.data[plt_i]) {
+        chart.colors.data[plt_i] = "Black";
       }
-      ctx.fillStyle = colors.data[plt_i];
-      ctx.strokeStyle = colors.data[plt_i];
+      ctx.fillStyle = chart.colors.data[plt_i];
+      ctx.strokeStyle = chart.colors.data[plt_i];
        
       //start line path
       if (flags.lines) {
@@ -1067,7 +1068,7 @@ Dave_js.chart = function(name) {
   };
   
   self.setColor = function(type, color) {
-    colors[type] = color;
+    chart.colors[type] = color;
   };
   
   self.setVars = function setVars(v) {
@@ -1195,11 +1196,11 @@ Dave_js.chart = function(name) {
   };
 
   self.setBorderColor = function(color) {
-    colors.borderColor = color;
+    chart.colors.borderColor = color;
   };
 
   self.setBackgroundColor = function(color) {
-    colors.bgColor = color;
+    chart.colors.bgColor = color;
   };
 
   self.setBackgroundImage = function(id) {
