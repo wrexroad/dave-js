@@ -41,7 +41,7 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels){
 };
 
 Dave_js.Cartesian.prototype.plot = function plot(vars){
-  var pnt_i, var_i, xSpacing, ySpacing, limits, coords, numPts, pnts;
+  var pnt_i, var_i, xSpacing, ySpacing, limits, coords, numPts, pnts, dot;
 
   if(!vars){
     console.log("Plot variables not set!");
@@ -97,10 +97,10 @@ Dave_js.Cartesian.prototype.plot = function plot(vars){
   }
 
   this.drawLines(coords, this.chart.colors.data[var_i]);
-  this.drawPoints(
-    coords, Dave_js.Cartesian.prototype.dotFactory(10), chart.colors.data[var_i]
-  );
-  
+
+  dot =
+    Dave_js.Cartesian.prototype.squareDotFactory({color: 'red', width: '2'});
+  this.drawPoints(coords, dot, this.chart.colors.data[var_i]);
 };
 
 Dave_js.Cartesian.prototype.drawLines = function drawLines(coords, color){
@@ -155,6 +155,11 @@ Dave_js.Cartesian.prototype.drawPoints=function drawPoints(coords, dot, color){
   this.ctx.fillStyle = color;
   this.ctx.strokeStyle = color;
 
+  //make sure the dot function is set
+  if(typeof dot != 'function'){
+    dot = Dave_js.Cartesian.squareDotFactory({color: 'black', width: '2'});
+  }
+
   numPts = coords.x.length;
   xCoords = coords.x;
   yCoords = coords.y;
@@ -195,17 +200,17 @@ Dave_js.Cartesian.prototype.drawLegend = function drawPoints(){
 Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts){
   //set defaults for missing options
   opts = opts || {};
-  opts.color = opts.color || 'black';
-  opts.width = +opts.width || 2;
-  opts.halfWidth = opts.width / 2;
+  var
+    color = opts.color || 'black',
+    width = +opts.width || 2,
+    halfWidth = Math.min((width / 2), 1);
 
-  return function dot(x, y) {
-    var
-      pointSize = opts.width;
-      halfPointSize = pointsSize / 2;
+  function dot(ctx, x, y) {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillRect(x - halfWidth, y - halfWidth, width, width);
+    ctx.restore();
+  }
 
-    ctx.fillRect(
-      x - halfPointSize, y - halfPointSize, pointSize, pointSize
-    );
-  };
+  return dot;
 };
