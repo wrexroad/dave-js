@@ -49,6 +49,10 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
     return;
   }
 
+  //move to the plot origin
+  this.ctx.save();
+  //this.ctx.translate(0, this.chart.sizes.height);
+
   //y variables are expected to be listed in an array
   vars.y = [].concat(vars.y);
   numVars = vars.y.length;
@@ -110,6 +114,9 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
 
     this.drawPoints(coords.x, coords.y[var_i], dot);
   }
+
+  //restore the context to the pre-plotting state
+  this.ctx.restore();
 };
 
 Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
@@ -126,23 +133,21 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
   this.ctx.fillStyle = color;
   this.ctx.strokeStyle = color;
   
-  //move to the plot origin
-  this.ctx.translate(0, this.chart.sizes.height);
-
   for(pnt_i = 0; pnt_i < x.length; pnt_i++){
     //if we hit a data gap, end the current path
-    if(!y[pnt_i]){
+    if (isNaN(y[pnt_i])) {
       this.ctx.stroke();
       onPath = false;
     } else {
-
       //make sure we have a current path
       if (!onPath) {
+        this.ctx.moveTo(x[pnt_i], y[pnt_i]);
         this.ctx.beginPath();
         onPath = true;
+      } else {
+        console.log(x[pnt_i], y[pnt_i]);
+        this.ctx.lineTo(x[pnt_i], y[pnt_i]);
       }
-      
-      this.ctx.moveTo(x[pnt_i], y[pnt_i]);
     }
   }
 
@@ -157,7 +162,7 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
 
   //make sure the dot function is set
   if (typeof dot != 'function') {
-    dot = Dave_js.Cartesian.squareDotFactory({color: color, width: '2'});
+    dot = Dave_js.Cartesian.squareDotFactory({color: color, width: 2});
   }
 
   for (pnt_i = 0; pnt_i < x.length; pnt_i++) {
