@@ -51,15 +51,15 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
 
   //y variables are expected to be listed in an array
   vars.y = [].concat(vars.y);
-  numVars = vars.y.length();
+  numVars = vars.y.length;
 
   //create a copy of the data that is to be plotted
-  coords = {};
+  coords = {y:[], x:[]};
   for (var_i = 0; var_i < numVars; var_i++) {
-    coords.y[var_i] = (dataStore.getVarData(vars.y[var_i]) || []).slice(0);
+    coords.y[var_i] = (this.dataStore.getVarData(vars.y[var_i]) || []).slice(0);
   }
 
-  if ((coords.x = dataStore.getVarData(vars.x)) === null) {
+  if ((coords.x = this.dataStore.getVarData(vars.x)) === null) {
     //if the x variable has not been set, create an array of indicies the 
     //same length as the first y variable data
     numPts = coords.y[0].length;
@@ -74,10 +74,10 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
 
   //figure out the plot limits
   limits = {
-    xMin : chart.limits.xmin || Math.min.apply(null, vars.x),
-    xMax : chart.limits.xmax || Math.max.apply(null, vars.x),
-    yMin : chart.limits.ymin,
-    yMax : chart.limits.ymax
+    xMin : this.chart.limits.xmin || Math.min.apply(null, coords.x),
+    xMax : this.chart.limits.xmax || Math.max.apply(null, coords.x),
+    yMin : this.chart.limits.ymin,
+    yMax : this.chart.limits.ymax
   };
 
   //calculate the pixel conversion factor
@@ -145,7 +145,7 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
         onPath = true;
       }
       
-      this.ctx.moveTo(xCoords[pnt_i], y[pnt_i]);
+      this.ctx.moveTo(x[pnt_i], y[pnt_i]);
     }
   }
 
@@ -163,7 +163,7 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
     dot = Dave_js.Cartesian.squareDotFactory({color: color, width: '2'});
   }
 
-  for (pnt_i = 0; x.length < numPts; pnt_i++) {
+  for (pnt_i = 0; pnt_i < x.length; pnt_i++) {
     dot(x[pnt_i], y[pnt_i]);
   }
 
@@ -204,7 +204,7 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
     color = opts.color || 'black',
     width = +opts.width || 2,
     halfWidth = Math.min((width / 2), 1),
-    ctx = ops.ctx;
+    ctx = opts.ctx;
 
   //make sure there is a context defined
   if (!ctx) {

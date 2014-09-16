@@ -60,7 +60,7 @@ Dave_js.chart = function(name) {
     pntSpacing : {dep : 1, indep : 1},
     
     //min and max values for dependent variables
-    limits : {min : 0, max : 0},
+    limits : {xmin : 0, xmax : 0, ymin : 0, ymax : 0},
     
     //default settings for plot scale
     scale : {"type" : "lin", "value" : 1},
@@ -562,8 +562,8 @@ Dave_js.chart = function(name) {
       minLimit = Math.min.apply(null, pltMin);
       maxLimit = Math.max.apply(null, pltMax);
     } else {
-      minLimit = +chart.limits.min || 0;
-      maxLimit = +chart.limits.max || 0;
+      minLimit = +chart.limits.ymin || 0;
+      maxLimit = +chart.limits.ymax || 0;
 
       //the user has predefined data limits, so apply to each subset
       for (plt_i = 0; plt_i < numDepVars; plt_i++) {
@@ -591,8 +591,8 @@ Dave_js.chart = function(name) {
       maxLimit = Math.ceil(maxLimit);
     }
     
-    chart.limits.min = minLimit;
-    chart.limits.max = maxLimit;
+    chart.limits.ymin = minLimit;
+    chart.limits.ymax = maxLimit;
 
     timer = (new Date()).getTime() - timer;
     console.log("Limits Calculated = " + timer / 1000);
@@ -601,7 +601,7 @@ Dave_js.chart = function(name) {
   function configSpacing() {
     var
       numOfPts = chart.range.numOfPts,
-      depRange = Math.abs(chart.limits.max - chart.limits.min);
+      depRange = Math.abs(chart.limits.ymax - chart.limits.ymin);
 
     chart.skipTics.indep =
     Math.max(1, parseInt((20 * numOfPts / chart.sizes.width), 10));
@@ -610,7 +610,7 @@ Dave_js.chart = function(name) {
     Math.max(1, parseInt((20 * depRange / chart.sizes.height), 10));
     
     if (flags.polar) {//polar plots only need spacing in the radial direction
-      chart.pntSpacing.dep = chart.sizes.radius / chart.limits.max;
+      chart.pntSpacing.dep = chart.sizes.radius / chart.limits.ymax;
     } else { // all other plots are rectangular and need x/y spacing
       chart.pntSpacing.indep = chart.sizes.width / (numOfPts - 1);
       chart.pntSpacing.dep = chart.sizes.height / depRange;
@@ -619,8 +619,8 @@ Dave_js.chart = function(name) {
 
   function callYTics() {
     var
-      maxLimit = chart.limits.max,
-      minLimit = chart.limits.min,
+      maxLimit = chart.limits.ymax,
+      minLimit = chart.limits.ymin,
       skipTics = chart.skipTics.dep,
       spacing = chart.pntSpacing.dep,
       chartHeight = chart.sizes.height,
@@ -709,7 +709,7 @@ Dave_js.chart = function(name) {
       timer = (new Date()).getTime(),
       legendOffset = 10,
       range_start = chart.range.start,
-      chart_min = chart.limits.min,
+      chart_min = chart.limits.ymin,
       y_spacing = chart.pntSpacing.dep,
       x_spacing = chart.pntSpacing.indep,
       //x_data = dataStore.getVarData(vars.indep) || [],
@@ -718,14 +718,14 @@ Dave_js.chart = function(name) {
       numOfPts = chart.range.numOfPts,
       y_data,
       plt_i,
-      plotter = new Dave_js.Plotter.LinePlot(ctx, dataStore, vars, chart);
-    
-    plotter.decorate(labels);
-    plotter.plot();
-    if (flags.legend) {
-      plotter.drawLegend();
-    }
+      plotter = new Dave_js.Cartesian(ctx, dataStore, chart);
 
+    plotter.decorate(chart.labels);
+    plotter.plot({
+        x: vars.indep,
+        y: vars.deps
+      });
+    
     timer = (new Date()).getTime() - timer;
     console.log("Draw Time = " + timer / 1000);
   }
@@ -757,7 +757,7 @@ Dave_js.chart = function(name) {
       depVarNames = vars.deps || [],
       numDepVars = depVarNames.length,
       spacing = chart.pntSpacing.dep,
-      minLimit = chart.limits.min,
+      minLimit = chart.limits.ymin,
       chartHeight = chart.sizes.height,
       depVarData,
       baseLineOffset,
@@ -843,7 +843,7 @@ Dave_js.chart = function(name) {
       radius_i,
       angle_i,
       spacing = chart.pntSpacing.dep,
-      maxLimit = chart.limits.max;
+      maxLimit = chart.limits.ymax;
 
     //rotate the plot
     ctx.rotate(chart.zeroAngle);
@@ -1170,8 +1170,8 @@ Dave_js.chart = function(name) {
   //set the min and max values for the yaxis
   self.setLimits = function(min,max) {
     if (!isNaN(0 + min) && !isNaN(0 + max)) {
-      chart.limits.min = 0 + min;
-      chart.limits.max = 0 + max;
+      chart.limits.ymin = 0 + min;
+      chart.limits.ymax = 0 + max;
       flags.limits = true;
     } else {
       alert("Plot limits could not be set.");
