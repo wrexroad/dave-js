@@ -58,11 +58,11 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
   for (var_i = 0; var_i < numVars; var_i++) {
     coords.y[var_i] = (this.dataStore.getVarData(vars.y[var_i]) || []).slice(0);
   }
+  numPts = coords.y[0].length || 0;
 
   if ((coords.x = this.dataStore.getVarData(vars.x)) === null) {
     //if the x variable has not been set, create an array of indicies the 
     //same length as the first y variable data
-    numPts = coords.y[0].length;
     
     for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
       coords.x[pnt_i] = pnt_i;
@@ -81,24 +81,21 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
   };
 
   //calculate the pixel conversion factor
-  xSpacing =
-    this.chart.sizes.width / (limits.xMax - limits.xMin);
-  ySpacing =
-    this.chart.sizes.height / (limits.yMax - limits.yMin);
+  xSpacing = this.chart.sizes.width / (limits.xMax - limits.xMin);
+  ySpacing = this.chart.sizes.height / (limits.yMax - limits.yMin);
   
   //convert all data points to coordinates
   pnts = coords.x;
   for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-    pnts[pnt_i] *= xSpacing;
+    pnts[pnt_i] = (pnts[pnt_i] - limits.xMin) * xSpacing;
   }
-  for (var_i = 0; var_i < coords.y.length; var_i++) {
+  for (var_i = 0; var_i < numVars; var_i++) {
     pnts = coords.y[var_i];
     for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
       pnts[pnt_i] = (limits.yMax - pnts[pnt_i]) * ySpacing;
     }
   }
 
-   
   //draw all the lines
   for(var_i = 0; var_i < numVars; var_i++){
     this.drawLines(coords.x, coords.y[var_i], this.chart.colors.data[var_i]);
