@@ -88,7 +88,7 @@ Dave_js.chart = function(name) {
     },
 
     //holds the different colors used for in the plot
-    chart.colors: {
+    colors: {
       // default colors
       activePoint : "#00FF00",
       text : "black",
