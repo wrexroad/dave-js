@@ -104,16 +104,14 @@ Dave_js.Cartesian.prototype.plot = function plot(vars) {
     this.drawLines(coords.x, coords.y[var_i], this.chart.colors.data[var_i]);
   }
 
-  //define what the points will look like
-  dot = Dave_js.Cartesian.prototype.squareDotFactory({
-    color: 'red', width: '2', ctx: this.ctx
-  });
-
   //draw all the points
   for(var_i = 0; var_i < numVars; var_i++){
-    this.drawPoints(
-      coords.x, coords.y[var_i], dot, this.chart.colors.data[var_i]
-    );
+    //define what the points will look like
+    dot = Dave_js.Cartesian.prototype.squareDotFactory({
+      color: this.chart.colors.data[var_i], width: '2', ctx: this.ctx
+    });
+
+    this.drawPoints(coords.x, coords.y[var_i], dot);
   }
 };
 
@@ -155,15 +153,10 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
   this.ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot, color) {
+Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
   var pnt_i;
 
   this.ctx.save();
-
-  //set colors for this plot
-  color = color || 'black';
-  this.ctx.fillStyle = color;
-  this.ctx.strokeStyle = color;
 
   //make sure the dot function is set
   if(typeof dot != 'function'){
@@ -222,6 +215,8 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
   function dot(x, y) {
     ctx.save();
     ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+
     ctx.fillRect(x - halfWidth, y - halfWidth, width, width);
     ctx.restore();
   }
