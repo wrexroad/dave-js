@@ -159,11 +159,11 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
   this.ctx.save();
 
   //make sure the dot function is set
-  if(typeof dot != 'function'){
+  if (typeof dot != 'function') {
     dot = Dave_js.Cartesian.squareDotFactory({color: color, width: '2'});
   }
 
-  for(pnt_i = 0; x.length < numPts; pnt_i++){
+  for (pnt_i = 0; x.length < numPts; pnt_i++) {
     dot(x[pnt_i], y[pnt_i]);
   }
 
@@ -175,7 +175,7 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
 
   this.ctx.save();
   
-  for(var_i = 0; var_i < vars.y; var_i++){
+  for (var_i = 0; var_i < vars.y; var_i++) {
     //draw legend
     ctx.strokeStyle = colors.data[plt_i];
     ctx.lineWidth = 1;
