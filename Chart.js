@@ -617,82 +617,6 @@ Dave_js.chart = function(name) {
     }
   }
 
-  function callYTics() {
-    var
-      maxLimit = chart.limits.ymax,
-      minLimit = chart.limits.ymin,
-      skipTics = chart.skipTics.dep,
-      spacing = chart.pntSpacing.dep,
-      chartHeight = chart.sizes.height,
-      scaleValue = chart.scale.value,
-      scaleType = chart.scale.type,
-      ticHeight,
-      offset,
-      ticLabel,
-      i;
-
-    //draw yAxis tic marks and labels
-    ctx.textAlign = "end";
-    for (i = minLimit; i <= maxLimit; i += skipTics) {
-      ticHeight = i - minLimit;
-      offset = chartHeight - (ticHeight * spacing);
-
-      ticLabel = i;
-
-      //unscale the y axis value if needed
-      if(flags.scaled) {
-        if(scaleType == "log") {
-          ticLabel = Math.pow(scaleValue, ticLabel);
-        } else if(scaleType == "lin") {
-          ticLabel /= scaleValue;
-        }
-      }
-       
-      if (!isNaN(ticLabel) && (ticLabel % 1) !== 0) {
-        ticLabel = ticLabel.toFixed(2);
-      }
-      
-      drawTic(ticLabel, offset);
-    }
-  }
-
-  function callXTics() {
-    var
-      indepVarData = dataStore.getVarData(vars.indep) || [],
-      numOfPts = chart.range.numOfPts,
-      start = chart.range.start,
-      offset,
-      ticLabel,
-      spacing,
-      textShift,
-      pnt_i;
-
-    if (flags.hist) {
-      spacing =  chart.histBarTotal;
-       
-      //we need to shift the text lables a bit 
-      //so they will line up with the bard
-      textShift = 0.5;
-    } else {
-      spacing = chart.pntSpacing.indep;
-      textShift = 0;
-    }
-
-    //draw xAxis tic marks and labels
-    ctx.save();
-    ctx.translate(0, chart.sizes.height);
-    ctx.rotate(1.5 * Math.PI);
-    
-    for (pnt_i = 0; pnt_i < numOfPts; pnt_i += chart.skipTics.indep) {
-      offset = (pnt_i * spacing) + textShift;
-      ticLabel = indepVarData[pnt_i + start];
-
-      //only draw the tic mark if it is defined
-      if (ticLabel !== undefined) {drawTic(ticLabel, offset);}
-    }
-    ctx.restore();
-  }
-
   function drawTic(ticLabel, offset) {
     if(ticLabel == "--") {ticLabel = "No Label";}
     ctx.fillText(ticLabel, -5, offset + 5);
@@ -1280,8 +1204,6 @@ Dave_js.chart = function(name) {
     //determine what type of plot we are generating
     if (flags.xy) {
       configSpacing();
-      callYTics();
-      callXTics();
       drawLinesPoints();
     }
     

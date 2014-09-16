@@ -36,8 +36,9 @@ Dave_js.Cartesian = function Cartesian(ctx, dataStore, chart){
 */
 
 Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
-
-
+  //draw the grid
+  this.callXTics();
+  this.callYTics();
 };
 
 Dave_js.Cartesian.prototype.plot = function plot(vars) {
@@ -224,4 +225,80 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
   }
 
   return dot;
+};
+
+Dave_js.Cartesian.prototype.callYTics = function callYTics() {
+  var
+    maxLimit = chart.limits.ymax,
+    minLimit = chart.limits.ymin,
+    skipTics = chart.skipTics.dep,
+    spacing = chart.pntSpacing.dep,
+    chartHeight = chart.sizes.height,
+    scaleValue = chart.scale.value,
+    scaleType = chart.scale.type,
+    ticHeight,
+    offset,
+    ticLabel,
+    i;
+
+  //draw yAxis tic marks and labels
+  ctx.textAlign = "end";
+  for (i = minLimit; i <= maxLimit; i += skipTics) {
+    ticHeight = i - minLimit;
+    offset = chartHeight - (ticHeight * spacing);
+
+    ticLabel = i;
+
+    //unscale the y axis value if needed
+    if(flags.scaled) {
+      if(scaleType == "log") {
+        ticLabel = Math.pow(scaleValue, ticLabel);
+      } else if(scaleType == "lin") {
+        ticLabel /= scaleValue;
+      }
+    }
+     
+    if (!isNaN(ticLabel) && (ticLabel % 1) !== 0) {
+      ticLabel = ticLabel.toFixed(2);
+    }
+    
+    drawTic(ticLabel, offset);
+  }
+};
+
+Dave_js.Cartesian.prototype.callXTics = function callXTics() {
+  var
+    indepVarData = dataStore.getVarData(vars.indep) || [],
+    numOfPts = chart.range.numOfPts,
+    start = chart.range.start,
+    offset,
+    ticLabel,
+    spacing,
+    textShift,
+    pnt_i;
+
+  if (flags.hist) {
+    spacing =  chart.histBarTotal;
+     
+    //we need to shift the text lables a bit 
+    //so they will line up with the bard
+    textShift = 0.5;
+  } else {
+    spacing = chart.pntSpacing.indep;
+    textShift = 0;
+  }
+
+  //draw xAxis tic marks and labels
+  ctx.save();
+  ctx.translate(0, chart.sizes.height);
+  ctx.rotate(1.5 * Math.PI);
+  
+  for (pnt_i = 0; pnt_i < numOfPts; pnt_i += chart.skipTics.indep) {
+    offset = (pnt_i * spacing) + textShift;
+    ticLabel = indepVarData[pnt_i + start];
+
+    //only draw the tic mark if it is defined
+    if (ticLabel !== undefined) {drawTic(ticLabel, offset);}
+  }
+  ctx.restore();
 };
