@@ -617,15 +617,6 @@ Dave_js.chart = function(name) {
     }
   }
 
-  function drawTic(ticLabel, offset) {
-    if(ticLabel == "--") {ticLabel = "No Label";}
-    ctx.fillText(ticLabel, -5, offset + 5);
-    ctx.beginPath();
-    ctx.moveTo(0, offset);
-    ctx.lineTo(5, offset);
-    ctx.stroke();
-  }
-
   function drawLinesPoints() {
     var
       x = 0,
@@ -644,11 +635,13 @@ Dave_js.chart = function(name) {
       plt_i,
       plotter = new Dave_js.Cartesian(ctx, dataStore, chart);
 
+    plotter.loadData({
+      x: vars.indep,
+      y: vars.deps
+    });
     plotter.decorate(chart.labels);
-    plotter.plot({
-        x: vars.indep,
-        y: vars.deps
-      });
+    
+    plotter.plot();
     
     timer = (new Date()).getTime() - timer;
     console.log("Draw Time = " + timer / 1000);
