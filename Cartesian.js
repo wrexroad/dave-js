@@ -146,7 +146,6 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
         this.ctx.beginPath();
         onPath = true;
       } else {
-        console.log(x[pnt_i], y[pnt_i]);
         this.ctx.lineTo(x[pnt_i], y[pnt_i]);
       }
     }
