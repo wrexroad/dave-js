@@ -345,9 +345,9 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics(labels) {
   //draw yAxis tic marks and labels
   this.ctx.save();
   this.ctx.textAlign = "end";
-  //this.ctx.translate(0, this.chart.sizes.height);
+  this.ctx.translate(0, this.chart.sizes.height);
   for (pnt_i = 0; pnt_i < numLabels; pnt_i += skipTics) {
-    offset = pnt_i * spacing;
+    offset = -pnt_i * spacing;
     ticLabel = labels[pnt_i];
 
     Dave_js.drawTic(this.ctx, ticLabel, offset);
