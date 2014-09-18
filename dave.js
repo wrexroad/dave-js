@@ -48,8 +48,6 @@ Dave_js.applyBounds = function applyBounds(data, min, max) {
   return result;
 };
 
-
-
 Dave_js.drawTic = function drawTic(ctx, ticLabel, offset) {
   if(ticLabel == "--") {ticLabel = "No Label";}
   ctx.fillText(ticLabel, -5, offset + 5);
@@ -57,6 +55,21 @@ Dave_js.drawTic = function drawTic(ctx, ticLabel, offset) {
   ctx.moveTo(0, offset);
   ctx.lineTo(5, offset);
   ctx.stroke();
+};
+
+Dave_js.rangeToArray = function rangeToArray(min, max, length){
+  var
+    i,
+    interval,
+    result = [];
+  
+  interval = (max - min) / length;
+
+  for (i = 0; i < length; i++) {
+    result[i] = (min + (i * interval)).toFixed(3);
+  }
+
+  return result;
 };
 
 (function () {
