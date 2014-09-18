@@ -645,9 +645,16 @@ Dave_js.chart = function(name) {
         dataStore.getVarData('Time').slice().sort(
           function compareNumbers(a, b) {return a - b;}
         ),
-      yTics: dataStore.getVarData(vars.deps[0]).slice().sort(
-          function compareNumbers(a, b) {return a - b;}
-        )
+      yTics: (function (){
+        var
+          var_i,
+          dataPts = [];
+
+        for(var_i = 0; var_i < vars.deps.length; var_i++){
+          dataPts = dataPts.concat(dataStore.getVarData(vars.deps[var_i]));
+        }
+        return dataPts.sort(function compareNumbers(a, b) {return a - b;});
+      })()
     });
     
     plotter.plot();
