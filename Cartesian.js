@@ -157,13 +157,19 @@ Dave_js.Cartesian.prototype.plot = function plot() {
     return;
   }
 
+  numVars = this.vars.y.length;
+
   //move to the plot origin
   this.ctx.save();
   //this.ctx.translate(0, this.chart.sizes.height);
 
   //draw all the lines
   for(var_i = 0; var_i < numVars; var_i++){
-    this.drawLines(coords.x, coords.y[var_i], this.chart.colors.data[var_i]);
+    this.drawLines(
+      this.coords.x, 
+      this.coords.y[var_i], 
+      this.chart.colors.data[var_i]
+    );
   }
 
   //draw all the points
@@ -173,7 +179,7 @@ Dave_js.Cartesian.prototype.plot = function plot() {
       color: this.chart.colors.data[var_i], width: '2', ctx: this.ctx
     });
 
-    this.drawPoints(coords.x, coords.y[var_i], dot);
+    this.drawPoints(this.coords.x, this.coords.y[var_i], dot);
   }
 
   //restore the context to the pre-plotting state
