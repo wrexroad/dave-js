@@ -143,9 +143,8 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 };
 
 Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
-  //draw the grid
-  this.callYTics(labels.yTics);
-  this.callXTics(labels.xTics);
+  this.callYTics();
+  this.callXTics();
 };
 
 Dave_js.Cartesian.prototype.plot = function plot() {
@@ -166,8 +165,8 @@ Dave_js.Cartesian.prototype.plot = function plot() {
   //draw all the lines
   for(var_i = 0; var_i < numVars; var_i++){
     this.drawLines(
-      this.coords.x, 
-      this.coords.y[var_i], 
+      this.coords.x,
+      this.coords.y[var_i],
       this.chart.colors.data[var_i]
     );
   }
@@ -292,22 +291,22 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
   return dot;
 };
 
-Dave_js.Cartesian.prototype.callXTics = function callXTics(labels) {
+Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   var
-    chartWidth, labelWidth, numTics, numLabels,
-    spacing, skipTics, offset, ticLabel, pnt_i;
-
-  if(!labels){
-    console.log('No x-axis labels.');
-    return;
-  }
+    chartWidth, labelWidth, numTics, skipTics,
+    offset, ticLabel, pnt_i, var_i, data;
+  
+  data = this.dataStore.getVarData(this.vars.x).slice();
 
   chartWidth = +this.chart.sizes.width;
   labelWidth = parseInt(this.ctx.font, 10) * 1.5;
   numTics = (chartWidth / labelWidth) >> 0;
-  numLabels = +labels.length || 0;
-  spacing = chartWidth / numLabels;
-  skipTics = Math.ceil(numLabels / numTics);
+  skipTics = Math.ceil(numTics / numTics);
+  labels = Dave_js.rangeToArray(
+    Math.min.apply(null, data),
+    Math.max.apply(null, data),
+    numTics
+  );
 
   //draw xAxis tic marks and labels
   this.ctx.save();
@@ -315,8 +314,8 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics(labels) {
   this.ctx.translate(0, this.chart.sizes.height);
   this.ctx.rotate(1.5 * Math.PI);
 
-  for (pnt_i = 0; pnt_i < numLabels; pnt_i += skipTics) {
-    offset = pnt_i * spacing;
+  for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
+    offset = pnt_i * labelWidth;
     ticLabel = labels[pnt_i];
 
     Dave_js.drawTic(this.ctx, ticLabel, offset);
@@ -325,39 +324,36 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics(labels) {
   this.ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.callYTics = function callYTics(labels) {
+Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   var
-    chartHeight, labelWidth, numTics, numLabels,
-    spacing, skipTics, offset, ticLabel, pnt_i;
-
-  if(!labels){
-    console.log('No y-axis labels.');
-    return;
+    chartHeight, labelWidth, numTics, skipTics,
+    offset, ticLabel, pnt_i, var_i, data;
+console.log(pnts);
+  data = [];
+  for(var_i = 0; var_i < this.vars.y.length; var_i++){
+    data = data.concat(this.dataStore.getVarData(this.vars.y[var_i]));
   }
 
   chartHeight = +this.chart.sizes.height;
   labelWidth = parseInt(this.ctx.font, 10) * 1.5;
   numTics = (chartHeight / labelWidth) >> 0;
-  numLabels = +labels.length || 0;
-  spacing = chartHeight / numLabels;
-  skipTics = Math.ceil(numLabels / numTics);
+  skipTics = Math.ceil(numTics / numTics);
+  labels = Dave_js.rangeToArray(
+    Math.min.apply(null, data),
+    Math.max.apply(null, data),
+    numTics
+  );
 
   //draw yAxis tic marks and labels
   this.ctx.save();
   this.ctx.textAlign = "end";
   this.ctx.translate(0, this.chart.sizes.height);
-  for (pnt_i = 0; pnt_i < numLabels; pnt_i += skipTics) {
-    offset = -pnt_i * spacing;
+  for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
+    offset = -pnt_i * labelWidth;
     ticLabel = labels[pnt_i];
 
     Dave_js.drawTic(this.ctx, ticLabel, offset);
-  }/*
-  for (pnt_i = 0; pnt_i < numPts; pnt_i += this.chart.skipTics.indep) {
-    offset = pnt_i * spacing;
-    ticLabel = labels[pnt_i + start];
-
-    Dave_js.drawTic(this.ctx, ticLabel, offset);
-  }*/
+  }
 
   this.ctx.restore();
 };

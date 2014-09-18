@@ -633,38 +633,14 @@ Dave_js.chart = function(name) {
       numOfPts = chart.range.numOfPts,
       y_data,
       plt_i,
-      plotter = new Dave_js.Cartesian(ctx, dataStore, chart),
-      xLabels = dataStore.getVarData('Time'),
-      yLabels = (function (){
-        var
-          var_i,
-          dataPts = [];
-
-        for(var_i = 0; var_i < vars.deps.length; var_i++){
-          dataPts = dataPts.concat(dataStore.getVarData(vars.deps[var_i]));
-        }
-        return dataPts;
-      })();
+      plotter = new Dave_js.Cartesian(ctx, dataStore, chart);
 
     plotter.loadData({
       x: vars.indep,
       y: vars.deps
     });
 
-    plotter.decorate({
-      xTics:
-        Dave_js.rangeToArray(
-          Math.min.apply(null, xLabels),
-          Math.max.apply(null, xLabels),
-          chart.sizes.width
-        ),
-      yTics:
-        Dave_js.rangeToArray(
-          Math.min.apply(null, yLabels),
-          Math.max.apply(null, yLabels),
-          chart.sizes.height
-        ),
-    });
+    plotter.decorate();
     
     plotter.plot();
     
