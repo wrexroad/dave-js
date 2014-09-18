@@ -208,8 +208,8 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
 
       //make sure we have a current path
       if (!onPath) {
-        this.ctx.moveTo(coords.x, coords.y);
         this.ctx.beginPath();
+        this.ctx.moveTo(coords.x, coords.y);
         onPath = true;
       } else {
         this.ctx.lineTo(coords.x, coords.y);
