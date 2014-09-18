@@ -58,7 +58,7 @@ Dave_js.Cartesian = function Cartesian(ctx, dataStore, chart){
 
 Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   var
-    ranged, numPts, pnt_i, numVars, var_i;
+    ranged, numPts, pnt_i, numVars, var_i, pnts;
 
   if(!vars){
     console.log('Could not load data into plot, no variables set.');
@@ -328,7 +328,7 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   var
     chartHeight, labelWidth, numTics, skipTics,
     offset, ticLabel, pnt_i, var_i, data;
-console.log(pnts);
+
   data = [];
   for(var_i = 0; var_i < this.vars.y.length; var_i++){
     data = data.concat(this.dataStore.getVarData(this.vars.y[var_i]));
