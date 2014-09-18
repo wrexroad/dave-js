@@ -144,8 +144,8 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 
 Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
   //draw the grid
-  this.callXTics();
-  this.callYTics();
+  this.callYTics(this.dataStore.getVarData(this.vars.y[0]));
+  this.callXTics(this.dataStore.getVarData('Time'));
 };
 
 Dave_js.Cartesian.prototype.plot = function plot() {
@@ -286,78 +286,72 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
   return dot;
 };
 
-Dave_js.Cartesian.prototype.callYTics = function callYTics() {
+Dave_js.Cartesian.prototype.callXTics = function callXTics(labels) {
   var
-    maxLimit = this.chart.limits.ymax,
-    minLimit = this.chart.limits.ymin,
-    skipTics = this.chart.skipTics.dep,
-    spacing = this.spacing.y,
-    chartHeight = this.chart.sizes.height,
-    scaleValue = this.chart.scale.value,
-    scaleType = this.chart.scale.type,
-    ticHeight,
-    offset,
-    ticLabel,
-    i;
+    chartWidth, labelWidth, numTics, numLabels,
+    spacing, skipTics, offset, ticLabel, pnt_i;
 
-  //draw yAxis tic marks and labels
-  this.ctx.textAlign = "end";
-  for (i = minLimit; i <= maxLimit; i += skipTics) {
-    ticHeight = i - minLimit;
-    offset = chartHeight - (ticHeight * spacing);
-
-    ticLabel = i;
-
-    //unscale the y axis value if needed
-    /*if(flags.scaled) {
-      if(scaleType == "log") {
-        ticLabel = Math.pow(scaleValue, ticLabel);
-      } else if(scaleType == "lin") {
-        ticLabel /= scaleValue;
-      }
-    }*/
-     
-    if (!isNaN(ticLabel) && (ticLabel % 1) !== 0) {
-      ticLabel = ticLabel.toFixed(2);
-    }
-    
-    Dave_js.drawTic(this.ctx, ticLabel, offset);
+  if(!labels){
+    console.log('No x-axis labels.');
+    return;
   }
-};
 
-Dave_js.Cartesian.prototype.callXTics = function callXTics() {
-  var
-    indepVarData = this.dataStore.getVarData(this.vars.x) || [],
-    numOfPts = this.chart.range.numOfPts,
-    start = this.chart.range.start,
-    offset,
-    ticLabel,
-    spacing = this.spacing.x,
-    textShift = 0,
-    pnt_i;
+  chartWidth = +this.chart.sizes.width;
+  labelWidth = parseInt(this.ctx.font, 10) * 1.5;
+  numTics = (chartWidth / labelWidth) >> 0;
+  numLabels = +labels.length || 0;
+  spacing = chartWidth / numLabels;
+  skipTics = Math.ceil(numLabels / numTics);
 
-  /*if (flags.hist) {
-    spacing =  chart.histBarTotal;
-     
-    //we need to shift the text lables a bit 
-    //so they will line up with the bard
-    textShift = 0.5;
-  } else {
-    spacing = chart.pntSpacing.indep;
-    textShift = 0;
-  }
-*/
   //draw xAxis tic marks and labels
   this.ctx.save();
+  this.ctx.textAlign = "end";
   this.ctx.translate(0, this.chart.sizes.height);
   this.ctx.rotate(1.5 * Math.PI);
-  
-  for (pnt_i = 0; pnt_i < numOfPts; pnt_i += this.chart.skipTics.indep) {
-    offset = (pnt_i * spacing) + textShift;
-    ticLabel = indepVarData[pnt_i + start];
 
-    //only draw the tic mark if it is defined
-    if (ticLabel !== undefined) {Dave_js.drawTic(this.ctx, ticLabel, offset);}
+  for (pnt_i = 0; pnt_i < numLabels; pnt_i += skipTics) {
+    offset = pnt_i * spacing;
+    ticLabel = labels[pnt_i];
+
+    Dave_js.drawTic(this.ctx, ticLabel, offset);
   }
+
+  this.ctx.restore();
+};
+
+Dave_js.Cartesian.prototype.callYTics = function callYTics(labels) {
+  var
+    chartHeight, labelWidth, numTics, numLabels,
+    spacing, skipTics, offset, ticLabel, pnt_i;
+
+  if(!labels){
+    console.log('No y-axis labels.');
+    return;
+  }
+
+  chartHeight = +this.chart.sizes.height;
+  labelWidth = parseInt(this.ctx.font, 10) * 1.5;
+  numTics = (chartHeight / labelWidth) >> 0;
+  numLabels = +labels.length || 0;
+  spacing = chartHeight / numLabels;
+  skipTics = Math.ceil(numLabels / numTics);
+
+  //draw yAxis tic marks and labels
+  this.ctx.save();
+  this.ctx.textAlign = "end";
+  //this.ctx.translate(0, this.chart.sizes.height);
+  for (pnt_i = 0; pnt_i < numLabels; pnt_i += skipTics) {
+    offset = pnt_i * spacing;
+    ticLabel = labels[pnt_i];
+
+    Dave_js.drawTic(this.ctx, ticLabel, offset);
+  }/*
+  for (pnt_i = 0; pnt_i < numPts; pnt_i += this.chart.skipTics.indep) {
+    offset = pnt_i * spacing;
+    ticLabel = labels[pnt_i + start];
+
+    Dave_js.drawTic(this.ctx, ticLabel, offset);
+  }*/
+
   this.ctx.restore();
 };
