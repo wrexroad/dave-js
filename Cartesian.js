@@ -107,7 +107,7 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   }
 
   //range the data
-  ranged = Dave_js.autoRange({
+  ranged = Dave_js.Utils.autoRange({
     data: this.data.x,
     min: this.chart.limits.xmin,
     max: this.chart.limits.xmax
@@ -116,7 +116,7 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   this.range.xMax = ranged.max;
 
   for(var_i = 0; var_i < numVars; var_i++){
-    ranged = Dave_js.autoRange({
+    ranged = Dave_js.Utils.autoRange({
       data: this.data.y[var_i],
       min: this.chart.limits.ymin,
       max: this.chart.limits.ymax
@@ -304,7 +304,7 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   labelWidth = parseInt(this.ctx.font, 10) * 1.5;
   numTics = (chartWidth / labelWidth) >> 0;
   skipTics = Math.ceil(numTics / numTics);
-  labels = Dave_js.rangeToArray(
+  labels = Dave_js.Utils.rangeToArray(
     Math.min.apply(null, data),
     Math.max.apply(null, data),
     numTics
@@ -320,7 +320,7 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
     ticLabel = labels[pnt_i];
     
     coords = this.getCoords(labels[pnt_i], 0);
-    Dave_js.drawTic(this.ctx, ticLabel, coords.x);
+    Dave_js.Utils.drawTic(this.ctx, ticLabel, coords.x);
   }
 
   this.ctx.restore();
@@ -340,7 +340,7 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   labelWidth = parseInt(this.ctx.font, 10) * 1.5;
   numTics = (chartHeight / labelWidth) >> 0;
   skipTics = Math.ceil(numTics / numTics);
-  labels = Dave_js.rangeToArray(
+  labels = Dave_js.Utils.rangeToArray(
     Math.min.apply(null, data),
     Math.max.apply(null, data),
     numTics
@@ -354,7 +354,7 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
     ticLabel = +labels[pnt_i];
     coords = this.getCoords(0, ticLabel);
 
-    Dave_js.drawTic(this.ctx, ticLabel, coords.y);
+    Dave_js.Utils.drawTic(this.ctx, ticLabel, coords.y);
   }
 
   this.ctx.restore();
