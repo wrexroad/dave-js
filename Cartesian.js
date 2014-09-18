@@ -144,8 +144,8 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 
 Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
   //draw the grid
-  this.callYTics(this.dataStore.getVarData(this.vars.y[0]));
-  this.callXTics(this.dataStore.getVarData('Time'));
+  this.callYTics(labels.yTics);
+  this.callXTics(labels.xTics);
 };
 
 Dave_js.Cartesian.prototype.plot = function plot() {

@@ -639,7 +639,16 @@ Dave_js.chart = function(name) {
       x: vars.indep,
       y: vars.deps
     });
-    plotter.decorate(chart.labels);
+
+    plotter.decorate({
+      xTics:
+        dataStore.getVarData('Time').slice().sort(
+          function compareNumbers(a, b) {return a - b;}
+        ),
+      yTics: dataStore.getVarData(vars.deps[0]).slice().sort(
+          function compareNumbers(a, b) {return a - b;}
+        )
+    });
     
     plotter.plot();
     
