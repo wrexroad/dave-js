@@ -22,8 +22,8 @@ Dave_js.Cartesian = function Cartesian(ctx, dataStore, chart){
     this.ctx = ctx;
   }
 
-  //this is where the coordinate map will be stored once calculated
-  this.coords = {};
+  //a copy of all the variable data that is pulled from dataStore
+  this.data = {};
 
   //vars will contain the name of the variables plotted on each axis
   this.vars = {
@@ -76,39 +76,39 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   numVars = this.vars.y.length;
 
   //create a copy of the data that is to be plotted
-  this.coords = {y:[], x:[]};
+  this.data = {y:[], x:[]};
   for (var_i = 0; var_i < numVars; var_i++) {
-    this.coords.y[var_i] =
+    this.data.y[var_i] =
       (this.dataStore.getVarData(this.vars.y[var_i]) || []).slice(0);
   }
   
   //make sure all the y variables are the same length
-  numPts = this.coords.y[0].length || 0;
+  numPts = this.data.y[0].length || 0;
   for(var_i = 0; var_i < numVars; var_i++){
-    if(numPts && numPts != this.coords.y[var_i].length){
+    if(numPts && numPts != this.data.y[var_i].length){
       console.log('Found y-axis variables with different lengths.');
-      console.log('\t' + this.vars.y[var_i] + ': ' + this.coords.y[var_i].length);
+      console.log('\t' + this.vars.y[var_i] + ': ' + this.data.y[var_i].length);
       console.log('\t' + this.vars.y[var_i] + ': ' + numPts);
       return;
     }
     
-    numPts = this.coords.y[var_i].length;
+    numPts = this.data.y[var_i].length;
   }
 
   //if the x variable has not been set, create an array of indicies the 
   //same length as the first y variable data
-  if ((this.coords.x = this.dataStore.getVarData(this.vars.x)) === null) {
+  if ((this.data.x = this.dataStore.getVarData(this.vars.x)) === null) {
     for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-      this.coords.x[pnt_i] = pnt_i;
+      this.data.x[pnt_i] = pnt_i;
     }
   } else {
     //we were able to get a reference to the x variable data, so make a new copy
-    this.coords.x = this.coords.x.slice(0);
+    this.data.x = this.data.x.slice(0);
   }
 
   //range the data
   ranged = Dave_js.autoRange({
-    data: this.coords.x,
+    data: this.data.x,
     min: this.chart.limits.xmin,
     max: this.chart.limits.xmax
   });
@@ -117,7 +117,7 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 
   for(var_i = 0; var_i < numVars; var_i++){
     ranged = Dave_js.autoRange({
-      data: this.coords.y[var_i],
+      data: this.data.y[var_i],
       min: this.chart.limits.ymin,
       max: this.chart.limits.ymax
     });
@@ -126,20 +126,17 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   }
 
   //calculate the pixel conversion factor
-  this.spacing.x = this.chart.sizes.width / (this.range.xMax - this.range.xMin);
-  this.spacing.y = this.chart.sizes.height / (this.range.yMax - this.range.yMin);
-  
-  //convert all data points to coordinates
-  pnts = this.coords.x;
-  for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-    pnts[pnt_i] = (pnts[pnt_i] - this.range.xMin) * this.spacing.x;
-  }
-  for (var_i = 0; var_i < numVars; var_i++) {
-    pnts = this.coords.y[var_i];
-    for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-      pnts[pnt_i] = (this.range.yMax - pnts[pnt_i]) * this.spacing.y;
-    }
-  }
+  this.spacing.x =
+    this.chart.sizes.width / (this.range.xMax - this.range.xMin);
+  this.spacing.y =
+    this.chart.sizes.height / (this.range.yMax - this.range.yMin);
+};
+
+Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
+  return {
+    x: (x - this.range.xMin) * this.spacing.x,
+    y: (this.range.yMax - y) * this.spacing.y
+  };
 };
 
 Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
@@ -165,8 +162,8 @@ Dave_js.Cartesian.prototype.plot = function plot() {
   //draw all the lines
   for(var_i = 0; var_i < numVars; var_i++){
     this.drawLines(
-      this.coords.x,
-      this.coords.y[var_i],
+      this.data.x,
+      this.data.y[var_i],
       this.chart.colors.data[var_i]
     );
   }
@@ -178,7 +175,7 @@ Dave_js.Cartesian.prototype.plot = function plot() {
       color: this.chart.colors.data[var_i], width: '2', ctx: this.ctx
     });
 
-    this.drawPoints(this.coords.x, this.coords.y[var_i], dot);
+    this.drawPoints(this.data.x, this.data.y[var_i], dot);
   }
 
   //restore the context to the pre-plotting state
@@ -188,6 +185,7 @@ Dave_js.Cartesian.prototype.plot = function plot() {
 Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
   var
     onPath = false,
+    coords,
     pnt_i;
 
   this.ctx.save();
@@ -205,13 +203,16 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
       this.ctx.stroke();
       onPath = false;
     } else {
+      //convert the data point to pixel coordinates
+      coords = this.getCoords(x[pnt_i], y[pnt_i]);
+
       //make sure we have a current path
       if (!onPath) {
-        this.ctx.moveTo(x[pnt_i], y[pnt_i]);
+        this.ctx.moveTo(coords.x, coords.y);
         this.ctx.beginPath();
         onPath = true;
       } else {
-        this.ctx.lineTo(x[pnt_i], y[pnt_i]);
+        this.ctx.lineTo(coords.x, coords.y);
       }
     }
   }
@@ -221,7 +222,7 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
 };
 
 Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
-  var pnt_i;
+  var coords, pnt_i;
 
   this.ctx.save();
 
@@ -231,7 +232,8 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
   }
 
   for (pnt_i = 0; pnt_i < x.length; pnt_i++) {
-    dot(x[pnt_i], y[pnt_i]);
+    coords = this.getCoords(x[pnt_i], y[pnt_i]);
+    dot(coords.x, coords.y);
   }
 
   this.ctx.restore();
