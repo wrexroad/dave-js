@@ -296,7 +296,7 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
 Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   var
     chartWidth, labelWidth, numTics, skipTics,
-    offset, ticLabel, pnt_i, var_i, data;
+    ticLabel, pnt_i, var_i, data, coords, labels;
   
   data = this.dataStore.getVarData(this.vars.x).slice();
 
@@ -317,10 +317,10 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   this.ctx.rotate(1.5 * Math.PI);
 
   for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
-    offset = pnt_i * labelWidth;
     ticLabel = labels[pnt_i];
-
-    Dave_js.drawTic(this.ctx, ticLabel, offset);
+    
+    coords = this.getCoords(labels[pnt_i], 0);
+    Dave_js.drawTic(this.ctx, ticLabel, coords.x);
   }
 
   this.ctx.restore();
@@ -329,7 +329,7 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
 Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   var
     chartHeight, labelWidth, numTics, skipTics,
-    offset, ticLabel, pnt_i, var_i, data;
+    ticLabel, pnt_i, var_i, data, coords, labels;
 
   data = [];
   for(var_i = 0; var_i < this.vars.y.length; var_i++){
@@ -349,12 +349,12 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   //draw yAxis tic marks and labels
   this.ctx.save();
   this.ctx.textAlign = "end";
-  this.ctx.translate(0, this.chart.sizes.height);
+  this.ctx.translate(0, 0);//this.chart.sizes.height);
   for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
-    offset = -pnt_i * labelWidth;
-    ticLabel = labels[pnt_i];
+    ticLabel = +labels[pnt_i];
+    coords = this.getCoords(0, ticLabel);
 
-    Dave_js.drawTic(this.ctx, ticLabel, offset);
+    Dave_js.drawTic(this.ctx, ticLabel, coords.y);
   }
 
   this.ctx.restore();
