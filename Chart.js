@@ -633,16 +633,20 @@ Dave_js.chart = function(name) {
       numOfPts = chart.range.numOfPts,
       y_data,
       plt_i,
-      plotter = new Dave_js.Cartesian(ctx, dataStore, chart);
+      plot = new Dave_js.Plot('Cartesian');
 
-    plotter.loadData({
+    plot.ctx = ctx;
+    plot.dataStore = dataStore;
+    plot.chart = chart;
+
+    plot.loadData({
       x: vars.indep,
       y: vars.deps
     });
 
-    plotter.decorate();
+    plot.decorate();
     
-    plotter.plot();
+    plot.plotData();
     
     timer = (new Date()).getTime() - timer;
     console.log("Draw Time = " + timer / 1000);
