@@ -4,7 +4,7 @@ Dave_js.Plot = function Plot(type) {
     console.log('Unknown plot type: "' + type + '"');
     return null;
   }
-  
+
   this.plotter = new Dave_js[type](this);
 
   this.vars = {
@@ -111,8 +111,8 @@ Dave_js.Plot.prototype.buildCanvas = function buildCanvas() {
   console.log("Canvas Build = " + timer / 1000);
 };
 
-Dave_js.Plot.prototype.setCanvasHolder = function(canvasHolderID) {
-  this.elms.canvasBox = document.getElementById(canvasHolderID);
+Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
+  this.elms.canvasBox = document.getElementById(canvasDivID);
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x,y) {
