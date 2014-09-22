@@ -300,21 +300,7 @@ Dave_js.Plot.prototype.setColor = function(type, color) {
 Dave_js.Plot.prototype.setVars = function setVars(vars) {
   this.vars = vars;
 };
-/*
-Dave_js.Plot.prototype.setDataRange = function(start, stop) {
-  var
-    indepVarData = dataStore.getVarData(this.vars.indep) || [],
-    indepVarLength = indepVarData.length,
-    range = this.chart.range;
 
-  //make sure the index range is within the data set and save it
-  range.start = Math.max(start, 0);
-  range.stop = Math.min(stop, indepVarLength - 1);
-
-  //figure out how manys data points we have
-  range.numOfPts = range.stop - range.start + 1;
-};
-*/
 Dave_js.Plot.prototype.setSubPlot = function(bool) {
   this.flags.subPlot = bool;
 };
@@ -413,11 +399,11 @@ Dave_js.Plot.prototype.setZoomable = function() {
 };
 
 Dave_js.Plot.prototype.getDataStore = function() {
-  return dataStore;
+  return this.dataStore;
 };
 
 Dave_js.Plot.prototype.setDataStore = function setDataStore(ds) {
-  dataStore = ds;
+  this.dataStore = ds;
 };
 
 Dave_js.Plot.prototype.getPlotElements = function() {
@@ -432,13 +418,8 @@ Dave_js.Plot.prototype.buildPlot = function(start, stop) {
   //var
   //  indepVarLength = (dataStore.getVarData(vars.indep) || []).length;
 
-  //determine if start and stop indicies were set
-  //if not, set for full range
-  //if (start === undefined) {start = 0;}
-  //if (stop === undefined) {stop = indepVarLength - 1;}
-  
   //set the start and stop indecies for all the loops
-  //this.setDataRange(start, stop);
+  this.setDataRange(+start || 0, +stop || this.dataStore.getVarData(this.vars.y[0]).length);
 
   //figure out the point size
   if (!this.flags.fixedPtSize) {

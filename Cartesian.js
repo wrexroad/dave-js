@@ -1,4 +1,10 @@
-Dave_js.Cartesian = function Cartesian(){};
+Dave_js.Cartesian = function Cartesian(owner){
+  //override any functions in Plot.js that are set here
+  if(!owner){return;}
+  for(var i in this){
+    owner[i] = this[i];
+  }
+};
 
 Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   var
@@ -323,4 +329,17 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   }
 
   ctx.restore();
+};
+
+Dave_js.Cartesian.prototype.setDataRange = function setDataRange(start, stop) {
+  var
+    xData = this.dataStore.getVarData(this.vars.indep) || [],
+    xLength = xData.length;
+
+  //make sure the index range is within the data set and save it
+  this.chart.range.start = Math.max(start, 0);
+  this.chart.range.stop = Math.min(stop, xLength - 1);
+ 
+  //figure out how manys data points we have
+  this.chart.range.numOfPts = this.chart.range.stop - this.chart.range.start + 1;
 };
