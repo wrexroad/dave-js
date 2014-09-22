@@ -5,17 +5,14 @@ Dave_js.Plot = function Plot(type) {
     return null;
   }
   
-  //associate this.plotters functions with this
   this.plotter = new Dave_js[type](this);
-  this.loadData = this.plotter.loadData;
-  this.plotData = this.plotter.plotData;
-  this.decorate = this.plotter.decorate;
-  
+
   this.vars = {
     x: "",
     y: []
   };
-
+  
+  //get a new set of properties
   this.chart = new Dave_js.ChartProperties();
 };
 
@@ -25,12 +22,7 @@ Dave_js.Plot.prototype.elms = {
   canvasBox : document.getElementsByTagName("body")[0],
   
   //element reference to the canvas we will draw to
-  canvas : undefined,
-  
-  //divs to hold the pointer coordinats. 
-  //Coord event listener will not be created without both of these
-  xCoordBox : undefined,
-  yCoordBox : undefined
+  canvas : undefined
 };
 
 // Add a new canvas to the "canvasBox" element, 
