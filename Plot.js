@@ -33,70 +33,13 @@ Dave_js.Plot.prototype.elms = {
   yCoordBox : undefined
 };
 
-Dave_js.Plot.prototype.flags = {
-  //set true if the data has been plotted once. 
-  //Prevents scaling data multiple times
-  replot : false,
-  
-  //set this to indicate a polar
-  polar : false,
-  
-  //draw a bar from zero up to the point value
-  hist : false,
-  
-  //rectangular box for an xy plot
-  xy : false,
-  
-  //setting this true indicates we are drawing on top of an existing plot.
-  //Frame, background, axis labels, tics, and limits are all skipped.
-  subPlot : false,
-  
-  //setting this true will add an event listener to the plot 
-  //so we can display exact mouseover plot values
-  showCoords : true,
-  
-  //values will be connected with a line
-  lines : false,
-  
-  //values will be represented by a point
-  points : false,
- 
-  //the user sets a fixed point width
-  fixedPtSize : false,
- 
-  //convert angular/radial values to longitude/lattitude
-  map : false,
-  
-  //scale the data before plotting
-  scaled : false,
-  
-  //false for fitting the y axis to the data, 
-  //true to use pre defined axis limits
-  limits : false,
-  
-  //draw a background grid (only for polar plots right now)
-  grid : false,
-  
-  axis : false,
-  
-  title : false,
-  
-  //on xy plots this lists variable names in their color along the top, 
-  //in polar plots, this draws a line from a colored variable name to 
-  //the last drawn point
-  legend : false,
-  
-  //makes plot zoomable by clicking and dragging over the desired area
-  zoomable : true
-};
-
 // Add a new canvas to the "canvasBox" element, 
 // gets the canvas context, and draws a skeleton graph
 Dave_js.Plot.prototype.buildCanvas = function buildCanvas() {
   var timer = (new Date()).getTime();
 
   //if this is not part of an existing plot, clear the canvas
-  if(this.flags.subplot != 1) {
+  if(this.chart.flags.subplot != 1) {
     //remove old canvas element
     if(this.elms.canvas) {
       this.elms.canvasBox.removeChild(this.elms.canvas);
@@ -119,7 +62,7 @@ Dave_js.Plot.prototype.buildCanvas = function buildCanvas() {
     this.chart.origin.x, this.chart.origin.y
   );
   
-  if (!this.flags.subplot) {
+  if (!this.chart.flags.subplot) {
     //draw background and border
     if (this.chart.bgImg) {
       ctx.drawImage( this.chart.bgImg, 0, 0 );
@@ -132,7 +75,7 @@ Dave_js.Plot.prototype.buildCanvas = function buildCanvas() {
     ctx.strokeRect(0, 0, this.chart.sizes.width, this.chart.sizes.height);
     
     //print title (bold)
-    if (this.flags.title) {
+    if (this.chart.flags.title) {
       ctx.textAlign = "center";
       ctx.fillStyle = this.chart.colors.text;
       ctx.font = "bold " + this.chart.cssFont;
@@ -143,7 +86,7 @@ Dave_js.Plot.prototype.buildCanvas = function buildCanvas() {
     }
     
     //print axis labels
-    if (this.flags.axis) {
+    if (this.chart.flags.axis) {
       ctx.font = this.chart.cssFont;
       ctx.fillStyle = this.chart.colors.text;
       ctx.textAlign = "start";
@@ -161,7 +104,7 @@ Dave_js.Plot.prototype.buildCanvas = function buildCanvas() {
   }
 
   //add coordinate display if this is an xy plot and the coord flag is set
-  if(this.flags.xy && this.flags.showCoords) {
+  if(this.chart.flags.xy && this.chart.flags.showCoords) {
     //create a message holder 
     this.elms.coordMsg = new Dave_js.message();
     this.elms.coordMsg.box.style.opacity = "0.8";
@@ -216,11 +159,11 @@ Dave_js.Plot.prototype.setVars = function setVars(vars) {
 };
 
 Dave_js.Plot.prototype.setSubPlot = function(bool) {
-  this.flags.subPlot = bool;
+  this.chart.flags.subPlot = bool;
 };
 
 Dave_js.Plot.prototype.setCoordDisp = function(bool) {
-  this.flags.showCoords = bool;
+  this.chart.flags.showCoords = bool;
 };
 
 //first argument is an array containing the name of each tracker. 
@@ -236,23 +179,23 @@ Dave_js.Plot.prototype.setTrackers = function() {
 Dave_js.Plot.prototype.setLabels = function(labels) {
   if (labels.title) {
     this.chart.labels.title = labels.title;
-    this.flags.title = true;
+    this.chart.flags.title = true;
   }
 
   if (labels.independent) {
     this.chart.labels.indep = labels.independent;
-    this.flags.axis = true;
+    this.chart.flags.axis = true;
   }
 
   if (labels.dependent) {
     this.chart.labels.dep = labels.dependent;
-    this.flags.axis = true;
+    this.chart.flags.axis = true;
   }
 };
 
 //set the data to be scaled in some way
 Dave_js.Plot.prototype.setScale = function(scale) {
-  this.flags.scaled = true;
+  this.chart.flags.scaled = true;
 
   var scaleParams = scale.split("_");
 
@@ -265,7 +208,7 @@ Dave_js.Plot.prototype.setLimits = function(min,max) {
   if (!isNaN(0 + min) && !isNaN(0 + max)) {
     this.chart.limits.ymin = 0 + min;
     this.chart.limits.ymax = 0 + max;
-    this.flags.limits = true;
+    this.chart.flags.limits = true;
   } else {
     alert("Plot limits could not be set.");
   }
@@ -277,7 +220,7 @@ Dave_js.Plot.prototype.setLineWidth = function(width) {
 
 Dave_js.Plot.prototype.setPointSize = function(width) {
   //stop from auto calculating point size
-  this.flags.fixedPtSize = true;
+  this.chart.flags.fixedPtSize = true;
 
   //make sure the supplied point size is not too small
   this.chart.sizes.pointSize = Math.max(1, width);
@@ -301,15 +244,15 @@ Dave_js.Plot.prototype.setBackgroundImage = function(id) {
 };
 
 Dave_js.Plot.prototype.setGrid = function() {
-  this.flags.grid = true;
+  this.chart.flags.grid = true;
 };
 
 Dave_js.Plot.prototype.setLegend = function() {
-  this.flags.legend = true;
+  this.chart.flags.legend = true;
 };
 
 Dave_js.Plot.prototype.setZoomable = function() {
-  this.flags.zoomable = true;
+  this.chart.flags.zoomable = true;
 };
 
 Dave_js.Plot.prototype.getDataStore = function() {
@@ -336,7 +279,7 @@ Dave_js.Plot.prototype.buildPlot = function(start, stop) {
   this.setDataRange(+start || 0, +stop || this.dataStore.getVarData(this.vars.y[0]).length);
 
   //figure out the point size
-  if (!this.flags.fixedPtSize) {
+  if (!this.chart.flags.fixedPtSize) {
     //take a best guess at point size
     this.setPointSize(
       parseInt((this.chart.sizes.width / this.chart.range.numOfPts / 2), 10)
@@ -349,11 +292,11 @@ Dave_js.Plot.prototype.buildPlot = function(start, stop) {
   }
 
   //Adjust the data as needed
-  if (this.flags.scaled && !this.flags.replot) {
+  if (this.chart.flags.scaled && !this.chart.flags.replot) {
     scaler();
   }
   
-  this.flags.replot = true;
+  this.chart.flags.replot = true;
   
   //initalize the canvas element and context
   this.buildCanvas();
@@ -364,23 +307,23 @@ Dave_js.Plot.prototype.buildPlot = function(start, stop) {
 
 
   //determine what type of plot we are generating
-  if (this.flags.xy) {
+  if (this.chart.flags.xy) {
     configSpacing();
     drawLinesPoints();
   }
   
-  if (this.flags.polar) {
+  if (this.chart.flags.polar) {
     configSpacing();
     configPolar();
 
-    if (!this.flags.subPlot && this.flags.setGrid) {
+    if (!this.chart.flags.subPlot && this.chart.flags.setGrid) {
       drawPolarGrid();
     }
 
     drawPolarPlot();
   }
   
-  if (this.flags.hist) {
+  if (this.chart.flags.hist) {
     configHistBars();
     configSpacing();
     callYTics();

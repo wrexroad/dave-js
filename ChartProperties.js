@@ -84,4 +84,61 @@ Dave_js.ChartProperties = function ChartProperties(){
     borderColor : '#000000',
     bgColor : '#CCCCCC'
   };
+
+  this.flags = {
+    //set true if the data has been plotted once. 
+    //Prevents scaling data multiple times
+    replot : false,
+    
+    //set this to indicate a polar
+    polar : false,
+    
+    //draw a bar from zero up to the point value
+    hist : false,
+    
+    //rectangular box for an xy plot
+    xy : false,
+    
+    //setting this true indicates we are drawing on top of an existing plot.
+    //Frame, background, axis labels, tics, and limits are all skipped.
+    subPlot : false,
+    
+    //setting this true will add an event listener to the plot 
+    //so we can display exact mouseover plot values
+    showCoords : true,
+    
+    //values will be connected with a line
+    lines : false,
+    
+    //values will be represented by a point
+    points : false,
+   
+    //the user sets a fixed point width
+    fixedPtSize : false,
+   
+    //convert angular/radial values to longitude/lattitude
+    map : false,
+    
+    //scale the data before plotting
+    scaled : false,
+    
+    //false for fitting the y axis to the data, 
+    //true to use pre defined axis limits
+    limits : false,
+    
+    //draw a background grid (only for polar plots right now)
+    grid : false,
+    
+    axis : false,
+    
+    title : false,
+    
+    //on xy plots this lists variable names in their color along the top, 
+    //in polar plots, this draws a line from a colored variable name to 
+    //the last drawn point
+    legend : false,
+    
+    //makes plot zoomable by clicking and dragging over the desired area
+    zoomable : true
+  };
 };
