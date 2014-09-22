@@ -98,6 +98,44 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
 };
 
 Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
+  //draw background and border
+  if (this.chart.bgImg) {
+    this.ctx.drawImage( this.chart.bgImg, 0, 0 );
+  } else {
+    this.ctx.fillStyle = this.chart.colors.bgColor;
+    this.ctx.fillRect( 0, 0, this.chart.sizes.width, this.chart.sizes.height );
+  }
+  this.ctx.strokeStyle = this.chart.colors.borderColor;
+  this.ctx.strokeRect(0, 0, this.chart.sizes.width, this.chart.sizes.height);
+
+  //print title (bold)
+  if (this.chart.flags.title) {
+    this.ctx.textAlign = "center";
+    this.ctx.fillStyle = this.chart.colors.text;
+    this.ctx.font = "bold " + this.chart.cssFont;
+    this.ctx.fillText(
+      this.chart.labels.title,
+      (this.chart.sizes.width / 2), -5
+    );
+  }
+  
+  //print axis labels
+  if (this.chart.flags.axis) {
+    this.ctx.font = this.chart.cssFont;
+    this.ctx.fillStyle = this.chart.colors.text;
+    this.ctx.textAlign = "start";
+    this.ctx.fillText(
+      this.chart.labels.indep,
+       -50, (this.chart.sizes.height + 40)
+    );
+    this.ctx.save();
+    this.ctx.translate(-45, (this.chart.sizes.height / 2) );
+    this.ctx.rotate(1.5 * Math.PI);
+    this.ctx.textAlign = "center";
+    this.ctx.fillText(this.chart.labels.dep, 0, -20);
+    this.ctx.restore();
+  }
+
   Dave_js.Cartesian.prototype.callYTics.apply(this, null);
   Dave_js.Cartesian.prototype.callXTics.apply(this, null);
 };
