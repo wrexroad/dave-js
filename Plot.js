@@ -168,8 +168,6 @@ Dave_js.Plot.prototype.buildPlot = function(start, stop) {
   
   this.chart.flags.replot = true;
   
-  //initalize the canvas element and context
-  this.buildCanvas();
 /*  
   //figure out axis and radii lengths
   // or limit dependent data sets
