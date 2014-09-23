@@ -26,14 +26,20 @@ Dave_js.Plot = function Plot(type) {
 };
 
 Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
-  this.canvasBox = document.getElementById(canvasDivID);
+  var el = document.getElementById(canvasDivID);
+  
   if (this.canvasBox !== null) {
-    this.canvasBox.appendChild(this.canvas);
+    this.canvasBox = el;
   } else {
     console.log(
       'Could not attach canvas to ' + canvasDivID + '. Element does not exist.'
     );
+    console.log(
+      'Attaching to BODY instead.'
+    );
   }
+
+  this.canvasBox.appendChild(this.canvas);
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {
