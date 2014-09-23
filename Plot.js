@@ -47,21 +47,26 @@ Dave_js.Plot.prototype.setOrigin = function(x, y) {
   this.chart.origin.y = isNaN(y) ? (+this.chart.origin.y || 0) : y;
 };
 
-Dave_js.Plot.prototype.setCanvasSize = function(height, width, margin) {
-  height = +height || 0;
-  width = +width || 0;
-  margin = +margin || 0;
+Dave_js.Plot.prototype.setChartSize = function(sizes) {
+  var margin, height, width;
 
-  this.canvas.height = height;
-  this.canvas.width = width;
-  this.chart.margin = margin;
+  if(!sizes){
+    return;
+  }
 
-  this.setChartSize((height - margin), (width - margin));
-};
+  if(margin = Dave_js.Utils.forceNumber(sizes.margin)){
+    this.chart.margin = Math.max(0, margin);
+  }
 
-Dave_js.Plot.prototype.setChartSize = function(height, width) {
-  height = +height || 0;
-  width = +width || 0;
+  if(height = Dave_js.Utils.forceNumber(sizes.height)){
+    this.chart.height = height;
+    this.canvas.height = height + this.chart.margin;
+  }
+
+  if(width = Dave_js.Utils.forceNumber(sizes.width)){
+    this.chart.width = width;
+    this.canvas.width = width + this.chart.margin;
+  }
 
   this.chart.height = height;
   this.chart.width = width;

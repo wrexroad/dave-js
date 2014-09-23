@@ -71,3 +71,16 @@ Dave_js.Utils.rangeToArray = function rangeToArray(min, max, length){
 
   return result;
 };
+
+Dave_js.Utils.forceNumber = function isNaN(num){
+  if(typeof num === 'number'){
+    //the input was already a number so there is nothing to do
+    return num;
+  } else if(num ==='0') {
+    //make sure '0' is not converted to NaN
+    return 0;
+  } else {
+    //convert anything falsey to NaN and anything truthy to a number
+    return (!num ? NaN : +num);
+  }
+}
