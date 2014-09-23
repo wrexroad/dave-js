@@ -39,8 +39,8 @@ Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {
-  this.chart.origin.x = isNaN(x) ? this.chart.origin.x : x;
-  this.chart.origin.y = isNaN(y) ? this.chart.origin.y : y;
+  this.chart.origin.x = isNaN(x) ? (+this.chart.origin.x || 0) : x;
+  this.chart.origin.y = isNaN(y) ? (+this.chart.origin.y || 0) : y;
 };
 
 Dave_js.Plot.prototype.setCanvasSize = function(height, width, margin) {
@@ -97,20 +97,24 @@ Dave_js.Plot.prototype.setScale = function(scale) {
 };
 
 Dave_js.Plot.prototype.setLineWidth = function(width) {
-  this.chart.sizes.lineWidth = width;
+  this.chart.sizes.lineWidth = +width || 1;
 };
 
 Dave_js.Plot.prototype.setPointSize = function(width) {
+  var
+    size = +width || 2,
+    halfSize = size >> 1;
+
   //stop from auto calculating point size
   this.chart.flags.fixedPtSize = true;
 
   //make sure the supplied point size is not too small
-  this.chart.sizes.pointSize = Math.max(1, width);
-  this.chart.sizes.halfPointSize = parseInt((this.chart.sizes.pointSize / 2), 10);
+  this.chart.sizes.pointSize = Math.max(2, size);
+  this.chart.sizes.halfPointSize = halfSize;
 };
 
 Dave_js.Plot.prototype.setHistBars = function(ratio) {
-  this.chart.histBarRatio = ratio;
+  this.chart.histBarRatio = +ratio || 1;
 };
 
 Dave_js.Plot.prototype.setBorderColor = function(color) {
@@ -122,7 +126,14 @@ Dave_js.Plot.prototype.setBackgroundColor = function(color) {
 };
 
 Dave_js.Plot.prototype.setBackgroundImage = function(id) {
-  this.chart.bgImg = document.getElementById(id);
+  var el = document.getElementById(id);
+  if(!id || id.tagName != 'IMG'){
+    console.log(
+      'Could not set background image, ' + el + ' is not an "IMG" tag.'
+    );
+  } else {
+    this.chart.bgImg = el;
+  }
 };
 
 Dave_js.Plot.prototype.setGrid = function() {
@@ -146,7 +157,7 @@ Dave_js.Plot.prototype.setDataStore = function setDataStore(ds) {
 };
 
 Dave_js.Plot.prototype.getPlotElements = function() {
-  return elms;
+  return this.elms;
 };
 
 Dave_js.Plot.prototype.getChartProps = function() {
