@@ -40,6 +40,9 @@ Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
   }
 
   this.canvasBox.appendChild(this.canvas);
+  this.ctx.translate(
+    this.chart.origin.x, this.chart.origin.y
+  );
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {
