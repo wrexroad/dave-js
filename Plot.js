@@ -35,7 +35,7 @@ Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
       'Could not attach canvas to ' + canvasDivID + '. Element does not exist.'
     );
     console.log(
-      'Attaching to BODY instead.'
+      'Attaching to body tag instead.'
     );
   }
 

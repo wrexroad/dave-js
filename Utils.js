@@ -83,4 +83,4 @@ Dave_js.Utils.forceNumber = function isNaN(num){
     //convert anything falsey to NaN and anything truthy to a number
     return (!num ? NaN : +num);
   }
-}
+};
