@@ -86,16 +86,6 @@ Dave_js.Plot.prototype.setTrackers = function() {
   }
 };
 
-//set the data to be scaled in some way
-Dave_js.Plot.prototype.setScale = function(scale) {
-  this.chart.flags.scaled = true;
-
-  var scaleParams = scale.split("_");
-
-  this.chart.scale.type = scaleParams[0];
-  this.chart.scale.value = parseInt((scaleParams[1]), 10);
-};
-
 Dave_js.Plot.prototype.setLineWidth = function(width) {
   this.chart.sizes.lineWidth = +width || 1;
 };
@@ -182,11 +172,6 @@ Dave_js.Plot.prototype.buildPlot = function(start, stop) {
     this.setPointSize(
       Math.max(1, Math.min(8, this.chart.sizes.pointSize))
     );
-  }
-
-  //Adjust the data as needed
-  if (this.chart.flags.scaled && !this.chart.flags.replot) {
-    scaler();
   }
   
   this.chart.flags.replot = true;
