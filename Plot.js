@@ -138,10 +138,6 @@ Dave_js.Plot.prototype.setDataStore = function setDataStore(ds) {
   this.dataStore = ds;
 };
 
-Dave_js.Plot.prototype.getPlotElements = function() {
-  return this.elms;
-};
-
 Dave_js.Plot.prototype.getChartProps = function() {
   return this.chart;
 };
