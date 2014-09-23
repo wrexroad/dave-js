@@ -11,31 +11,23 @@ Dave_js.Plot = function Plot(type) {
   this.chart = new Dave_js.ChartProperties();
 
   //create the canvas element
-  this.elms.canvas = document.createElement("canvas");
-  this.elms.canvas.id = this.chart.id;
+  this.canvas = document.createElement("canvas");
+  this.canvas.id = this.chart.id;
   
   //initialize canvas context
-  this.ctx = this.elms.canvas.getContext("2d");
+  this.ctx = this.canvas.getContext("2d");
   
   //move coord origin to the upper left corner of plot area
   this.ctx.translate(
     this.chart.origin.x, this.chart.origin.y
   );
 
-  this.elms.canvasBox.appendChild(this.elms.canvas);
-};
-
-Dave_js.Plot.prototype.elms = {
-  //element reference for a div that will hold the canvas element. 
-  //If not specified, canvas will be generated in the "body" tag.
-  canvasBox : document.getElementsByTagName("body")[0],
-  
-  //element reference to the canvas we will draw to
-  canvas : undefined
+  this.canvasBox = document.getElementsByTagName("body")[0];
+  this.canvasBox.appendChild(this.canvas);
 };
 
 Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
-  this.elms.canvasBox = document.getElementById(canvasDivID);
+  this.canvasBox = document.getElementById(canvasDivID);
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {
