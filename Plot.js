@@ -53,6 +53,7 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
   labels = labels || {};
 
   //draw background and border
+  this.ctx.save();
   if (this.chart.bgImg) {
     this.ctx.drawImage( this.chart.bgImg, 0, 0 );
   } else {
@@ -61,9 +62,11 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
   }
   this.ctx.strokeStyle = this.chart.colors.borderColor;
   this.ctx.strokeRect(0, 0, this.chart.width, this.chart.height);
+  this.ctx.restore();
 
   //print title (bold)
   if (labels.plotTitle) {
+    this.ctx.save();
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = this.chart.colors.text;
     this.ctx.font = "bold " + this.chart.cssFont;
@@ -71,6 +74,7 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
       labels.plotTitle,
       (this.chart.width / 2), -5
     );
+    this.ctx.restore();
   }
   
   //print axis labels
