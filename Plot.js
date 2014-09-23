@@ -23,11 +23,17 @@ Dave_js.Plot = function Plot(type) {
   );
 
   this.canvasBox = document.getElementsByTagName("body")[0];
-  this.canvasBox.appendChild(this.canvas);
 };
 
 Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
   this.canvasBox = document.getElementById(canvasDivID);
+  if (this.canvasBox !== null) {
+    this.canvasBox.appendChild(this.canvas);
+  } else {
+    console.log(
+      'Could not attach canvas to ' + canvasDivID + '. Element does not exist.'
+    );
+  }
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {
