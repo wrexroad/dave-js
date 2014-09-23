@@ -4,24 +4,14 @@ Dave_js.ChartProperties = function ChartProperties(){
   
   //default canvas size
   this.sizes = {
-    canvas : {
-      //drawable area height and width
-      width : 0,
-      height : 0,
-      //margin between canvas edge and ploting region 
-      //(used for titels, labels, etc...)
-      margin : 200
-    },
-
-    //chart height and width or radius
-    width : 0,
-    height : 0,
-    radius : 0,
-    
     lineWidth : 3,
     pointSize : 6,
     halfPointSize : 3
   };
+
+  this.height = 0;
+  this.width = 0;
+  this.margin = 200;
 
   //default x and y origins for the canvas coordinate system   
   this.origin = { x : 60, y : 20};

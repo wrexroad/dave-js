@@ -83,8 +83,8 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 
   //calculate the pixel conversion factor
   this.spacing = {
-    x: chart.sizes.width / (this.range.xMax - this.range.xMin),
-    y: chart.sizes.height / (this.range.yMax - this.range.yMin)
+    x: chart.width / (this.range.xMax - this.range.xMin),
+    y: chart.height / (this.range.yMax - this.range.yMin)
   };
 };
 
@@ -103,10 +103,10 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
     this.ctx.drawImage( this.chart.bgImg, 0, 0 );
   } else {
     this.ctx.fillStyle = this.chart.colors.bgColor;
-    this.ctx.fillRect( 0, 0, this.chart.sizes.width, this.chart.sizes.height );
+    this.ctx.fillRect( 0, 0, this.chart.width, this.chart.height );
   }
   this.ctx.strokeStyle = this.chart.colors.borderColor;
-  this.ctx.strokeRect(0, 0, this.chart.sizes.width, this.chart.sizes.height);
+  this.ctx.strokeRect(0, 0, this.chart.width, this.chart.height);
 
   //print title (bold)
   if (this.chart.flags.title) {
@@ -115,7 +115,7 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
     this.ctx.font = "bold " + this.chart.cssFont;
     this.ctx.fillText(
       this.chart.labels.title,
-      (this.chart.sizes.width / 2), -5
+      (this.chart.width / 2), -5
     );
   }
   
@@ -126,10 +126,10 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
     this.ctx.textAlign = "start";
     this.ctx.fillText(
       this.chart.labels.indep,
-       -50, (this.chart.sizes.height + 40)
+       -50, (this.chart.height + 40)
     );
     this.ctx.save();
-    this.ctx.translate(-45, (this.chart.sizes.height / 2) );
+    this.ctx.translate(-45, (this.chart.height / 2) );
     this.ctx.rotate(1.5 * Math.PI);
     this.ctx.textAlign = "center";
     this.ctx.fillText(this.chart.labels.dep, 0, -20);
@@ -149,7 +149,7 @@ Dave_js.Cartesian.prototype.plotData = function plotData() {
 
   //move to the plot origin
   ctx.save();
-  //ctx.translate(0, chart.sizes.height);
+  //ctx.translate(0, chart.height);
 
   //draw all the lines
   for(var_i = 0; var_i < numVars; var_i++){
@@ -253,19 +253,19 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
     ctx.strokeStyle = colors.data[plt_i];
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(chart.sizes.width, y);
-    ctx.lineTo(chart.sizes.width + legendOffset, y);
+    ctx.moveTo(chart.width, y);
+    ctx.lineTo(chart.width + legendOffset, y);
     ctx.stroke();
 
     ctx.fillStyle = colors.data[plt_i];
     ctx.textAlign = "start";
     ctx.fillText(
-      depVarNames[plt_i], chart.sizes.width + legendOffset, y
+      depVarNames[plt_i], chart.width + legendOffset, y
     );
   }
 
   //return to the canvas origin
-  ctx.translate(0, -1 * chart.sizes.height);
+  ctx.translate(0, -1 * chart.height);
 
   ctx.restore();
 };
@@ -303,8 +303,8 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
     ctx = this.ctx,
     dataStore = this.dataStore,
     vars = this.vars,
-    sizes = this.chart.sizes,
-    chartWidth = +sizes.width || 0,
+    chart = this.chart,
+    chartWidth = +chart.width || 0,
     labelWidth = parseInt(ctx.font, 10) * 1.5,
     numTics = (chartWidth / labelWidth) >> 0,
     skipTics = Math.ceil(numTics / numTics),
@@ -318,7 +318,7 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   //draw xAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(0, sizes.height);
+  ctx.translate(0, chart.height);
   ctx.rotate(1.5 * Math.PI);
 
   for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
@@ -338,7 +338,7 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
     vars = this.vars,
     ctx = this.ctx,
     dataStore = this.dataStore,
-    chartHeight = +this.chart.sizes.height || 0,
+    chartHeight = +this.chart.height || 0,
     labelWidth = parseInt(ctx.font, 10) * 1.5,
     numTics = (chartHeight / labelWidth) >> 0,
     skipTics = Math.ceil(numTics / numTics);
@@ -357,7 +357,7 @@ Dave_js.Cartesian.prototype.callYTics = function callYTics() {
   //draw yAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(0, 0);//this.chart.sizes.height);
+  ctx.translate(0, 0);//chartHeight);
   for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
     ticLabel = +labels[pnt_i];
     coords =

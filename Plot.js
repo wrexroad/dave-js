@@ -52,9 +52,9 @@ Dave_js.Plot.prototype.setCanvasSize = function(height, width, margin) {
   width = +width || 0;
   margin = +margin || 0;
 
-  this.chart.sizes.canvas.height = height;
-  this.chart.sizes.canvas.width = width;
-  this.chart.sizes.canvas.margin = margin;
+  this.canvas.height = height;
+  this.canvas.width = width;
+  this.chart.margin = margin;
 
   this.setChartSize((height - margin), (width - margin));
 };
@@ -63,8 +63,8 @@ Dave_js.Plot.prototype.setChartSize = function(height, width) {
   height = +height || 0;
   width = +width || 0;
 
-  this.chart.sizes.height = height;
-  this.chart.sizes.width = width;
+  this.chart.height = height;
+  this.chart.width = width;
   
   this.chart.sizes.radius = Math.max(width, height) / 2;
 };
