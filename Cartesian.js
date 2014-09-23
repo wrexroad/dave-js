@@ -4,6 +4,13 @@ Dave_js.Cartesian = function Cartesian(owner){
   for(var i in this){
     owner[i] = this[i];
   }
+
+  owner.range = {
+    xMin: null,
+    xMax: null,
+    yMin: null,
+    yMax: null
+  };
 };
 
 Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
@@ -59,33 +66,41 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   }
 
   //range the data
-  ranged = Dave_js.Utils.autoRange({
-    data: this.data.x,
-    min: chart.limits.xmin,
-    max: chart.limits.xmax
-  });
+
   this.range = {
     xMin: ranged.min,
     xMax: ranged.max
   };
 
-  for(var_i = 0; var_i < numVars; var_i++){
-    ranged = Dave_js.Utils.autoRange({
-      data: this.data.y[var_i],
-      min: chart.limits.ymin,
-      max: chart.limits.ymax
-    });
+};
 
-    this.range.yMin = Math.min(ranged.min, (this.range.yMin || ranged.min));
-    this.range.yMax = Math.max(ranged.max, (this.range.yMax || ranged.min));
+Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
+  var ranged;
 
-  }
+  //get the min and max values for each axis
+  ranged = Dave_js.Utils.autoRange({
+    data: this.dataStore.getVarData(data.x),
+    min: this.chart.limits.xmin,
+    max: this.chart.limits.xmax
+  });
+  this.range.xMin = Math.min(ranged.min, (this.range.xMin || ranged.min));
+  this.range.xMax = Math.max(ranged.max, (this.range.xMax || ranged.min));
 
+  ranged = Dave_js.Utils.autoRange({
+    data: this.dataStore.getVarData(data.y),
+    min: this.chart.limits.ymin,
+    max: this.chart.limits.ymax
+  });
+  this.range.yMin = Math.min(ranged.min, (this.range.yMin || ranged.min));
+  this.range.yMax = Math.max(ranged.max, (this.range.yMax || ranged.min));
+  
   //calculate the pixel conversion factor
   this.spacing = {
-    x: chart.width / (this.range.xMax - this.range.xMin),
-    y: chart.height / (this.range.yMax - this.range.yMin)
+    x: this.chart.width / (this.range.xMax - this.range.xMin),
+    y: this.chart.height / (this.range.yMax - this.range.yMin)
   };
+
+  this.chart.flags.hasPixelConversion = true;
 };
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
@@ -97,47 +112,38 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
   };
 };
 
-Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
-  //draw background and border
-  if (this.chart.bgImg) {
-    this.ctx.drawImage( this.chart.bgImg, 0, 0 );
-  } else {
-    this.ctx.fillStyle = this.chart.colors.bgColor;
-    this.ctx.fillRect( 0, 0, this.chart.width, this.chart.height );
-  }
-  this.ctx.strokeStyle = this.chart.colors.borderColor;
-  this.ctx.strokeRect(0, 0, this.chart.width, this.chart.height);
+Dave_js.Cartesian.prototype.drawGrid = function drawGrid(dataVars){
+  if(!dataVars){return;}
 
-  //print title (bold)
-  if (this.chart.flags.title) {
-    this.ctx.textAlign = "center";
-    this.ctx.fillStyle = this.chart.colors.text;
-    this.ctx.font = "bold " + this.chart.cssFont;
-    this.ctx.fillText(
-      this.chart.labels.title,
-      (this.chart.width / 2), -5
-    );
-  }
+  Dave_js.Cartesian.prototype.drawXTics.call(
+    this, this.dataStore.getVarData(dataVars.x).slice()
+  );
+  Dave_js.Cartesian.prototype.drawYTics.call(
+    this, this.dataStore.getVarData(dataVars.y).slice()
+  );
+};
+
+Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
+  if(!labels){return;}
   
-  //print axis labels
-  if (this.chart.flags.axis) {
+  this.ctx.save();
+
+  if(labels.x){
     this.ctx.font = this.chart.cssFont;
     this.ctx.fillStyle = this.chart.colors.text;
     this.ctx.textAlign = "start";
-    this.ctx.fillText(
-      this.chart.labels.indep,
-       -50, (this.chart.height + 40)
-    );
-    this.ctx.save();
+    this.ctx.fillText(labels.x, -50, (this.chart.height + 40));
+    
+  }
+
+  if(labels.y){
     this.ctx.translate(-45, (this.chart.height / 2) );
     this.ctx.rotate(1.5 * Math.PI);
     this.ctx.textAlign = "center";
-    this.ctx.fillText(this.chart.labels.dep, 0, -20);
-    this.ctx.restore();
+    this.ctx.fillText(labels.y, 0, -20);
   }
 
-  Dave_js.Cartesian.prototype.callYTics.apply(this, null);
-  Dave_js.Cartesian.prototype.callXTics.apply(this, null);
+  this.ctx.restore();
 };
 
 Dave_js.Cartesian.prototype.plotData = function plotData() {
@@ -297,18 +303,14 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
   return dot;
 };
 
-Dave_js.Cartesian.prototype.callXTics = function callXTics() {
+Dave_js.Cartesian.prototype.drawXTics = function drawXTics(data) {
   var
-    ticLabel, pnt_i, var_i, coords,
+    ticLabel, pnt_i, coords,
     ctx = this.ctx,
-    dataStore = this.dataStore,
-    vars = this.vars,
     chart = this.chart,
     chartWidth = +chart.width || 0,
-    labelWidth = parseInt(ctx.font, 10) * 1.5,
+    labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartWidth / labelWidth) >> 0,
-    skipTics = Math.ceil(numTics / numTics),
-    data = dataStore.getVarData(vars.x).slice(),
     labels = Dave_js.Utils.rangeToArray(
       Math.min.apply(null, data),
       Math.max.apply(null, data),
@@ -321,7 +323,7 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   ctx.translate(0, chart.height);
   ctx.rotate(1.5 * Math.PI);
 
-  for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
+  for (pnt_i = 0; pnt_i < numTics; pnt_i ++) {
     ticLabel = labels[pnt_i];
     
     coords =
@@ -332,33 +334,25 @@ Dave_js.Cartesian.prototype.callXTics = function callXTics() {
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.callYTics = function callYTics() {
+Dave_js.Cartesian.prototype.drawYTics = function drawYTics(data) {
   var
-    ticLabel, pnt_i, var_i, coords, labels, data,
-    vars = this.vars,
+    ticLabel, pnt_i, coords,
     ctx = this.ctx,
-    dataStore = this.dataStore,
-    chartHeight = +this.chart.height || 0,
-    labelWidth = parseInt(ctx.font, 10) * 1.5,
+    chart = this.chart,
+    chartHeight = +chart.height || 0,
+    labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartHeight / labelWidth) >> 0,
-    skipTics = Math.ceil(numTics / numTics);
-
-  data = [];
-  for(var_i = 0; var_i < vars.y.length; var_i++){
-    data = data.concat(dataStore.getVarData(vars.y[var_i]));
-  }
-
-  labels = Dave_js.Utils.rangeToArray(
-    Math.min.apply(null, data),
-    Math.max.apply(null, data),
-    numTics
-  );
+    labels = Dave_js.Utils.rangeToArray(
+      Math.min.apply(null, data),
+      Math.max.apply(null, data),
+      numTics
+    );
 
   //draw yAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
   ctx.translate(0, 0);//chartHeight);
-  for (pnt_i = 0; pnt_i < numTics; pnt_i += skipTics) {
+  for (pnt_i = 0; pnt_i < numTics; pnt_i ++) {
     ticLabel = +labels[pnt_i];
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, 0, ticLabel);

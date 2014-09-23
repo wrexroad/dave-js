@@ -25,6 +25,10 @@ Dave_js.Plot = function Plot(type) {
   this.canvasBox = document.getElementsByTagName("body")[0];
 };
 
+//this is an obect which defines the bounds on the data
+//each plot type will define this object differently so it will be overridden
+Dave_js.Plot.prototype.range = null;
+
 Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
   var el = document.getElementById(canvasDivID);
   
@@ -43,6 +47,42 @@ Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
   this.ctx.translate(
     this.chart.origin.x, this.chart.origin.y
   );
+};
+
+Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
+  labels = labels || {};
+
+  //draw background and border
+  if (this.chart.bgImg) {
+    this.ctx.drawImage( this.chart.bgImg, 0, 0 );
+  } else {
+    this.ctx.fillStyle = this.chart.colors.bgColor;
+    this.ctx.fillRect( 0, 0, this.chart.width, this.chart.height );
+  }
+  this.ctx.strokeStyle = this.chart.colors.borderColor;
+  this.ctx.strokeRect(0, 0, this.chart.width, this.chart.height);
+
+  //print title (bold)
+  if (labels.plotTitle) {
+    this.ctx.textAlign = "center";
+    this.ctx.fillStyle = this.chart.colors.text;
+    this.ctx.font = "bold " + this.chart.cssFont;
+    this.ctx.fillText(
+      labels.plotTitle,
+      (this.chart.width / 2), -5
+    );
+  }
+  
+  //print axis labels
+  this.plotter.labelAxes.call(this, labels.axisLabels);
+
+  //add the grid
+  if(labels.axisVars){
+    if(!this.chart.flags.hasPixelConversion){
+      this.plotter.mapPixels.call(this, labels.axisVars);
+    }
+    this.plotter.drawGrid.call(this, labels.axisVars);
+  }
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {

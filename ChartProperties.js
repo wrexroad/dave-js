@@ -76,6 +76,9 @@ Dave_js.ChartProperties = function ChartProperties(){
   };
 
   this.flags = {
+    //indicated that a value to pixel conversion has been calculated
+    hasPixelConversion : false,
+
     //set true if the data has been plotted once. 
     //Prevents scaling data multiple times
     replot : false,
