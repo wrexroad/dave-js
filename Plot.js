@@ -54,16 +54,16 @@ Dave_js.Plot.prototype.setChartSize = function(sizes) {
     return;
   }
 
-  if(margin = Dave_js.Utils.forceNumber(sizes.margin)){
+  if((margin = Dave_js.Utils.forceNumber(sizes.margin))){
     this.chart.margin = Math.max(0, margin);
   }
 
-  if(height = Dave_js.Utils.forceNumber(sizes.height)){
+  if((height = Dave_js.Utils.forceNumber(sizes.height))){
     this.chart.height = height;
     this.canvas.height = height + this.chart.margin;
   }
 
-  if(width = Dave_js.Utils.forceNumber(sizes.width)){
+  if((width = Dave_js.Utils.forceNumber(sizes.width))){
     this.chart.width = width;
     this.canvas.width = width + this.chart.margin;
   }
