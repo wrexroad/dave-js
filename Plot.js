@@ -46,8 +46,8 @@ Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
 };
 
 Dave_js.Plot.prototype.setOrigin = function(x, y) {
-  this.chart.origin.x = isNaN(x) ? (+this.chart.origin.x || 0) : x;
-  this.chart.origin.y = isNaN(y) ? (+this.chart.origin.y || 0) : y;
+  this.chart.origin.x = Dave_js.forceNumber(x) || this.chart.origin.x;
+  this.chart.origin.y = Dave_js.forceNumber(y) || this.chart.origin.y;
 };
 
 Dave_js.Plot.prototype.setChartSize = function(sizes) {
