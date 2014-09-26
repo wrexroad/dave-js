@@ -285,6 +285,18 @@ Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
     halfWidth = Math.min((width / 2), 1),
     ctx = opts.ctx;
 
+    /*a possible better way of choosing point size
+    //take a best guess at point size
+    this.setPointSize(
+      parseInt((this.chart.sizes.width / this.chart.range.numOfPts / 2), 10)
+    );
+
+    //make sure the point is between 2 and 8
+    this.setPointSize(
+      Math.max(1, Math.min(8, this.chart.sizes.pointSize))
+    );
+    */
+
   //make sure there is a context defined
   if (!ctx) {
     console.log('Could not draw dot, no canvas context');
