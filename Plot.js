@@ -196,6 +196,11 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
     plotter = this.plotter,
     style;
 
+  //make sure we already have the pixel map configured
+  if(!this.chart.flags.hasPixelConversion){
+      this.plotter.mapPixels.call(this, labels.axisVars);
+  }
+
   //make sure the required variables are set
   if(!data || !data.vars){
     return;
