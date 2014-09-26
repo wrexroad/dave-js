@@ -4,6 +4,8 @@ Dave_js.Plot = function Plot(type) {
     console.log('Unknown plot type: "' + type + '"');
     return null;
   }
+  
+  this.type = type;
 
   this.plotter = new Dave_js[type](this);
   
@@ -142,23 +144,6 @@ Dave_js.Plot.prototype.setTrackers = function() {
   }
 };
 
-Dave_js.Plot.prototype.setLineWidth = function(width) {
-  this.chart.sizes.lineWidth = +width || 1;
-};
-
-Dave_js.Plot.prototype.setPointSize = function(width) {
-  var
-    size = +width || 2,
-    halfSize = size >> 1;
-
-  //stop from auto calculating point size
-  this.chart.flags.fixedPtSize = true;
-
-  //make sure the supplied point size is not too small
-  this.chart.sizes.pointSize = Math.max(2, size);
-  this.chart.sizes.halfPointSize = halfSize;
-};
-
 Dave_js.Plot.prototype.setHistBars = function(ratio) {
   this.chart.histBarRatio = +ratio || 1;
 };
@@ -204,4 +189,47 @@ Dave_js.Plot.prototype.setDataStore = function setDataStore(ds) {
 
 Dave_js.Plot.prototype.getChartProps = function() {
   return this.chart;
+};
+
+Dave_js.Plot.prototype.drawData = function drawData(data) {
+  var
+    plotter = this.plotter,
+    style;
+
+  //make sure the required variables are set
+  if(!data || !data.vars){
+    return;
+  }
+
+  //default to drawing just a line plot
+  style = (data.style || "line").toLowerCase();
+  
+  //draw the various styles that were specified
+  if(style.indexOf("line") != -1){
+    if(typeof plotter.drawLines == 'function'){
+      plotter.drawLines.call(this, data);
+    } else {
+      console.log(this.type + " plotter can not plot lines.");
+    }
+  }
+
+  if(style.indexOf("point") != -1){
+    if(typeof plotter.drawPoints == 'function'){
+      plotter.drawPoints.call(this, data);
+    } else {
+      console.log(this.type + " plotter can not plot points.");
+    }
+  }
+
+  if(style.indexOf("function") != -1){
+    if(typeof plotter.drawFunction == 'function'){
+      plotter.drawPoints.call(this, data);
+    } else {
+      console.log(this.type + " plotter can not plot function.");
+    }
+  }
+
+  if(this.chart.flags.legend){
+    //this.plotter.drawLegend(data);
+  }
 };

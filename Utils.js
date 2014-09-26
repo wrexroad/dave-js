@@ -84,3 +84,36 @@ Dave_js.Utils.forceNumber = function isNaN(num){
     return (!num ? NaN : +num);
   }
 };
+
+Dave_js.Utils.squareDotFactory = function squareDotFactory(opts) {
+  //set defaults for missing options
+  opts = opts || {};
+  var
+    color = opts.color || 'black',
+    width = +opts.width || 2,
+    halfWidth = Math.min((width / 2), 1);
+
+    /*a possible better way of choosing point size
+    //take a best guess at point size
+    this.setPointSize(
+      parseInt((this.chart.sizes.width / this.chart.range.numOfPts / 2), 10)
+    );
+
+    //make sure the point is between 2 and 8
+    this.setPointSize(
+      Math.max(1, Math.min(8, this.chart.sizes.pointSize))
+    );
+    */
+
+  function dot(x, y) {
+    var ctx = this.ctx;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+
+    ctx.fillRect(x - halfWidth, y - halfWidth, width, width);
+    ctx.restore();
+  }
+
+  return dot;
+};

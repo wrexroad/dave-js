@@ -146,53 +146,19 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
   this.ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.plotData = function plotData() {
-  var
-    chart = this.chart,
-    ctx = this.ctx,
-    numVars = this.vars.y.length,
-    pnt_i, var_i, limits, numPts, pnts, dot;
-
-  //move to the plot origin
-  ctx.save();
-  //ctx.translate(0, chart.height);
-
-  //draw all the lines
-  for(var_i = 0; var_i < numVars; var_i++){
-    Dave_js.Cartesian.prototype.drawLines.call(
-      this,
-      this.data.x,
-      this.data.y[var_i],
-      chart.colors.data[var_i]
-    );
-  }
-
-  //draw all the points
-  for(var_i = 0; var_i < numVars; var_i++){
-    //define what the points will look like
-    dot = Dave_js.Cartesian.prototype.squareDotFactory({
-      color: chart.colors.data[var_i], width: '2', ctx: ctx
-    });
-
-    Dave_js.Cartesian.prototype.drawPoints.call(
-      this, this.data.x, this.data.y[var_i], dot
-    );
-  }
-
-  //restore the context to the pre-plotting state
-  ctx.restore();
-};
-
-Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
+Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
   var
     ctx = this.ctx,
+    x = this.dataStore.getVarData(data.vars.x),
+    y = this.dataStore.getVarData(data.vars.y),
+    color = data.color || 'black',
+    brushWidth = +data.brushWidth || 2,
     onPath = false,
-    coords,
-    pnt_i;
+    coords, pnt_i;
 
   ctx.save();
 
-  ctx.lineWidth = this.chart.sizes.lineWidth;
+  ctx.lineWidth = brushWidth;
 
   //set colors for this plot
   color = color || 'black';
@@ -224,22 +190,26 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(x, y, color) {
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawPoints = function drawPoints(x, y, dot) {
+Dave_js.Cartesian.prototype.drawPoints = function drawPoints(data) {
   var
     ctx = this.ctx,
+    x = this.dataStore.getVarData(data.vars.x),
+    y = this.dataStore.getVarData(data.vars.y),
+    color = data.color || 'black',
+    brushWidth = +data.brushWidth || 2,
+    dot =
+      (typeof data.dot == 'function' ?
+       dot :
+       Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
+      ),
     coords, pnt_i;
 
   ctx.save();
 
-  //make sure the dot function is set
-  if (typeof dot != 'function') {
-    dot = Dave_js.Cartesian.squareDotFactory({color: color, width: 2});
-  }
-
   for (pnt_i = 0; pnt_i < x.length; pnt_i++) {
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, x[pnt_i], y[pnt_i]);
-    dot(coords.x, coords.y);
+    dot.call(this, coords.x, coords.y);
   }
 
   ctx.restore();
@@ -274,45 +244,6 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
   ctx.translate(0, -1 * chart.height);
 
   ctx.restore();
-};
-
-Dave_js.Cartesian.prototype.squareDotFactory = function squareDotFactory(opts) {
-  //set defaults for missing options
-  opts = opts || {};
-  var
-    color = opts.color || 'black',
-    width = +opts.width || 2,
-    halfWidth = Math.min((width / 2), 1),
-    ctx = opts.ctx;
-
-    /*a possible better way of choosing point size
-    //take a best guess at point size
-    this.setPointSize(
-      parseInt((this.chart.sizes.width / this.chart.range.numOfPts / 2), 10)
-    );
-
-    //make sure the point is between 2 and 8
-    this.setPointSize(
-      Math.max(1, Math.min(8, this.chart.sizes.pointSize))
-    );
-    */
-
-  //make sure there is a context defined
-  if (!ctx) {
-    console.log('Could not draw dot, no canvas context');
-    return;
-  }
-
-  function dot(x, y) {
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-
-    ctx.fillRect(x - halfWidth, y - halfWidth, width, width);
-    ctx.restore();
-  }
-
-  return dot;
 };
 
 Dave_js.Cartesian.prototype.drawXTics = function drawXTics(data) {
