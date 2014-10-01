@@ -274,7 +274,7 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(labels) {
   ctx.translate(0, chart.height);
   ctx.rotate(1.5 * Math.PI);
 
-  for (pnt_i = 0; pnt_i < numTics; pnt_i += stepSize) {
+  for (pnt_i = 0; pnt_i <= numTics; pnt_i += stepSize) {
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, labels[pnt_i].value, 0);
     Dave_js.Utils.drawTic(ctx, labels[pnt_i].text, coords.x);
@@ -309,7 +309,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(labels) {
   ctx.save();
   ctx.textAlign = "end";
   ctx.translate(0, 0);//chartHeight);
-  for (pnt_i = 0; pnt_i < numTics; pnt_i ++) {
+  for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, 0, labels[pnt_i].value);
 

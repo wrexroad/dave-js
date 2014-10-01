@@ -87,7 +87,7 @@ Dave_js.Utils.createLabels = function createLabels(min, max, length){
   
   interval = (max - min) / length;
 
-  for (i = 0; i < length; i++) {
+  for (i = 0; i <= length; i++) {
     value = (min + (i * interval)).toFixed(3);
     result[i] = {
       text: value,
