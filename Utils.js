@@ -2,14 +2,13 @@ Dave_js.Utils = {};
 
 Dave_js.Utils.autoRange = function autoRange(unranged){
 
-  var ranged = {
-    data: unranged.data || [],
-    min: +unranged.min || null,
-    max: +unranged.max || null
-  };
-  
-  ranged.min = +unranged.min || null;
-  ranged.max = +unranged.max || null;
+  var
+    ranged = {
+      data: unranged.data || [],
+      min: +unranged.min || null,
+      max: +unranged.max || null
+    },
+    pad = 0;
   
   if(ranged.min === null){
     //no minimum was set for this variable,
@@ -25,6 +24,12 @@ Dave_js.Utils.autoRange = function autoRange(unranged){
   } else {
     ranged.data = Dave_js.Utils.applyBounds(ranged.data, null, ranged.max);
   }
+  
+
+  //pad data range by 5%
+  pad = (ranged.max - ranged.min) * 0.05;
+  ranged.min -= pad;
+  ranged.max += pad;
 
   return ranged;
 };

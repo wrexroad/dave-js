@@ -85,7 +85,7 @@ Dave_js.Plot.prototype.decorate = function decorate(labels) {
   //add the grid
   if(labels.axisVars){
     if(!this.chart.flags.hasPixelConversion){
-      this.plotter.mapPixels.call(this, null);
+      if(!this.plotter.mapPixels.call(this, null)){return;}
     }
     this.plotter.drawGrid.call(this, labels.axisVars);
   }
@@ -196,14 +196,15 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
     plotter = this.plotter,
     style;
 
-  //make sure we already have the pixel map configured
-  if(!this.chart.flags.hasPixelConversion){
-      this.plotter.mapPixels.call(this, labels.axisVars);
-  }
-
   //make sure the required variables are set
   if(!data || !data.vars){
+    console.log('No data to draw!');
     return;
+  }
+
+  //make sure we already have the pixel map configured
+  if(!this.chart.flags.hasPixelConversion){
+      this.plotter.mapPixels.call(this, data.vars);
   }
 
   //default to drawing just a line plot

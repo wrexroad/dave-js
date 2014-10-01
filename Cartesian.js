@@ -75,36 +75,56 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 };
 
 Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
-  var ranged;
+  var
+    newRange,
+    chartRange = this.range,
+    xMin = chartRange.xMin,
+    xMax = chartRange.xMax,
+    yMin = chartRange.yMin,
+    yMax = chartRange.yMax;
+  
+  //make sure that we have either a range preset or some data from which we can 
+  //create a range
+  if(!data && !(xMin && xMax && yMin && yMax)){
+    console.log('Could not create pixel mappings.');
+    return false;
+  }
   data = data || {};
 
   //get the min and max values for each axis and clip the dataset
   if(data.x){
-    ranged = Dave_js.Utils.autoRange({
+    newRange = Dave_js.Utils.autoRange({
       data: this.dataStore.getVarData(data.x),
-      min: this.range.xMin,
-      max: this.range.xMax
+      min: xMin,
+      max: xMax
     });
-    this.range.xMin = Math.min(ranged.min, (this.range.xMin || ranged.min));
-    this.range.xMax = Math.max(ranged.max, (this.range.xMax || ranged.min));
+    xMin = Math.min(newRange.min, (xMin || newRange.min));
+    xMax = Math.max(newRange.max, (xMax || newRange.min));
   }
   if(data.y){
-    ranged = Dave_js.Utils.autoRange({
+    newRange = Dave_js.Utils.autoRange({
       data: this.dataStore.getVarData(data.y),
-      min: this.range.yMin,
-      max: this.range.yMax
+      min: yMin,
+      max: yMax
     });
-    this.range.yMin = Math.min(ranged.min, (this.range.yMin || ranged.min));
-    this.range.yMax = Math.max(ranged.max, (this.range.yMax || ranged.min));
+    yMin = Math.min(newRange.min, (yMin || newRange.min));
+    yMax = Math.max(newRange.max, (yMax || newRange.min));
   }
+
+  //save the new range
+  Dave_js.Cartesian.prototype.setAxisRange.call(this, {
+    x: {min: xMin,max: xMax},
+    y: {min: yMin,max: yMax}
+  });
 
   //calculate the pixel conversion factor
   this.spacing = {
-    x: this.chart.width / (this.range.xMax - this.range.xMin),
-    y: this.chart.height / (this.range.yMax - this.range.yMin)
+    x: this.chart.width / (xMax - xMin),
+    y: this.chart.height / (yMax - yMin)
   };
 
   this.chart.flags.hasPixelConversion = true;
+  return true;
 };
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
