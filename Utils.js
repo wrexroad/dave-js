@@ -57,16 +57,42 @@ Dave_js.Utils.drawTic = function drawTic(ctx, ticLabel, offset) {
   ctx.stroke();
 };
 
-Dave_js.Utils.rangeToArray = function rangeToArray(min, max, length){
+Dave_js.Utils.getRange = function getRange(data){
+  var
+    numbers = [],
+    num, length, i;
+
+  if(!Array.isArray(data)){return;}
+
+  length = data.length;
+
+  for (i = 0; i < length; i++) {
+    num = Dave_js.Utils.forceNumber(data[i]);
+    if(!isNaN(num)){
+      numbers.push(num);
+    }
+  }
+
+  return {
+    min: Math.min.apply(null, numbers), max: Math.max.apply(null, numbers)
+  };
+};
+
+Dave_js.Utils.createLabels = function rangeToArray(min, max, length){
   var
     i,
     interval,
+    value,
     result = [];
   
   interval = (max - min) / length;
 
   for (i = 0; i < length; i++) {
-    result[i] = (min + (i * interval)).toFixed(3);
+    value = (min + (i * interval)).toFixed(3);
+    result[i] = {
+      text: value,
+      value: value
+    };
   }
 
   return result;

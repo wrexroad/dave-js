@@ -85,7 +85,7 @@ Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
   //add the grid
   if(labels.axisVars){
     if(!this.chart.flags.hasPixelConversion){
-      this.plotter.mapPixels.call(this, labels.axisVars);
+      this.plotter.mapPixels.call(this, null);
     }
     this.plotter.drawGrid.call(this, labels.axisVars);
   }

@@ -76,24 +76,28 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
 
 Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
   var ranged;
+  data = data || {};
 
-  //get the min and max values for each axis
-  ranged = Dave_js.Utils.autoRange({
-    data: this.dataStore.getVarData(data.x),
-    min: this.chart.limits.xmin,
-    max: this.chart.limits.xmax
-  });
-  this.range.xMin = Math.min(ranged.min, (this.range.xMin || ranged.min));
-  this.range.xMax = Math.max(ranged.max, (this.range.xMax || ranged.min));
+  //get the min and max values for each axis and clip the dataset
+  if(data.x){
+    ranged = Dave_js.Utils.autoRange({
+      data: this.dataStore.getVarData(data.x),
+      min: this.range.xMin,
+      max: this.range.xMax
+    });
+    this.range.xMin = Math.min(ranged.min, (this.range.xMin || ranged.min));
+    this.range.xMax = Math.max(ranged.max, (this.range.xMax || ranged.min));
+  }
+  if(data.y){
+    ranged = Dave_js.Utils.autoRange({
+      data: this.dataStore.getVarData(data.y),
+      min: this.range.yMin,
+      max: this.range.yMax
+    });
+    this.range.yMin = Math.min(ranged.min, (this.range.yMin || ranged.min));
+    this.range.yMax = Math.max(ranged.max, (this.range.yMax || ranged.min));
+  }
 
-  ranged = Dave_js.Utils.autoRange({
-    data: this.dataStore.getVarData(data.y),
-    min: this.chart.limits.ymin,
-    max: this.chart.limits.ymax
-  });
-  this.range.yMin = Math.min(ranged.min, (this.range.yMin || ranged.min));
-  this.range.yMax = Math.max(ranged.max, (this.range.yMax || ranged.min));
-  
   //calculate the pixel conversion factor
   this.spacing = {
     x: this.chart.width / (this.range.xMax - this.range.xMin),
@@ -104,23 +108,17 @@ Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
 };
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
-  //console.log(x,this.range.xMin,this.spacing.x);
-  //console.log(this.range.yMax, y, this.spacing.y);
   return {
     x: (x - this.range.xMin) * this.spacing.x,
     y: (this.range.yMax - y) * this.spacing.y
   };
 };
 
-Dave_js.Cartesian.prototype.drawGrid = function drawGrid(dataVars){
-  if(!dataVars){return;}
+Dave_js.Cartesian.prototype.drawGrid = function drawGrid(labels){
+  labels = labels || {};
 
-  Dave_js.Cartesian.prototype.drawXTics.call(
-    this, this.dataStore.getVarData(dataVars.x).slice()
-  );
-  Dave_js.Cartesian.prototype.drawYTics.call(
-    this, this.dataStore.getVarData(dataVars.y).slice()
-  );
+  Dave_js.Cartesian.prototype.drawXTics.call(this, labels.x);
+  Dave_js.Cartesian.prototype.drawYTics.call(this, labels.y);
 };
 
 Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
@@ -246,19 +244,29 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawXTics = function drawXTics(data) {
+Dave_js.Cartesian.prototype.drawXTics = function drawXTics(labels) {
   var
-    ticLabel, pnt_i, coords,
+    pnt_i, coords,
     ctx = this.ctx,
     chart = this.chart,
     chartWidth = +chart.width || 0,
     labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartWidth / labelWidth) >> 0,
-    labels = Dave_js.Utils.rangeToArray(
-      Math.min.apply(null, data),
-      Math.max.apply(null, data),
-      numTics
-    );
+    stepSize;
+
+  //if a labels array were passed in, calculate how many labels to skip per tic 
+  //mark. If we dont have any labels, generate some from the axis range
+  if (Array.isArray(labels)) {
+    stepSize = (labels.length || 1) / (numTics || 1);
+  } else {
+    stepSize = 1;
+    labels =
+      Dave_js.Utils.createLabels(
+        this.range.xMin,
+        this.range.xMax,
+        numTics
+      );
+  }
 
   //draw xAxis tic marks and labels
   ctx.save();
@@ -266,55 +274,59 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(data) {
   ctx.translate(0, chart.height);
   ctx.rotate(1.5 * Math.PI);
 
-  for (pnt_i = 0; pnt_i < numTics; pnt_i ++) {
-    ticLabel = labels[pnt_i];
-    
+  for (pnt_i = 0; pnt_i < numTics; pnt_i += stepSize) {
     coords =
-      Dave_js.Cartesian.prototype.getCoords.call(this, labels[pnt_i], 0);
-    Dave_js.Utils.drawTic(ctx, ticLabel, coords.x);
+      Dave_js.Cartesian.prototype.getCoords.call(this, labels[pnt_i].value, 0);
+    Dave_js.Utils.drawTic(ctx, labels[pnt_i].text, coords.x);
   }
 
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawYTics = function drawYTics(data) {
+Dave_js.Cartesian.prototype.drawYTics = function drawYTics(labels) {
   var
-    ticLabel, pnt_i, coords,
+    pnt_i, coords,
     ctx = this.ctx,
     chart = this.chart,
     chartHeight = +chart.height || 0,
     labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartHeight / labelWidth) >> 0,
-    labels = Dave_js.Utils.rangeToArray(
-      Math.min.apply(null, data),
-      Math.max.apply(null, data),
-      numTics
-    );
+    stepSize;
+
+  if (Array.isArray(labels)) {
+    stepSize = (labels.length || 1) / (numTics || 1);
+  } else {
+    stepSize = 1;
+    labels =
+      Dave_js.Utils.createLabels(
+        this.range.yMin,
+        this.range.yMax,
+        numTics
+      );
+  }
 
   //draw yAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
   ctx.translate(0, 0);//chartHeight);
   for (pnt_i = 0; pnt_i < numTics; pnt_i ++) {
-    ticLabel = +labels[pnt_i];
     coords =
-      Dave_js.Cartesian.prototype.getCoords.call(this, 0, ticLabel);
+      Dave_js.Cartesian.prototype.getCoords.call(this, 0, labels[pnt_i].value);
 
-    Dave_js.Utils.drawTic(ctx, ticLabel, coords.y);
+    Dave_js.Utils.drawTic(ctx, labels[pnt_i].text, coords.y);
   }
 
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.setDataRange = function setDataRange(start, stop) {
+Dave_js.Cartesian.prototype.setAxisRange = function setAxisRange(range) {
+  range = range || {};
   var
-    xData = this.dataStore.getVarData(this.vars.indep) || [],
-    xLength = xData.length;
+    x = range.x || {};
+    y = range.y || {};
 
-  //make sure the index range is within the data set and save it
-  this.chart.range.start = Math.max(start, 0);
-  this.chart.range.stop = Math.min(stop, xLength - 1);
- 
-  //figure out how manys data points we have
-  this.chart.range.numOfPts = this.chart.range.stop - this.chart.range.start + 1;
+  this.range.xMin = x.min || this.range.xMin || 0;
+  this.range.xMax = x.max || this.range.xMax || 0;
+  this.range.yMin = y.min || this.range.yMin || 0;
+  this.range.yMax = y.max || this.range.yMax || 0;
 };
