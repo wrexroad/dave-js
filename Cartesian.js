@@ -257,7 +257,7 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(labels) {
   //if a labels array were passed in, calculate how many labels to skip per tic 
   //mark. If we dont have any labels, generate some from the axis range
   if (Array.isArray(labels)) {
-    stepSize = (labels.length || 1) / (numTics || 1);
+    stepSize = (labels.length / numTics) || 1;
   } else {
     stepSize = 1;
     labels =
@@ -294,7 +294,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(labels) {
     stepSize;
 
   if (Array.isArray(labels)) {
-    stepSize = (labels.length || 1) / (numTics || 1);
+    stepSize = (labels.length / numTics) || 1;
   } else {
     stepSize = 1;
     labels =
