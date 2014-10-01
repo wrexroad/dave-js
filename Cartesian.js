@@ -322,7 +322,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(labels) {
 Dave_js.Cartesian.prototype.setAxisRange = function setAxisRange(range) {
   range = range || {};
   var
-    x = range.x || {};
+    x = range.x || {},
     y = range.y || {};
 
   this.range.xMin = x.min || this.range.xMin || 0;
