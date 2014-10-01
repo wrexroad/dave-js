@@ -51,7 +51,7 @@ Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
   );
 };
 
-Dave_js.Cartesian.prototype.decorate = function decorate(labels) {
+Dave_js.Plot.prototype.decorate = function decorate(labels) {
   labels = labels || {};
 
   //draw background and border
