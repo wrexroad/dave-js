@@ -78,7 +78,7 @@ Dave_js.Utils.getRange = function getRange(data){
   };
 };
 
-Dave_js.Utils.createLabels = function rangeToArray(min, max, length){
+Dave_js.Utils.createLabels = function createLabels(min, max, length){
   var
     i,
     interval,
