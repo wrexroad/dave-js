@@ -15,15 +15,47 @@ Dave_js.DataStore = (function DataStoreFactory() {
     sets[this.id].name = name;
   };
 
-  DataStore.prototype.addJSONData = function addJSONData(data) {
+  DataStore.prototype.addJSONData = function addJSONData(jsonData, index) {
     var
-      var_i,
+      var_i, pnt_i, length, keyedData, varData,indexData, key, num,
+      numberData = [],
       dataSetVars = sets[this.id].vars;
 
-    for (var_i in data) {
-      if (data.hasOwnProperty(var_i)) {
-        dataSetVars[var_i] = {};
-        dataSetVars[var_i].data = data[var_i].slice(0);
+    jsonData = jsonData || {};
+
+    indexData = jsonData[index] || [];
+    
+    for (var_i in jsonData) {
+      if (jsonData.hasOwnProperty(var_i)) {
+        varData = jsonData[var_i] || [];
+        length = varData.length;
+
+        //create a hash of data points whose keys are the index variable
+        keyedData = {};
+        for (pnt_i = 0; pnt_i < length; pnt_i++) {
+          key = indexData[pnt_i];
+          if (key === "" || typeof key != "string" || typeof key != "number") {
+            //if there is no index, just use the order in which the data arrived
+            key = indexData[pnt_i] = pnt_i;
+          }
+
+          keyedData[key] = varData[pnt_i];
+
+          //figure out if this is a max or minimum point
+          num = Dave_js.Utils.forceNumber(keyedData[key]);
+          if(!isNaN(num)){
+            numberData.push(num);
+          }
+        }
+
+        //save the indexed data and some statistics to the DataStore object
+        dataSetVars[var_i] = {
+          data: keyedData,
+          keys: indexData,
+          length: keys.length,
+          min: Math.min.apply(null, numberData),
+          max: Math.max.apply(null, numberData)
+        };
       }
     }
   };
@@ -47,8 +79,8 @@ Dave_js.DataStore = (function DataStoreFactory() {
     return sets[this.id].vars[varName] ? true : false;
   };
 
-  DataStore.prototype.getVarData = function getVarData(varName) {
-    return this.hasVar(varName) ? sets[this.id].vars[varName].data : null;
+  DataStore.prototype.getVarData = function getVar(varName) {
+    return this.hasVar(varName) ? sets[this.id].vars[varName] : null;
   };
 
   DataStore.prototype.destroy = function destroy() {
