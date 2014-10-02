@@ -52,7 +52,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
         dataSetVars[var_i] = {
           data: keyedData,
           keys: indexData,
-          length: keys.length,
+          length: indexData.length,
           min: Math.min.apply(null, numberData),
           max: Math.max.apply(null, numberData)
         };
