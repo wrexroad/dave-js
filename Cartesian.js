@@ -34,31 +34,12 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
   vars.y = [].concat(vars.y);
   numVars = vars.y.length;
 
-  //create a copy of the data that is to be plotted
+  //get the data that is to be plotted
   this.data = {y:[], x:[]};
   for (var_i = 0; var_i < numVars; var_i++) {
-    this.data.y[var_i] =
-      (dataStore.getVarData(vars.y[var_i]) || []).slice(0);
+    this.data.y[var_i] = dataStore.getVar(vars.y[var_i]);
   }
-
-  //if the x variable has not been set, create an array of indicies the 
-  //same length as the first y variable data
-  if ((this.data.x = dataStore.getVarData(vars.x)) === null) {
-    for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-      this.data.x[pnt_i] = pnt_i;
-    }
-  } else {
-    //we were able to get a reference to the x variable data, so make a new copy
-    this.data.x = this.data.x.slice(0);
-  }
-
-  //range the data
-
-  this.range = {
-    xMin: ranged.min,
-    xMax: ranged.max
-  };
-
+  this.data.x = dataStore.getVar(vars.x);
 };
 
 Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
