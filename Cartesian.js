@@ -25,7 +25,7 @@ Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
   
   //make sure that we have either a range preset or some data from which we can 
   //create a range
-  if(!data && !(xMin && xMax && yMin && yMax)){
+  if(!data && isNaN(xMin + xMax + yMin + yMax)){
     console.log('Could not create pixel mappings.');
     return false;
   }
