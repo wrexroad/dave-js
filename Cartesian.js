@@ -13,35 +13,6 @@ Dave_js.Cartesian = function Cartesian(owner){
   };
 };
 
-Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
-  var
-    chart = this.chart,
-    dataStore = this.dataStore,
-    ranged, numPts, pnt_i, numVars, var_i, pnts;
-
-  if(!vars){
-    console.log('Could not load data into plot, no variables set.');
-    return;
-  }
-
-  this.vars = vars;
-
-  //y variables are expected to be listed in an array
-  if(!vars.y){
-    console.log('No y-axis variables set for plot.');
-    return;
-  }
-  vars.y = [].concat(vars.y);
-  numVars = vars.y.length;
-
-  //get the data that is to be plotted
-  this.data = {y:[], x:[]};
-  for (var_i = 0; var_i < numVars; var_i++) {
-    this.data.y[var_i] = dataStore.getVar(vars.y[var_i]);
-  }
-  this.data.x = dataStore.getVar(vars.x);
-};
-
 Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
   var
     newRange,
