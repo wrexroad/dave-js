@@ -40,19 +40,6 @@ Dave_js.Cartesian.prototype.loadData = function loadData(vars) {
     this.data.y[var_i] =
       (dataStore.getVarData(vars.y[var_i]) || []).slice(0);
   }
-  
-  //make sure all the y variables are the same length
-  numPts = this.data.y[0].length || 0;
-  for(var_i = 0; var_i < numVars; var_i++){
-    if(numPts && numPts != this.data.y[var_i].length){
-      console.log('Found y-axis variables with different lengths.');
-      console.log('\t' + vars.y[var_i] + ': ' + this.data.y[var_i].length);
-      console.log('\t' + vars.y[var_i] + ': ' + numPts);
-      return;
-    }
-    
-    numPts = this.data.y[var_i].length;
-  }
 
   //if the x variable has not been set, create an array of indicies the 
   //same length as the first y variable data
