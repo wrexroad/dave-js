@@ -49,7 +49,8 @@ Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
     xMin = chartRange.xMin,
     xMax = chartRange.xMax,
     yMin = chartRange.yMin,
-    yMax = chartRange.yMax;
+    yMax = chartRange.yMax,
+    xVar, yVar;
   
   //make sure that we have either a range preset or some data from which we can 
   //create a range
@@ -59,30 +60,27 @@ Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
   }
   data = data || {};
 
-  //get the min and max values for each axis and clip the dataset
-  if(data.x){
-    newRange = Dave_js.Utils.autoRange({
-      data: this.dataStore.getVarData(data.x),
-      min: xMin,
-      max: xMax
-    });
-    xMin = Math.min(newRange.min, (xMin || newRange.min));
-    xMax = Math.max(newRange.max, (xMax || newRange.min));
+  yVar = this.dataStore.getVar(data.y) || {};
+  xVar = this.dataStore.getVar(data.x) || {};
+
+  //expand the range if needed
+  if(!isNaN(+xVar.min)){
+    xMin = Math.min(xVar.min, xMin || xVar.min);
   }
-  if(data.y){
-    newRange = Dave_js.Utils.autoRange({
-      data: this.dataStore.getVarData(data.y),
-      min: yMin,
-      max: yMax
-    });
-    yMin = Math.min(newRange.min, (yMin || newRange.min));
-    yMax = Math.max(newRange.max, (yMax || newRange.min));
+  if(!isNaN(+xVar.max)){
+    xMax = Math.max(xVar.max, xMax || xVar.max);
+  }
+  if(!isNaN(+yVar.min)){
+    yMin = Math.min(yVar.min, yMin || yVar.min);
+  }
+  if(!isNaN(+xVar.max)){
+    yMax = Math.max(yVar.max, yMax || yVar.max);
   }
 
   //save the new range
   Dave_js.Cartesian.prototype.setAxisRange.call(this, {
-    x: {min: xMin,max: xMax},
-    y: {min: yMin,max: yMax}
+    x: {min: xMin, max: xMax},
+    y: {min: yMin, max: yMax}
   });
 
   //calculate the pixel conversion factor
