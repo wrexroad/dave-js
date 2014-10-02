@@ -24,7 +24,6 @@ Dave_js.DataStore = (function DataStoreFactory() {
       if (data.hasOwnProperty(var_i)) {
         dataSetVars[var_i] = {};
         dataSetVars[var_i].data = data[var_i].slice(0);
-        dataSetVars[var_i].id = '';
       }
     }
   };
@@ -50,25 +49,6 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
   DataStore.prototype.getVarData = function getVarData(varName) {
     return this.hasVar(varName) ? sets[this.id].vars[varName].data : null;
-  };
-
-  DataStore.prototype.getVarID = function getVarID(varName) {
-    return this.hasVar(varName) ? sets[this.id].vars[varName].id : null;
-  };
-
-  DataStore.prototype.setVarID = function setVarID(varName, id) {
-    if (this.hasVar(varName)) {
-      sets[this.id].vars[varName].id = id;
-
-      return true;
-    } else {
-      console.log(
-        'Can not set variable ID. ' +
-        'DataStore ' + this.id + ' does not contain ' + varName + '.'
-      );
-
-      return false;
-    }
   };
 
   DataStore.prototype.destroy = function destroy() {
