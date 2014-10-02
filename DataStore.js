@@ -18,7 +18,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
   DataStore.prototype.addJSONData = function addJSONData(jsonData, index) {
     var
       var_i, pnt_i, length, keyedData, varData,indexData, key, num,
-      numberData = [],
+      numberData,
       dataSetVars = sets[this.id].vars;
 
     jsonData = jsonData || {};
@@ -32,6 +32,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
         //create a hash of data points whose keys are the index variable
         keyedData = {};
+        numberData = [];
         for (pnt_i = 0; pnt_i < length; pnt_i++) {
           key = indexData[pnt_i];
           if (key === "" || typeof key != "string" || typeof key != "number") {
