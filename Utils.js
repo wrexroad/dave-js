@@ -148,3 +148,16 @@ Dave_js.Utils.squareDotFactory = function squareDotFactory(opts) {
 
   return dot;
 };
+
+Dave_js.Utils.arrayToObject = function arrayToObject(array){
+  var
+    i,
+    object = {},
+    length = (array || []).length || 0;
+
+  for (i = 0; i < array.length; i++) {
+     object[array[i]] = array[i];
+  }
+
+  return object;
+};
