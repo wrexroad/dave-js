@@ -104,12 +104,27 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
 Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
   var
     ctx = this.ctx,
-    x = this.dataStore.getVarData(data.vars.x),
-    y = this.dataStore.getVarData(data.vars.y),
+    x = this.dataStore.getVar(data.vars.x),
+    y = this.dataStore.getVar(data.vars.y),
     color = data.color || 'black',
     brushWidth = +data.brushWidth || 2,
     onPath = false,
-    coords, pnt_i;
+    coords, pnt_i, index, keys, xData, yData, numPts;
+  
+  //check if we have an good data
+  if(y === null) {
+    return;
+  } else {
+    yData = y.data;
+  }
+  if (x === null) {
+    //No x axis variable was set use the indexing values from y
+    xData = Dave_js.Utils.arrayToObject(y.keys);
+  } else {
+    xData = x.data;
+  }
+  keys = y.keys || {};
+  numPts = y.length || 0;
 
   ctx.save();
 
@@ -119,16 +134,20 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
   color = color || 'black';
   ctx.fillStyle = color;
   ctx.strokeStyle = color;
-  
-  for(pnt_i = 0; pnt_i < x.length; pnt_i++){
+
+  for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
+    index = keys[pnt_i];
+
     //if we hit a data gap, end the current path
-    if (isNaN(y[pnt_i])) {
+    if (isNaN(yData[index])) {
       ctx.stroke();
       onPath = false;
     } else {
       //convert the data point to pixel coordinates
       coords =
-        Dave_js.Cartesian.prototype.getCoords.call(this, x[pnt_i], y[pnt_i]);
+        Dave_js.Cartesian.prototype.getCoords.call(
+          this, xData[index], yData[index]
+        );
 
       //make sure we have a current path
       if (!onPath) {
@@ -148,8 +167,8 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
 Dave_js.Cartesian.prototype.drawPoints = function drawPoints(data) {
   var
     ctx = this.ctx,
-    x = this.dataStore.getVarData(data.vars.x),
-    y = this.dataStore.getVarData(data.vars.y),
+    x = this.dataStore.getVar(data.vars.x),
+    y = this.dataStore.getVar(data.vars.y),
     color = data.color || 'black',
     brushWidth = +data.brushWidth || 2,
     dot =
@@ -157,13 +176,29 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(data) {
        dot :
        Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
       ),
-    coords, pnt_i;
+    coords, pnt_i, index, keys, xData, yData, numPts;
+  
+  if(y === null) {
+    return;
+  } else {
+    yData = y.data;
+  }
+  if (x === null) {
+    xData = Dave_js.Utils.arrayToObject(y.keys);
+  } else {
+    xData = x.data;
+  }
+  keys = y.keys || {};
+  numPts = y.length || 0;
 
   ctx.save();
 
-  for (pnt_i = 0; pnt_i < x.length; pnt_i++) {
+  for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
+    index = keys[pnt_i];
     coords =
-      Dave_js.Cartesian.prototype.getCoords.call(this, x[pnt_i], y[pnt_i]);
+      Dave_js.Cartesian.prototype.getCoords.call(
+        this, xData[index] ,yData[index]
+      );
     dot.call(this, coords.x, coords.y);
   }
 
