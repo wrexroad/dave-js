@@ -79,7 +79,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
     return sets[this.id].vars[varName] ? true : false;
   };
 
-  DataStore.prototype.getVarData = function getVar(varName) {
+  DataStore.prototype.getVar = function getVar(varName) {
     return this.hasVar(varName) ? sets[this.id].vars[varName] : null;
   };
 
