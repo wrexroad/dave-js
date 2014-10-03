@@ -82,12 +82,14 @@ Dave_js.Plot.prototype.decorate = function decorate(labels) {
   //print axis labels
   this.plotter.labelAxes.call(this, labels.axisLabels);
 
-  //add the grid
-  if(labels.axisVars){
-    if(!this.chart.flags.hasPixelConversion){
-      if(!this.plotter.mapPixels.call(this, null)){return;}
-    }
-    this.plotter.drawGrid.call(this, labels.axisVars);
+  //set up the axes tic marks
+  this.chart.axisVars = labels.axisVars || {};
+  if(this.chart.flags.autoRange){
+    this.plotter.autoRange.call(this);
+  }
+  //add the grid based on the 
+  if (!this.chart.flags.hasRange) {
+    this.plotter.drawGrid.call(this);
   }
 };
 
@@ -179,6 +181,10 @@ Dave_js.Plot.prototype.setZoomable = function() {
   this.chart.flags.zoomable = true;
 };
 
+Dave_js.Plot.prototype.setAutoRange = function setAutoRange(bool) {
+  this.chart.flags.autoRange = bool;
+};
+
 Dave_js.Plot.prototype.getDataStore = function() {
   return this.dataStore;
 };
@@ -200,11 +206,6 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   if(!data || !data.vars){
     console.log('No data to draw!');
     return;
-  }
-
-  //make sure we already have the pixel map configured
-  if(!this.chart.flags.hasPixelConversion){
-      this.plotter.mapPixels.call(this, data.vars);
   }
 
   //default to drawing just a line plot

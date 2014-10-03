@@ -36,6 +36,9 @@ Dave_js.ChartProperties = function ChartProperties(){
   //number of pixels per point in each dimension
   this.pntSpacing = {dep : 1, indep : 1};
   
+  //variables that will be used to labels the tic marks on each axis
+  this.axisVars = {};
+
   //min and max values for dependent variables
   this.limits = {xmin : 0, xmax : 0, ymin : 0, ymax : 0};
   
@@ -77,7 +80,8 @@ Dave_js.ChartProperties = function ChartProperties(){
 
   this.flags = {
     //indicated that a value to pixel conversion has been calculated
-    hasPixelConversion : false,
+    hasRange : false,
+    autoRange: true,
 
     //set true if the data has been plotted once. 
     //Prevents scaling data multiple times

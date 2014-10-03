@@ -6,62 +6,11 @@ Dave_js.Cartesian = function Cartesian(owner){
   }
 
   owner.range = {
-    xMin: null,
-    xMax: null,
-    yMin: null,
-    yMax: null
+    xMin: NaN,
+    xMax: NaN,
+    yMin: NaN,
+    yMax: NaN
   };
-};
-
-Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
-  var
-    newRange,
-    chartRange = this.range,
-    xMin = chartRange.xMin,
-    xMax = chartRange.xMax,
-    yMin = chartRange.yMin,
-    yMax = chartRange.yMax,
-    xVar, yVar;
-  
-  //make sure that we have either a range preset or some data from which we can 
-  //create a range
-  if(!data && isNaN(xMin + xMax + yMin + yMax)){
-    console.log('Could not create pixel mappings.');
-    return false;
-  }
-  data = data || {};
-
-  yVar = this.dataStore.getVar(data.y) || {};
-  xVar = this.dataStore.getVar(data.x) || {};
-
-  //expand the range if needed
-  if(!isNaN(+xVar.min)){
-    xMin = Math.min(xVar.min, xMin || xVar.min);
-  }
-  if(!isNaN(+xVar.max)){
-    xMax = Math.max(xVar.max, xMax || xVar.max);
-  }
-  if(!isNaN(+yVar.min)){
-    yMin = Math.min(yVar.min, yMin || yVar.min);
-  }
-  if(!isNaN(+xVar.max)){
-    yMax = Math.max(yVar.max, yMax || yVar.max);
-  }
-
-  //save the new range
-  Dave_js.Cartesian.prototype.setAxisRange.call(this, {
-    x: {min: xMin, max: xMax},
-    y: {min: yMin, max: yMax}
-  });
-
-  //calculate the pixel conversion factor
-  this.spacing = {
-    x: this.chart.width / (xMax - xMin),
-    y: this.chart.height / (yMax - yMin)
-  };
-
-  this.chart.flags.hasPixelConversion = true;
-  return true;
 };
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
@@ -71,11 +20,47 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
   };
 };
 
-Dave_js.Cartesian.prototype.drawGrid = function drawGrid(labels){
-  labels = labels || {};
+Dave_js.Cartesian.prototype.drawGrid = function drawGrid(){
+  var vars = this.chart.axisVars || {};
+  
+  Dave_js.Cartesian.prototype.drawXTics.call(this, vars.x);
+  Dave_js.Cartesian.prototype.drawYTics.call(this, vars.y);
+};
 
-  Dave_js.Cartesian.prototype.drawXTics.call(this, labels.x);
-  Dave_js.Cartesian.prototype.drawYTics.call(this, labels.y);
+Dave_js.Cartesian.prototype.autoRange = function autoRange(){
+  var
+    vars = this.chart.axisVars || {},
+    dataStore = this.dataStore,
+    yVar = dataStore.getVar(vars.y),
+    xVar = dataStore.getVar(vars.x),
+    range = this.range,
+    xMin, xMax, yMin, yMax;
+
+  //set the y variable first
+  if(!yVar){
+    console.log("No axis variables set. Can not determine plot scale.");
+    return false;
+  }
+  yMin = Dave_js.Utils.forceNumber(vars.y.min);
+  yMin = isNaN(yMin) ? range.yMin : yMin;
+  yMax = Dave_js.Utils.forceNumber(vars.y.max);
+  yMax = isNaN(yMax) ? range.yMax : yMax;
+
+  //if no x var was set, use the y index for the range
+  if(!xVar){
+    xMin = yVar.keys[0];
+    xMax = yVar.keys[yVar.length - 1];
+  } else {
+    xMin = Dave_js.Utils.forceNumber(vars.x.min);
+    xMin = isNaN(xMin) ? range.xMin : xMin;
+    xMax = Dave_js.Utils.forceNumber(vars.x.max);
+    xMax = isNaN(xMax) ? range.xMax : xMax;
+  }
+
+  return this.setAxisRange({
+    x: {min: xMin, max: xMax},
+    y: {min: yMin, max: yMax}
+  });
 };
 
 Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
@@ -236,8 +221,9 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawXTics = function drawXTics(labels) {
+Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
   var
+    labels = (this.dataStore.getVar(varName) || {}).data,
     pnt_i, coords,
     ctx = this.ctx,
     chart = this.chart,
@@ -275,9 +261,10 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(labels) {
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.drawYTics = function drawYTics(labels) {
+Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
   var
     pnt_i, coords,
+    labels = (this.dataStore.getVar(varName) || {}).data,
     ctx = this.ctx,
     chart = this.chart,
     chartHeight = +chart.height || 0,
@@ -315,10 +302,67 @@ Dave_js.Cartesian.prototype.setAxisRange = function setAxisRange(range) {
   range = range || {};
   var
     x = range.x || {},
-    y = range.y || {};
+    y = range.y || {},
+    xMin = Dave_js.Utils.forceNumber(x.min),
+    xMax = Dave_js.Utils.forceNumber(x.max),
+    yMin = Dave_js.Utils.forceNumber(y.min),
+    yMax = Dave_js.Utils.forceNumber(y.max);
 
-  this.range.xMin = x.min || this.range.xMin || 0;
-  this.range.xMax = x.max || this.range.xMax || 0;
-  this.range.yMin = y.min || this.range.yMin || 0;
-  this.range.yMax = y.max || this.range.yMax || 0;
+  this.range.xMin = isNaN(xMin) ? this.range.xMin : xMin;
+  this.range.xMax = isNaN(xMax) ? this.range.xMax : xMax;
+  this.range.yMin = isNaN(yMin) ? this.range.yMin : yMin;
+  this.range.yMax = isNaN(yMax) ? this.range.yMax : yMax;
+
+  //calculate the pixel conversion factor
+  this.spacing = {
+    x: this.chart.width / (xMax - xMin),
+    y: this.chart.height / (yMax - yMin)
+  };
+
+  this.chart.flags.hasPixelConversion = true;
 };
+
+/*
+Dave_js.Cartesian.prototype.mapPixels = function mapPixels(data){
+  var
+    chartRange = this.range,
+    xMin = chartRange.xMin,
+    xMax = chartRange.xMax,
+    yMin = chartRange.yMin,
+    yMax = chartRange.yMax,
+    xVar, yVar;
+  
+  //make sure we have a minimum of plot info to move forward
+  if(!data && isNaN(yMin + yMax)){
+    console.log('Could not create pixel mappings.');
+    return false;
+  }
+  data = data || {};
+
+  yVar = this.dataStore.getVar(data.y) || {};
+  xVar = this.dataStore.getVar(data.x) || {};
+
+  //expand the range if needed
+  if(!isNaN(+xVar.min)){
+    xMin = Math.min(xVar.min, xMin || xVar.min);
+  }
+  if(!isNaN(+xVar.max)){
+    xMax = Math.max(xVar.max, xMax || xVar.max);
+  }
+  if(!isNaN(+yVar.min)){
+    yMin = Math.min(yVar.min, yMin || yVar.min);
+  }
+  if(!isNaN(+xVar.max)){
+    yMax = Math.max(yVar.max, yMax || yVar.max);
+  }
+
+  //save the new range
+  Dave_js.Cartesian.prototype.setAxisRange.call(this, {
+    x: {min: xMin, max: xMax},
+    y: {min: yMin, max: yMax}
+  });
+
+  
+  return true;
+};
+*/
