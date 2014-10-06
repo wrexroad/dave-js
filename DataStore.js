@@ -35,7 +35,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
         numberData = [];
         for (pnt_i = 0; pnt_i < length; pnt_i++) {
           key = indexData[pnt_i];
-          if (key === "" || (typeof key != "string" && typeof key != "number")) {
+          if (key === "" || (typeof key != "string" && typeof key != "number")){
             //if there is no index, just use the order in which the data arrived
             key = indexData[pnt_i] = pnt_i;
           }
