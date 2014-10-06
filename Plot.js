@@ -31,7 +31,7 @@ Dave_js.Plot = function Plot(type) {
 //each plot type will define this object differently so it will be overridden
 Dave_js.Plot.prototype.range = null;
 
-Dave_js.Plot.prototype.renderInto = function(canvasDivID) {
+Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
   var el = document.getElementById(canvasDivID);
   
   if (this.canvasBox !== null) {
@@ -84,7 +84,7 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
 
   //set up the axes tic marks
   this.chart.axisVars = labels.axisVars || {};
-  if(this.chart.flags.autoRange){
+  if (this.chart.flags.autoRange) {
     this.plotter.autoRange.call(this);
   }
   //add the grid based on the 
@@ -93,12 +93,12 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   }
 };
 
-Dave_js.Plot.prototype.setOrigin = function(x, y) {
+Dave_js.Plot.prototype.setOrigin = function setOrigin(x, y) {
   this.chart.origin.x = Dave_js.forceNumber(x) || this.chart.origin.x;
   this.chart.origin.y = Dave_js.forceNumber(y) || this.chart.origin.y;
 };
 
-Dave_js.Plot.prototype.setChartSize = function(sizes) {
+Dave_js.Plot.prototype.setChartSize = function setChartSize(sizes) {
   var margin, height, width;
 
   if(!sizes){
@@ -125,40 +125,40 @@ Dave_js.Plot.prototype.setChartSize = function(sizes) {
   this.chart.sizes.radius = Math.max(width, height) / 2;
 };
 
-Dave_js.Plot.prototype.setColor = function(type, color) {
+Dave_js.Plot.prototype.setColor = function setColor(type, color) {
   this.chart.colors[type] = color;
 };
 
-Dave_js.Plot.prototype.setSubPlot = function(bool) {
+Dave_js.Plot.prototype.setSubPlot = function setSubPlot(bool) {
   this.chart.flags.subPlot = bool;
 };
 
-Dave_js.Plot.prototype.setCoordDisp = function(bool) {
+Dave_js.Plot.prototype.setCoordDisp = function setCoordDisp(bool) {
   this.chart.flags.showCoords = bool;
 };
 
 //first argument is an array containing the name of each tracker. 
 //each aditional argument is an array containing tracker data
-Dave_js.Plot.prototype.setTrackers = function() {
+Dave_js.Plot.prototype.setTrackers = function setTrackers() {
   this.vars.trackLabels = arguments[0].slice(0);
   for (var array_i = 1 ; array_i < arguments.length; array_i) {
     this.vars.trackers[array_i] = arguments[array_i].slice(0);
   }
 };
 
-Dave_js.Plot.prototype.setHistBars = function(ratio) {
+Dave_js.Plot.prototype.setHistBars = function setHistBars(ratio) {
   this.chart.histBarRatio = +ratio || 1;
 };
 
-Dave_js.Plot.prototype.setBorderColor = function(color) {
+Dave_js.Plot.prototype.setBorderColor = function setBorderColor(color) {
   this.chart.colors.borderColor = color;
 };
 
-Dave_js.Plot.prototype.setBackgroundColor = function(color) {
+Dave_js.Plot.prototype.setBackgroundColor = function setBackgroundColor(color) {
   this.chart.colors.bgColor = color;
 };
 
-Dave_js.Plot.prototype.setBackgroundImage = function(id) {
+Dave_js.Plot.prototype.setBackgroundImage = function setBackgroundImage(id) {
   var el = document.getElementById(id);
   if(!id || id.tagName != 'IMG'){
     console.log(
@@ -169,15 +169,15 @@ Dave_js.Plot.prototype.setBackgroundImage = function(id) {
   }
 };
 
-Dave_js.Plot.prototype.setGrid = function() {
+Dave_js.Plot.prototype.setGrid = function setGrid() {
   this.chart.flags.grid = true;
 };
 
-Dave_js.Plot.prototype.setLegend = function() {
+Dave_js.Plot.prototype.setLegend = function setLegend() {
   this.chart.flags.legend = true;
 };
 
-Dave_js.Plot.prototype.setZoomable = function() {
+Dave_js.Plot.prototype.setZoomable = function setZoomable() {
   this.chart.flags.zoomable = true;
 };
 
@@ -185,7 +185,7 @@ Dave_js.Plot.prototype.setAutoRange = function setAutoRange(bool) {
   this.chart.flags.autoRange = bool;
 };
 
-Dave_js.Plot.prototype.getDataStore = function() {
+Dave_js.Plot.prototype.getDataStore = function getDataStore() {
   return this.dataStore;
 };
 
@@ -193,7 +193,7 @@ Dave_js.Plot.prototype.setDataStore = function setDataStore(ds) {
   this.dataStore = ds;
 };
 
-Dave_js.Plot.prototype.getChartProps = function() {
+Dave_js.Plot.prototype.getChartProps = function getChartProps() {
   return this.chart;
 };
 
