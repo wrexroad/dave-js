@@ -41,9 +41,9 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange(){
     console.log("No axis variables set. Can not determine plot scale.");
     return false;
   }
-  yMin = Dave_js.Utils.forceNumber(vars.y.min);
+  yMin = Dave_js.Utils.forceNumber(yVar.min);
   yMin = isNaN(yMin) ? range.yMin : yMin;
-  yMax = Dave_js.Utils.forceNumber(vars.y.max);
+  yMax = Dave_js.Utils.forceNumber(yVar.max);
   yMax = isNaN(yMax) ? range.yMax : yMax;
 
   //if no x var was set, use the y index for the range
@@ -51,13 +51,13 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange(){
     xMin = yVar.keys[0];
     xMax = yVar.keys[yVar.length - 1];
   } else {
-    xMin = Dave_js.Utils.forceNumber(vars.x.min);
+    xMin = Dave_js.Utils.forceNumber(xVar.min);
     xMin = isNaN(xMin) ? range.xMin : xMin;
-    xMax = Dave_js.Utils.forceNumber(vars.x.max);
+    xMax = Dave_js.Utils.forceNumber(xVar.max);
     xMax = isNaN(xMax) ? range.xMax : xMax;
   }
 
-  return this.setAxisRange({
+  this.setAxisRange({
     x: {min: xMin, max: xMax},
     y: {min: yMin, max: yMax}
   });
