@@ -17,13 +17,13 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
   DataStore.prototype.addJSONData = function addJSONData(jsonData, index) {
     var
-      var_i, pnt_i, length, keyedData, varData,indexData, key, num,
+      var_i, pnt_i, length, keyedData, varData, indexData, key, num,
       numberData,
       dataSetVars = sets[this.id].vars;
 
     jsonData = jsonData || {};
 
-    indexData = jsonData[index] || [];
+    indexData = jsonData[index].slice() || [];
     
     for (var_i in jsonData) {
       if (jsonData.hasOwnProperty(var_i)) {
@@ -35,7 +35,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
         numberData = [];
         for (pnt_i = 0; pnt_i < length; pnt_i++) {
           key = indexData[pnt_i];
-          if (key === "" || typeof key != "string" || typeof key != "number") {
+          if (key === "" || (typeof key != "string" && typeof key != "number")) {
             //if there is no index, just use the order in which the data arrived
             key = indexData[pnt_i] = pnt_i;
           }
