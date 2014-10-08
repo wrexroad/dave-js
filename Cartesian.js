@@ -57,6 +57,16 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange(){
     xMax = isNaN(xMax) ? range.xMax : xMax;
   }
 
+  //make sure the max and min of either axis are not the same
+  if(xMax === xMin){
+    xMax *= 1.1;
+    xMin /= 1.1;
+  }
+  if(yMax === yMin){
+    yMax *= 1.1;
+    yMin /= 1.1;
+  }
+
   this.setAxisRange({
     x: {min: xMin, max: xMax},
     y: {min: yMin, max: yMax}
