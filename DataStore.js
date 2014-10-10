@@ -23,7 +23,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
     jsonData = jsonData || {};
 
-    indexData = jsonData[index].slice() || [];
+    indexData = (jsonData[index] || []).slice();
     
     for (var_i in jsonData) {
       if (jsonData.hasOwnProperty(var_i)) {

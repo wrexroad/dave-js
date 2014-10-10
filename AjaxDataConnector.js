@@ -190,6 +190,13 @@ Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData
 
     lineNumber++;
   }
+  
+  if(data.ERROR){
+    console.error('Error while accessing data:');
+    console.error('\t' + data.ERROR.join(' '));
+
+    return false;
+  }
 
   return data;
 };
