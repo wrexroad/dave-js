@@ -240,8 +240,9 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
     chartWidth = +chart.width || 0,
     labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartWidth / labelWidth) >> 0,
+    converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
     stepSize;
-
+console.log(varName,converter);
   //if a labels array were passed in, calculate how many labels to skip per tic 
   //mark. If we dont have any labels, generate some from the axis range
   if (Array.isArray(labels)) {
@@ -252,7 +253,8 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
       Dave_js.Utils.createLabels(
         this.range.xMin,
         this.range.xMax,
-        numTics
+        numTics,
+        converter
       );
   }
 
@@ -280,6 +282,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
     chartHeight = +chart.height || 0,
     labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartHeight / labelWidth) >> 0,
+    converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
     stepSize;
 
   if (Array.isArray(labels)) {
@@ -290,7 +293,8 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
       Dave_js.Utils.createLabels(
         this.range.yMin,
         this.range.yMax,
-        numTics
+        numTics,
+        converter
       );
   }
 

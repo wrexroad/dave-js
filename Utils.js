@@ -83,7 +83,7 @@ Dave_js.Utils.getRange = function getRange(data){
   };
 };
 
-Dave_js.Utils.createLabels = function createLabels(min, max, length){
+Dave_js.Utils.createLabels = function createLabels(min, max, length, converter){
   var
     i,
     interval,
@@ -95,7 +95,7 @@ Dave_js.Utils.createLabels = function createLabels(min, max, length){
   for (i = 0; i <= length; i++) {
     value = (min + (i * interval)).toFixed(3);
     result[i] = {
-      text: value,
+      text: converter(value),
       value: value
     };
   }
