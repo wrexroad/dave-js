@@ -107,7 +107,7 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
     coords, pnt_i, index, keys, xData, yData, numPts;
   
   //check if we have an good data
-  if(y === null) {
+  if (y === null) {
     return;
   } else {
     yData = y.data;
@@ -233,7 +233,7 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
 
 Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
   var
-    labels = (this.dataStore.getVar(varName) || {}).data,
+    labels,// = (this.dataStore.getVar(varName) || {}).data,
     pnt_i, coords,
     ctx = this.ctx,
     chart = this.chart,
@@ -242,7 +242,7 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
     numTics = (chartWidth / labelWidth) >> 0,
     converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
     stepSize;
-console.log(varName,converter);
+
   //if a labels array were passed in, calculate how many labels to skip per tic 
   //mark. If we dont have any labels, generate some from the axis range
   if (Array.isArray(labels)) {
@@ -276,7 +276,7 @@ console.log(varName,converter);
 Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
   var
     pnt_i, coords,
-    labels = (this.dataStore.getVar(varName) || {}).data,
+    labels,// = (this.dataStore.getVar(varName) || {}).data,
     ctx = this.ctx,
     chart = this.chart,
     chartHeight = +chart.height || 0,

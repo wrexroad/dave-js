@@ -77,11 +77,11 @@ Dave_js.DataStore = (function DataStoreFactory() {
   };
 
   DataStore.prototype.hasVar = function hasVar(varName) {
-    return sets[this.id].vars[varName] ? true : false;
+    return typeof sets[this.id].vars[varName] == "object" ? true : false;
   };
 
   DataStore.prototype.getVar = function getVar(varName) {
-    return this.hasVar(varName) ? sets[this.id].vars[varName[0]] : null;
+    return this.hasVar(varName) ? sets[this.id].vars[varName] : null;
   };
 
   DataStore.prototype.destroy = function destroy() {
