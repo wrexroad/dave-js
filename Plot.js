@@ -98,31 +98,19 @@ Dave_js.Plot.prototype.setOrigin = function setOrigin(x, y) {
   this.chart.origin.y = Dave_js.forceNumber(y) || this.chart.origin.y;
 };
 
-Dave_js.Plot.prototype.setChartSize = function setChartSize(sizes) {
-  var margin, height, width;
+Dave_js.Plot.prototype.setCanvasSize = function setCanvasSize(sizes) {
+  var size;
 
   if(!sizes){
     return;
   }
 
-  if((margin = Dave_js.Utils.forceNumber(sizes.margin))){
-    this.chart.margin = Math.max(0, margin);
+  if((size = Dave_js.Utils.forceNumber(sizes.height))){
+    this.canvas.height = size;
   }
-
-  if((height = Dave_js.Utils.forceNumber(sizes.height))){
-    this.chart.height = height;
-    this.canvas.height = height + this.chart.margin;
+  if((size = Dave_js.Utils.forceNumber(sizes.width))){
+    this.canvas.width = size;
   }
-
-  if((width = Dave_js.Utils.forceNumber(sizes.width))){
-    this.chart.width = width;
-    this.canvas.width = width + this.chart.margin;
-  }
-
-  this.chart.height = height;
-  this.chart.width = width;
-  
-  this.chart.sizes.radius = Math.max(width, height) / 2;
 };
 
 Dave_js.Plot.prototype.setColor = function setColor(type, color) {
