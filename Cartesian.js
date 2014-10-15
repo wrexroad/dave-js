@@ -74,6 +74,7 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange(){
 };
 
 Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
+  var left, right;
   if(!labels){return;}
   
   this.ctx.save();
@@ -83,7 +84,6 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
     this.ctx.fillStyle = this.chart.colors.text;
     this.ctx.textAlign = "start";
     this.ctx.fillText(labels.x, -50, (this.chart.height + 40));
-    
   }
 
   if(labels.y){
@@ -94,6 +94,11 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
   }
 
   this.ctx.restore();
+
+  return {
+    left: left || 0,
+    right: right || 0,
+  };
 };
 
 Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {

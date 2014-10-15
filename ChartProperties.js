@@ -11,7 +11,14 @@ Dave_js.ChartProperties = function ChartProperties(){
 
   this.height = 0;
   this.width = 0;
-  this.margin = 200;
+
+  //indicates pixels from edge of canvas
+  this.plotRegion = {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
+  };
 
   //default x and y origins for the canvas coordinate system   
   this.origin = { x : 60, y : 20};

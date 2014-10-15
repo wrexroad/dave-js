@@ -46,28 +46,53 @@ Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
   }
 
   this.canvasBox.appendChild(this.canvas);
-  this.ctx.translate(
-    this.chart.origin.x, this.chart.origin.y
-  );
 };
 
 Dave_js.Plot.prototype.configure = function configure(labels) {
+  var plotRegion = this.chart.plotRegion;
+
   labels = labels || {};
+
+  //print axis labels
+  plotRegion = this.decorate(this, labels);
+  this.chart.width = this.canvas.width - plotRegion.left - plotRegion.right;
+  this.chart.height = this.canvas.height - plotRegion.top - plotRegion.bottom;
 
   //draw background and border
   this.ctx.save();
   if (this.chart.bgImg) {
-    this.ctx.drawImage( this.chart.bgImg, 0, 0 );
+    //resize the image to fit the plotting area
+    this.chart.bgImg.width = this.canvas.width;
+    this.chart.bgImg.height = this.canvas.height;
+
+    this.ctx.drawImage( this.chart.bgImg, plotRegion.left, plotRegion.top );
   } else {
     this.ctx.fillStyle = this.chart.colors.bgColor;
-    this.ctx.fillRect( 0, 0, this.chart.width, this.chart.height );
+    this.ctx.fillRect(
+      plotRegion.left, plotRegion.top, this.canvas.width, this.canvas.height
+    );
   }
   this.ctx.strokeStyle = this.chart.colors.borderColor;
   this.ctx.strokeRect(0, 0, this.chart.width, this.chart.height);
   this.ctx.restore();
 
+  //set up the axes tic marks
+  this.chart.axisVars = labels.axisVars || {};
+  if (this.chart.flags.autoRange) {
+    this.plotter.autoRange.call(this);
+  }
+  //add the grid based on the 
+  if (!this.chart.flags.hasRange) {
+    this.plotter.drawGrid.call(this);
+  }
+};
+
+Dave_js.Plot.prototype.decorate = function decorate(labels) {
+  var top = 0, bottom = 0, labelWidth;
+
   //print title (bold)
-  if (labels.plotTitle) {
+  if (typeof labels.plotTitle == "string") {
+    top = parseInt(ctx.font, 10) * 1.5 || 30;
     this.ctx.save();
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = this.chart.colors.text;
@@ -79,18 +104,16 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
     this.ctx.restore();
   }
   
-  //print axis labels
-  this.plotter.labelAxes.call(this, labels.axisLabels);
+  if (labels.axisLabels) {
+    labelWidth = this.plotter.labelAxes.call(labels.axisLabels);
+  }
 
-  //set up the axes tic marks
-  this.chart.axisVars = labels.axisVars || {};
-  if (this.chart.flags.autoRange) {
-    this.plotter.autoRange.call(this);
-  }
-  //add the grid based on the 
-  if (!this.chart.flags.hasRange) {
-    this.plotter.drawGrid.call(this);
-  }
+  return {
+    top: top || 0,
+    bottom: bottom || 0,
+    left: labelWidth.left || 0,
+    right: labelWidth.right || 0
+  };
 };
 
 Dave_js.Plot.prototype.setOrigin = function setOrigin(x, y) {
