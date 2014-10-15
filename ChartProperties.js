@@ -23,7 +23,7 @@ Dave_js.ChartProperties = function ChartProperties(){
   this.bgImg = undefined;
   
   //settings for chart text
-  this.cssFont = '14px sans-serif';
+  this.cssFont = '14px "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace';
   this.labels = {
     title : "",
     indep : "",
