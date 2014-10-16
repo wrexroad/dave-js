@@ -13,6 +13,54 @@ Dave_js.Cartesian = function Cartesian(owner){
   };
 };
 
+Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(lables){
+  var
+    axisVars = labels.axisVars || {},
+    x = (this.dataStore.getVar(axisVars.x) || {}),
+    y = (this.dataStore.getVar(axisVars.y) || {}),
+    xMin = +x.min || 0,
+    xMax = +x.max || 0,
+    yMin = +y.min || 0,
+    yMax = +y.max || 0,
+    top, bottom, left, right,
+    converter, text;
+
+  //calculate the top margin based on the font height
+  top = labels.plotTitle ? this.chart.fontSize : 0;
+
+  //figure how wide the grid labels will need to be
+  if (xDiff) {
+    //get an appropriate converter
+    converter = Dave_js.Converters[axisVars.x] || Dave_js.Converters.default;
+
+    text = converter(
+      //convert either the max ore min, whichever has more characters
+      Math.max(('' + xMin).length, ('' + xMax).length),
+      //use the difference between max and min to figure out sigFigs
+      ('' + (xMax - xMin)).length
+    );
+
+    //measure the converted string
+    left = this.ctx.measureText(text);
+  }
+  if (yDiff) {
+    converter = Dave_js.Converters[axisVars.y] || Dave_js.Converters.default;
+    text = converter(
+      Math.max(('' + yMin).length, ('' + yMax).length),
+      ('' + (yMax - yMin)).length
+    );
+
+    bottom = this.ctx.measureText(text);
+  }
+
+  return {
+    top: top || 0,
+    bottom: bottom || 0,
+    left: labelWidth.left || 0,
+    right: labelWidth.right || 0
+  };
+};
+
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
   return {
     x: (x - this.range.xMin) * this.spacing.x,
@@ -90,7 +138,6 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
   this.ctx.save();
 
   if(labels.x){
-    this.ctx.font = this.chart.cssFont;
     this.ctx.fillStyle = this.chart.colors.text;
     this.ctx.textAlign = "start";
     this.ctx.fillText(labels.x, -50, (this.chart.height + 40));
@@ -251,8 +298,9 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
     labels,// = (this.dataStore.getVar(varName) || {}).data,
     pnt_i, coords,
     ctx = this.ctx,
-    chart = this.chart,
-    chartWidth = +chart.width || 0,
+    chart = this.chart || {},
+    chartWidth = chart.width,
+    plotRegion = chart.plotRegion || {},
     labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartWidth / labelWidth) >> 0,
     converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
@@ -276,7 +324,7 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
   //draw xAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(0, chart.height);
+  ctx.translate(plotRegion.left, this.canvas.height - plotRegion.bottom);
   ctx.rotate(1.5 * Math.PI);
 
   for (pnt_i = 0; pnt_i <= numTics; pnt_i += stepSize) {

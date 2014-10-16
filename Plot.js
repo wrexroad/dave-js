@@ -49,50 +49,71 @@ Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
 };
 
 Dave_js.Plot.prototype.configure = function configure(labels) {
-  var plotRegion = this.chart.plotRegion;
+  var
+    chart = this.chart,
+    ctx = this.ctx,
+    plotRegion = this.chart.plotRegion,
+    font = this.chart.cssFont,
+    fontSize;
 
   labels = labels || {};
 
+  //verify font and measure its height
+  if (typeof font !== 'string') {
+    font = '12px monospace';
+    fontSize = 12;
+  } else {
+    fontSize = parseInt(font, 10);
+    if (!fontSize) {
+      fontSize = 12;
+      font = '12px ' + font;
+    }
+  }
+  chart.cssFont = ctx.font = font;
+  chart.fontSize = fontSize;
+
+  //figure out how much space the ticmarks and labels will occupy
+  plotRegion = this.plotter.caluclateMargins.call(this, labels);
+
   //print axis labels
-  plotRegion = this.decorate(this, labels);
-  this.chart.width = this.canvas.width - plotRegion.left - plotRegion.right;
-  this.chart.height = this.canvas.height - plotRegion.top - plotRegion.bottom;
+  chart.width = canvas.width - plotRegion.left - plotRegion.right;
+  chart.height = canvas.height - plotRegion.top - plotRegion.bottom;
 
   //draw background and border
-  this.ctx.save();
-  if (this.chart.bgImg) {
+  ctx.save();
+  if (chart.bgImg) {
     //resize the image to fit the plotting area
-    this.chart.bgImg.width = this.canvas.width;
-    this.chart.bgImg.height = this.canvas.height;
+    chart.bgImg.width = canvas.width;
+    chart.bgImg.height = canvas.height;
 
-    this.ctx.drawImage( this.chart.bgImg, plotRegion.left, plotRegion.top );
+    ctx.drawImage( chart.bgImg, plotRegion.left, plotRegion.top );
   } else {
-    this.ctx.fillStyle = this.chart.colors.bgColor;
-    this.ctx.fillRect(
-      plotRegion.left, plotRegion.top, this.canvas.width, this.canvas.height
+    ctx.fillStyle = chart.colors.bgColor;
+    ctx.fillRect(
+      plotRegion.left, plotRegion.top, canvas.width, canvas.height
     );
   }
-  this.ctx.strokeStyle = this.chart.colors.borderColor;
-  this.ctx.strokeRect(0, 0, this.chart.width, this.chart.height);
-  this.ctx.restore();
+  ctx.strokeStyle = chart.colors.borderColor;
+  ctx.strokeRect(0, 0, chart.width, chart.height);
+  ctx.restore();
 
   //set up the axes tic marks
-  this.chart.axisVars = labels.axisVars || {};
-  if (this.chart.flags.autoRange) {
+  chart.axisVars = labels.axisVars || {};
+  if (chart.flags.autoRange) {
     this.plotter.autoRange.call(this);
   }
+
   //add the grid based on the 
-  if (!this.chart.flags.hasRange) {
+  if (!chart.flags.hasRange) {
     this.plotter.drawGrid.call(this);
   }
 };
 
 Dave_js.Plot.prototype.decorate = function decorate(labels) {
-  var top = 0, bottom = 0, labelWidth;
-
+  
   //print title (bold)
   if (typeof labels.plotTitle == "string") {
-    top = parseInt(ctx.font, 10) * 1.5 || 30;
+    
     this.ctx.save();
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = this.chart.colors.text;
@@ -105,15 +126,10 @@ Dave_js.Plot.prototype.decorate = function decorate(labels) {
   }
   
   if (labels.axisLabels) {
-    labelWidth = this.plotter.labelAxes.call(labels.axisLabels);
+    this.plotter.labelAxes.call(labels.axisLabels);
   }
 
-  return {
-    top: top || 0,
-    bottom: bottom || 0,
-    left: labelWidth.left || 0,
-    right: labelWidth.right || 0
-  };
+  
 };
 
 Dave_js.Plot.prototype.setOrigin = function setOrigin(x, y) {
