@@ -59,12 +59,22 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange(){
 
   //make sure the max and min of either axis are not the same
   if(xMax === xMin){
-    xMax *= 1.1;
-    xMin /= 1.1;
+    if(xMax === 0){
+      xMax = 1;
+      xMin = -1;
+    } else {
+      xMax *= 1.1;
+      xMin /= 1.1;
+    }
   }
   if(yMax === yMin){
-    yMax *= 1.1;
-    yMin /= 1.1;
+   if(yMax === 0){
+      yMax = 1;
+      yMin = -1;
+    } else {
+      yMax *= 1.1;
+      yMin /= 1.1;
+    }
   }
 
   this.setAxisRange({
