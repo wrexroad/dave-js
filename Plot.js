@@ -50,11 +50,11 @@ Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
 
 Dave_js.Plot.prototype.configure = function configure(labels) {
   var
+    canvas = this.canvas,
     chart = this.chart,
     ctx = this.ctx,
-    plotRegion = this.chart.plotRegion,
     font = this.chart.cssFont,
-    fontSize;
+    plotRegion, fontSize;
 
   labels = labels || {};
 
@@ -73,7 +73,8 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   chart.fontSize = fontSize;
 
   //figure out how much space the ticmarks and labels will occupy
-  plotRegion = this.plotter.caluclateMargins.call(this, labels);
+  this.chart.plotRegion = plotRegion =
+    this.plotter.calculateMargins.call(this, labels);
 
   //print axis labels
   chart.width = canvas.width - plotRegion.left - plotRegion.right;
@@ -90,7 +91,7 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   } else {
     ctx.fillStyle = chart.colors.bgColor;
     ctx.fillRect(
-      plotRegion.left, plotRegion.top, canvas.width, canvas.height
+      plotRegion.left, plotRegion.top, chart.width, chart.height
     );
   }
   ctx.strokeStyle = chart.colors.borderColor;

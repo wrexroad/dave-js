@@ -13,15 +13,17 @@ Dave_js.Cartesian = function Cartesian(owner){
   };
 };
 
-Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(lables){
+Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
   var
     axisVars = labels.axisVars || {},
     x = (this.dataStore.getVar(axisVars.x) || {}),
     y = (this.dataStore.getVar(axisVars.y) || {}),
-    xMin = +x.min || 0,
-    xMax = +x.max || 0,
-    yMin = +y.min || 0,
-    yMax = +y.max || 0,
+    xMin = x.min,
+    xMax = x.max,
+    yMin = y.min,
+    yMax = y.max,
+    xDiff = Dave_js.Utils.floatSubtraction(xMax, xMin),
+    yDiff = Dave_js.Utils.floatSubtraction(yMax, yMin),
     top, bottom, left, right,
     converter, text;
 
@@ -35,29 +37,28 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(lables){
 
     text = converter(
       //convert either the max ore min, whichever has more characters
-      Math.max(('' + xMin).length, ('' + xMax).length),
+      (('' + xMin).length < ('' + xMax).length) ? xMax : xMin,
       //use the difference between max and min to figure out sigFigs
-      ('' + (xMax - xMin)).length
+      ('' + xDiff).length
     );
 
     //measure the converted string
-    left = this.ctx.measureText(text);
+    left = this.ctx.measureText('' + text).width;
   }
   if (yDiff) {
     converter = Dave_js.Converters[axisVars.y] || Dave_js.Converters.default;
     text = converter(
-      Math.max(('' + yMin).length, ('' + yMax).length),
-      ('' + (yMax - yMin)).length
+      (('' + yMin).length < ('' + yMax).length) ? yMax : yMin,
+      ('' + yDiff).length
     );
-
-    bottom = this.ctx.measureText(text);
+    bottom = this.ctx.measureText('' + text).width;
   }
 
   return {
     top: top || 0,
     bottom: bottom || 0,
-    left: labelWidth.left || 0,
-    right: labelWidth.right || 0
+    left: left || 0,
+    right: right || 0
   };
 };
 
@@ -342,6 +343,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
     labels,// = (this.dataStore.getVar(varName) || {}).data,
     ctx = this.ctx,
     chart = this.chart,
+    plotRegion = chart.plotRegion || {},
     chartHeight = +chart.height || 0,
     labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
     numTics = (chartHeight / labelWidth) >> 0,
@@ -364,7 +366,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
   //draw yAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(0, 0);//chartHeight);
+  ctx.translate(plotRegion.left, chartHeight - plotRegion.bottom);//chartHeight);
   for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, 0, labels[pnt_i].value);
