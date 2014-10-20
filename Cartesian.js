@@ -366,7 +366,7 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
   //draw yAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(plotRegion.left, chartHeight - plotRegion.bottom);//chartHeight);
+  ctx.translate(plotRegion.left, plotRegion.top);//chartHeight);
   for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, 0, labels[pnt_i].value);
