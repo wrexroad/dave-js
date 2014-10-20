@@ -18,11 +18,6 @@ Dave_js.Plot = function Plot(type) {
   
   //initialize canvas context
   this.ctx = this.canvas.getContext("2d");
-  
-  //move coord origin to the upper left corner of plot area
-  this.ctx.translate(
-    this.chart.origin.x, this.chart.origin.y
-  );
 
   this.canvasBox = document.getElementsByTagName("body")[0];
 };
