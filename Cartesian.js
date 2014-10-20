@@ -69,8 +69,17 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
 };
 
 Dave_js.Cartesian.prototype.drawGrid = function drawGrid(){
-  var vars = this.chart.axisVars || {};
+  var
+    chart = this.chart || {},
+    plotRegion = chart.plotRegion || {},
+    vars = chart.axisVars || {},
+    ctx = this.ctx || {};
   
+  ctx.save();
+  ctx.strokeStyle = chart.colors.borderColor;
+  ctx.strokeRect(0, 0, chart.width, chart.height);
+  ctx.restore();
+
   Dave_js.Cartesian.prototype.drawXTics.call(this, vars.x);
   Dave_js.Cartesian.prototype.drawYTics.call(this, vars.y);
 };
@@ -324,7 +333,7 @@ Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
   //draw xAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(plotRegion.left, this.canvas.height - plotRegion.bottom);
+  ctx.translate(0, this.chart.height);
   ctx.rotate(1.5 * Math.PI);
 
   for (pnt_i = 0; pnt_i <= numTics; pnt_i += stepSize) {
@@ -365,7 +374,6 @@ Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
   //draw yAxis tic marks and labels
   ctx.save();
   ctx.textAlign = "end";
-  ctx.translate(plotRegion.left, plotRegion.top);
   for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(this, 0, labels[pnt_i].value);

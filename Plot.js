@@ -93,8 +93,6 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
     ctx.fillStyle = chart.colors.bgColor;
     ctx.fillRect(0,0, chart.width, chart.height);
   }
-  ctx.strokeStyle = chart.colors.borderColor;
-  ctx.strokeRect(0, 0, chart.width, chart.height);
   ctx.restore();
 
   //calculate the value/pixes ratio
@@ -273,10 +271,15 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
 Dave_js.Plot.prototype.drawAxes = function drawAxes() {
   var
     chart = this.chart || {},
-    flags = chart.flags || {};
+    flags = chart.flags || {},
+    plotRegion = chart.plotRegion || {},
+    ctx = this.ctx;
 
   //add the grid based on the 
   if (!flags.hasRange) {
+    ctx.save();
+    ctx.translate(plotRegion.left, plotRegion.top);
     this.plotter.drawGrid.call(this);
+    ctx.restore();
   }
 };
