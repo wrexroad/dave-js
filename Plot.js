@@ -77,17 +77,16 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   
   //draw background and border
   ctx.save();
+  ctx.translate(plotRegion.left, plotRegion.top);
   if (chart.bgImg) {
     //resize the image to fit the plotting area
     chart.bgImg.width = canvas.width;
     chart.bgImg.height = canvas.height;
 
-    ctx.drawImage( chart.bgImg, plotRegion.left, plotRegion.top );
+    ctx.drawImage(chart.bgImg,0 , 0);
   } else {
     ctx.fillStyle = chart.colors.bgColor;
-    ctx.fillRect(
-      plotRegion.left, plotRegion.top, chart.width, chart.height
-    );
+    ctx.fillRect(0,0, chart.width, chart.height);
   }
   ctx.strokeStyle = chart.colors.borderColor;
   ctx.strokeRect(0, 0, chart.width, chart.height);
