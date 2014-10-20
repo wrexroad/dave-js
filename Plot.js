@@ -228,7 +228,7 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   //move coord origin to the upper left corner of plot area
   this.ctx.save();
   this.ctx.translate(
-    this.plotRegion.left, this.plotRegion.top
+    this.chart.plotRegion.left, this.chart.plotRegion.top
   );
 
   //make sure the required variables are set
