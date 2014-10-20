@@ -25,7 +25,7 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
     xDiff = Dave_js.Utils.floatSubtraction(xMax, xMin),
     yDiff = Dave_js.Utils.floatSubtraction(yMax, yMin),
     top, bottom, left, right,
-    converter, text;
+    converter, text1, text2;
 
   //calculate the top margin based on the font height
   top = labels.plotTitle ? this.chart.fontSize : 0;
@@ -35,30 +35,30 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
     //get an appropriate converter
     converter = Dave_js.Converters[axisVars.x] || Dave_js.Converters.default;
 
-    text = converter(
-      //convert either the max ore min, whichever has more characters
-      (('' + xMin).length < ('' + xMax).length) ? xMax : xMin,
-      //use the difference between max and min to figure out sigFigs
-      ('' + xDiff).length
-    );
+    //convert the min and max values to determin which has the longer label
+    //use the difference between max and min to figure out sigFigs
+    text1 = converter(xMin, ('' + xDiff).length);
+    text2 = converter(xMax, ('' + xDiff).length);
 
     //measure the converted string
-    left = this.ctx.measureText('' + text).width;
+    bottom =
+      this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
   }
   if (yDiff) {
     converter = Dave_js.Converters[axisVars.y] || Dave_js.Converters.default;
-    text = converter(
-      (('' + yMin).length < ('' + yMax).length) ? yMax : yMin,
-      ('' + yDiff).length
-    );
-    bottom = this.ctx.measureText('' + text).width;
+
+    text1 = converter(yMin, ('' + yDiff).length);
+    text2 = converter(yMax, ('' + yDiff).length);
+
+    left =
+      this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
   }
 
   return {
-    top: top || 0,
-    bottom: bottom || 0,
-    left: left || 0,
-    right: right || 0
+    top: (top || 0) + this.chart.fontSize,
+    bottom: (bottom || 0) + this.chart.fontSize,
+    left: (left || 0) + this.chart.fontSize,
+    right: (right || 0) + this.chart.fontSize
   };
 };
 
