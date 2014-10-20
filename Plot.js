@@ -225,6 +225,12 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
     plotter = this.plotter,
     style;
 
+  //move coord origin to the upper left corner of plot area
+  this.ctx.save();
+  this.ctx.translate(
+    this.plotRegion.left, this.plotRegion.top
+  );
+
   //make sure the required variables are set
   if(!data || !data.vars){
     console.log('No data to draw!');
@@ -262,4 +268,6 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   if(this.chart.flags.legend){
     //this.plotter.drawLegend(data);
   }
+
+  this.ctx.restore();
 };
