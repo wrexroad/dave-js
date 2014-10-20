@@ -16,56 +16,49 @@ Dave_js.Cartesian = function Cartesian(owner){
 Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
   var
     axisVars = labels.axisVars || {},
-    x = (this.dataStore.getVar(axisVars.x) || {}),
-    y = (this.dataStore.getVar(axisVars.y) || {}),
-    xMin = x.min,
-    xMax = x.max,
-    yMin = y.min,
-    yMax = y.max,
-    xDiff = Dave_js.Utils.floatSubtraction(xMax, xMin),
-    yDiff = Dave_js.Utils.floatSubtraction(yMax, yMin),
-    top, bottom, left, right,
-    converter, text1, text2;
+    top, bottom, left, right;
 
   //calculate the top margin based on the font height
   top = labels.plotTitle ? this.chart.fontSize : 0;
 
-  //get an appropriate converter
-  converter = Dave_js.Converters[axisVars.x] || Dave_js.Converters.default;
-
-  //make sure we have a range
-  if (!xDiff) {
-    xMin = (xMin || xMax) * 0.9 || -1;
-    xMax = (xMin || xMax) * 1.1 || 1;
-    xDiff = xMax - xMin;
-  }
-
-  //convert the min and max values to determin which has the longer label
-  //use the difference between max and min to figure out sigFigs
-  text1 = converter(xMin, ('' + xDiff).length);
-  text2 = converter(xMax, ('' + xDiff).length);
-
-  //measure the converted string
-  bottom =
-    this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
-
-  converter = Dave_js.Converters[axisVars.y] || Dave_js.Converters.default;
-  if (!yDiff) {
-    yMin = (yMin || yMax) * 0.9 || -1;
-    yMax = (yMin || yMax) * 1.1 || 1;
-    yDiff = yMax - yMin;
-  }
-  text1 = converter(yMin, ('' + yDiff).length);
-  text2 = converter(yMax, ('' + yDiff).length);
-  left =
-    this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
-    
+  //figure out how wide each axis label set will be
+  bottom = this.getAxisSize.call(this, axisVars.x);
+  left = this.getAxisSize.call(this, axisVars.y);
+  
   return {
     top: (top || 0) + this.chart.fontSize,
     bottom: (bottom || 0) + this.chart.fontSize,
     left: (left || 0) + this.chart.fontSize,
     right: (right || 0) + this.chart.fontSize
   };
+};
+
+Dave_js.Cartesian.prototype.getAxisSize=function getAxisSize(varName){
+  var
+    converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
+    varData = (this.dataStore.getVar(varName) || {}),
+    min = varData.min || 0,
+    max = varData.max || 0,
+    diff = Dave_js.Utils.floatSubtraction(max, min),
+    text1, text2;
+
+  //if we werent able to calculate a range, assume we have a constant value
+  //and bump it by 10% in either direction.
+  //If we STILL dont have a range, just use -1 to 1
+  if (!diff) {
+    min = (min || max) * 0.9 || -1;
+    max = (min || max) * 1.1 || 1;
+    diff = max - min;
+  }
+  
+  //convert the min and max values to determin which has the longer label
+  //use the difference between max and min to figure out sigFigs
+  text1 = converter(min, ('' + diff).length);
+  text2 = converter(max, ('' + diff).length);
+
+  return (
+    this.ctx.measureText(text1.length > text2.length ? text1 : text2).width
+  );
 };
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
