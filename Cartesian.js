@@ -30,30 +30,36 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
   //calculate the top margin based on the font height
   top = labels.plotTitle ? this.chart.fontSize : 0;
 
-  //figure how wide the grid labels will need to be
-  if (xDiff) {
-    //get an appropriate converter
-    converter = Dave_js.Converters[axisVars.x] || Dave_js.Converters.default;
+  //get an appropriate converter
+  converter = Dave_js.Converters[axisVars.x] || Dave_js.Converters.default;
 
-    //convert the min and max values to determin which has the longer label
-    //use the difference between max and min to figure out sigFigs
-    text1 = converter(xMin, ('' + xDiff).length);
-    text2 = converter(xMax, ('' + xDiff).length);
-
-    //measure the converted string
-    bottom =
-      this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
-  }
-  if (yDiff) {
-    converter = Dave_js.Converters[axisVars.y] || Dave_js.Converters.default;
-
-    text1 = converter(yMin, ('' + yDiff).length);
-    text2 = converter(yMax, ('' + yDiff).length);
-
-    left =
-      this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
+  //make sure we have a range
+  if (!xDiff) {
+    xMin = (xMin || xMax) * 0.9 || -1;
+    xMax = (xMin || xMax) * 1.1 || 1;
+    xDiff = xMax - xMin;
   }
 
+  //convert the min and max values to determin which has the longer label
+  //use the difference between max and min to figure out sigFigs
+  text1 = converter(xMin, ('' + xDiff).length);
+  text2 = converter(xMax, ('' + xDiff).length);
+
+  //measure the converted string
+  bottom =
+    this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
+
+  converter = Dave_js.Converters[axisVars.y] || Dave_js.Converters.default;
+  if (!yDiff) {
+    yMin = (yMin || yMax) * 0.9 || -1;
+    yMax = (yMin || yMax) * 1.1 || 1;
+    yDiff = yMax - yMin;
+  }
+  text1 = converter(yMin, ('' + yDiff).length);
+  text2 = converter(yMax, ('' + yDiff).length);
+  left =
+    this.ctx.measureText(text1.length > text2.length ? text1 : text2).width;
+    
   return {
     top: (top || 0) + this.chart.fontSize,
     bottom: (bottom || 0) + this.chart.fontSize,
