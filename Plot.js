@@ -76,10 +76,10 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   this.chart.plotRegion = plotRegion =
     this.plotter.calculateMargins.call(this, labels);
 
-  //print axis labels
-  chart.width = canvas.width - plotRegion.left - plotRegion.right;
-  chart.height = canvas.height - plotRegion.top - plotRegion.bottom;
-
+  //get the size of the plotting area
+  canvas.width = chart.width + plotRegion.left + plotRegion.right;
+  canvas.height = chart.height + plotRegion.top + plotRegion.bottom;
+  
   //draw background and border
   ctx.save();
   if (chart.bgImg) {
@@ -138,7 +138,7 @@ Dave_js.Plot.prototype.setOrigin = function setOrigin(x, y) {
   this.chart.origin.y = Dave_js.forceNumber(y) || this.chart.origin.y;
 };
 
-Dave_js.Plot.prototype.setCanvasSize = function setCanvasSize(sizes) {
+Dave_js.Plot.prototype.setPlotSize = function setPlotSize(sizes) {
   var size;
 
   if(!sizes){
@@ -146,10 +146,10 @@ Dave_js.Plot.prototype.setCanvasSize = function setCanvasSize(sizes) {
   }
 
   if((size = Dave_js.Utils.forceNumber(sizes.height))){
-    this.canvas.height = size;
+    this.chart.height = size;
   }
   if((size = Dave_js.Utils.forceNumber(sizes.width))){
-    this.canvas.width = size;
+    this.chart.width = size;
   }
 };
 
