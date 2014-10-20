@@ -1,4 +1,4 @@
-Dave_js.Cartesian = function Cartesian(owner){
+Dave_js.Cartesian = function Cartesia1n(owner){
   //override any functions in Plot.js that are set here
   if(!owner){return;}
   for(var i in this){

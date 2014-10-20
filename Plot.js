@@ -45,14 +45,19 @@ Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
 
 Dave_js.Plot.prototype.configure = function configure(labels) {
   var
-    canvas = this.canvas,
-    chart = this.chart,
-    ctx = this.ctx,
-    font = this.chart.cssFont,
+    canvas = this.canvas || {},
+    chart = this.chart || {},
+    flags = chart.flags || {},
+    ctx = this.ctx || {},
+    plotter = this.plotter,
+    font = this.chart.cssFont || '',
     plotRegion, fontSize;
 
   labels = labels || {};
-
+  
+  //save which variables are for which axis
+  chart.axisVars = labels.axisVars || {};
+  
   //verify font and measure its height
   if (typeof font !== 'string') {
     font = '12px monospace';
@@ -92,15 +97,9 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   ctx.strokeRect(0, 0, chart.width, chart.height);
   ctx.restore();
 
-  //set up the axes tic marks
-  chart.axisVars = labels.axisVars || {};
-  if (chart.flags.autoRange) {
-    this.plotter.autoRange.call(this);
-  }
-
-  //add the grid based on the 
-  if (!chart.flags.hasRange) {
-    this.plotter.drawGrid.call(this);
+  //calculate the value/pixes ratio
+  if (flags.autoRange) {
+    plotter.autoRange.call(this);
   }
 };
 
@@ -121,7 +120,7 @@ Dave_js.Plot.prototype.decorate = function decorate(labels) {
   }
   
   if (labels.axisLabels) {
-    this.plotter.labelAxes.call(labels.axisLabels);
+    plotter.labelAxes.call(labels.axisLabels);
   }
 
   
@@ -269,4 +268,15 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   }
 
   this.ctx.restore();
+};
+
+Dave_js.Plot.prototype.drawAxes = function drawAxes() {
+  var
+    chart = this.chart || {},
+    flags = chart.flags || {};
+
+  //add the grid based on the 
+  if (!flags.hasRange) {
+    this.plotter.drawGrid.call(this);
+  }
 };
