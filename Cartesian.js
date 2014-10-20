@@ -63,8 +63,8 @@ Dave_js.Cartesian.prototype.getAxisSize=function getAxisSize(varName){
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
   return {
-    x: (x - this.range.xMin) * this.spacing.x,
-    y: (this.range.yMax - y) * this.spacing.y
+    x: x * this.spacing.x,
+    y: y * this.spacing.y
   };
 };
 
@@ -73,15 +73,52 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid(){
     chart = this.chart || {},
     plotRegion = chart.plotRegion || {},
     vars = chart.axisVars || {},
-    ctx = this.ctx || {};
+    ctx = this.ctx || {},
+    labels, converter, numTics, coords, pnt_i;
   
+  //configure the drawing context
   ctx.save();
   ctx.strokeStyle = chart.colors.borderColor;
-  ctx.strokeRect(0, 0, chart.width, chart.height);
-  ctx.restore();
+  ctx.textAlign = "end";
 
-  Dave_js.Cartesian.prototype.drawXTics.call(this, vars.x);
-  Dave_js.Cartesian.prototype.drawYTics.call(this, vars.y);
+  //outline the grid
+  ctx.translate(plotRegion.left, plotRegion.top);
+  ctx.strokeRect(0, 0, chart.width, chart.height);
+
+  //draw the y axis tics and labels
+  ctx.translate(0, chart.height);
+  numTics = (chart.height / chart.fontSize || 25) >> 0;
+  converter = Dave_js.Converters[vars.y] || Dave_js.Converters.default;
+  labels =
+    Dave_js.Utils.createLabels(
+      this.range.yMin,
+      this.range.yMax,
+      numTics,
+      converter
+    );
+  for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
+    Dave_js.Utils.drawTic(
+      ctx, labels[pnt_i].text, -labels[pnt_i].coord * this.spacing.y
+    );
+  }
+
+  //draw the x axis tics and labels
+  ctx.rotate(1.5 * Math.PI);
+  numTics = (chart.width / chart.fontSize || 25) >> 0;
+  converter = Dave_js.Converters[vars.x] || Dave_js.Converters.default;
+  labels =
+    Dave_js.Utils.createLabels(
+      this.range.xMin,
+      this.range.xMax,
+      numTics,
+      converter
+    );
+  for (pnt_i = 0; pnt_i <= numTics; pnt_i++) {
+    Dave_js.Utils.drawTic(
+      ctx, labels[pnt_i].text, labels[pnt_i].coord * this.spacing.x
+    );
+  }
+  ctx.restore();
 };
 
 Dave_js.Cartesian.prototype.autoRange = function autoRange(){
@@ -172,8 +209,6 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
     ctx = this.ctx,
     x = this.dataStore.getVar(data.vars.x),
     y = this.dataStore.getVar(data.vars.y),
-    color = data.color || 'black',
-    brushWidth = +data.brushWidth || 2,
     onPath = false,
     coords, pnt_i, index, keys, xData, yData, numPts;
   
@@ -192,15 +227,6 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
   keys = y.keys || {};
   numPts = y.length || 0;
 
-  ctx.save();
-
-  ctx.lineWidth = brushWidth;
-
-  //set colors for this plot
-  color = color || 'black';
-  ctx.fillStyle = color;
-  ctx.strokeStyle = color;
-
   for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
     index = keys[pnt_i];
 
@@ -210,24 +236,23 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
       onPath = false;
     } else {
       //convert the data point to pixel coordinates
-      coords =
+      /*coords =
         Dave_js.Cartesian.prototype.getCoords.call(
           this, xData[index], yData[index]
         );
-
+*/
       //make sure we have a current path
       if (!onPath) {
         ctx.beginPath();
-        ctx.moveTo(coords.x, coords.y);
+        ctx.moveTo((coords.x - xData.min) * this.spacing.x, (coords.y - yData.min) * this.spacing.y);
         onPath = true;
       } else {
-        ctx.lineTo(coords.x, coords.y);
+        ctx.lineTo((coords.x - xData.min) * this.spacing.x, (coords.y - yData.min) * this.spacing.y);
       }
     }
   }
 
   ctx.stroke();
-  ctx.restore();
 };
 
 Dave_js.Cartesian.prototype.drawPoints = function drawPoints(data) {
@@ -257,18 +282,14 @@ Dave_js.Cartesian.prototype.drawPoints = function drawPoints(data) {
   keys = y.keys || {};
   numPts = y.length || 0;
 
-  ctx.save();
-
   for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
     index = keys[pnt_i];
     coords =
       Dave_js.Cartesian.prototype.getCoords.call(
         this, xData[index] ,yData[index]
       );
-    dot.call(this, coords.x, coords.y);
+    dot.call(this, (coords.x - xData.min) * this.spacing.x, (coords.y - yData.min) * this.spacing.y);
   }
-
-  ctx.restore();
 };
 
 Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
@@ -298,88 +319,6 @@ Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
 
   //return to the canvas origin
   ctx.translate(0, -1 * chart.height);
-
-  ctx.restore();
-};
-
-Dave_js.Cartesian.prototype.drawXTics = function drawXTics(varName) {
-  var
-    labels,// = (this.dataStore.getVar(varName) || {}).data,
-    pnt_i, coords,
-    ctx = this.ctx,
-    chart = this.chart || {},
-    chartWidth = chart.width,
-    plotRegion = chart.plotRegion || {},
-    labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
-    numTics = (chartWidth / labelWidth) >> 0,
-    converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
-    stepSize;
-
-  //if a labels array were passed in, calculate how many labels to skip per tic 
-  //mark. If we dont have any labels, generate some from the axis range
-  if (Array.isArray(labels)) {
-    stepSize = (labels.length / numTics) || 1;
-  } else {
-    stepSize = 1;
-    labels =
-      Dave_js.Utils.createLabels(
-        this.range.xMin,
-        this.range.xMax,
-        numTics,
-        converter
-      );
-  }
-
-  //draw xAxis tic marks and labels
-  ctx.save();
-  ctx.textAlign = "end";
-  ctx.translate(0, this.chart.height);
-  ctx.rotate(1.5 * Math.PI);
-
-  for (pnt_i = 0; pnt_i <= numTics; pnt_i += stepSize) {
-    coords =
-      Dave_js.Cartesian.prototype.getCoords.call(this, labels[pnt_i].value, 0);
-    Dave_js.Utils.drawTic(ctx, labels[pnt_i].text, coords.x);
-  }
-
-  ctx.restore();
-};
-
-Dave_js.Cartesian.prototype.drawYTics = function drawYTics(varName) {
-  var
-    pnt_i, coords,
-    labels,
-    ctx = this.ctx,
-    chart = this.chart,
-    plotRegion = chart.plotRegion || {},
-    chartHeight = +chart.height || 0,
-    labelWidth = (parseInt(ctx.font, 10) * 1.5) || 25,
-    numTics = (chartHeight / labelWidth) >> 0,
-    converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
-    stepSize;
-
-  if (Array.isArray(labels)) {
-    stepSize = (labels.length / numTics) || 1;
-  } else {
-    stepSize = 1;
-    labels =
-      Dave_js.Utils.createLabels(
-        this.range.yMin,
-        this.range.yMax,
-        numTics,
-        converter
-      );
-  }
-
-  //draw yAxis tic marks and labels
-  ctx.save();
-  ctx.textAlign = "end";
-  for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
-    coords =
-      Dave_js.Cartesian.prototype.getCoords.call(this, 0, labels[pnt_i].value);
-
-    Dave_js.Utils.drawTic(ctx, labels[pnt_i].text, coords.y);
-  }
 
   ctx.restore();
 };

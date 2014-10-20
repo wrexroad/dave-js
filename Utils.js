@@ -93,10 +93,10 @@ Dave_js.Utils.createLabels = function createLabels(min, max, length, converter){
   interval = (max - min) / length;
 
   for (i = 0; i <= length; i++) {
-    value = (min + (i * interval)).toFixed(3);
+    value = (min + (i * interval));
     result[i] = {
       text: converter(value),
-      value: value
+      coord: value - min
     };
   }
 

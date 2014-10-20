@@ -80,7 +80,7 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
   canvas.width = chart.width + plotRegion.left + plotRegion.right;
   canvas.height = chart.height + plotRegion.top + plotRegion.bottom;
   
-  //draw background and border
+  //draw background
   ctx.save();
   ctx.translate(plotRegion.left, plotRegion.top);
   if (chart.bgImg) {
@@ -219,13 +219,12 @@ Dave_js.Plot.prototype.getChartProps = function getChartProps() {
 Dave_js.Plot.prototype.drawData = function drawData(data) {
   var
     plotter = this.plotter,
+    ctx = this.ctx || {},
+    chart = this.chart || {},
+    plotRegion = chart.plotRegion || {},
+    brushWidth = +data.brushWidth || 2,
+    color = data.color || 'black',
     style;
-
-  //move coord origin to the upper left corner of plot area
-  this.ctx.save();
-  this.ctx.translate(
-    this.chart.plotRegion.left, this.chart.plotRegion.top
-  );
 
   //make sure the required variables are set
   if(!data || !data.vars){
@@ -236,6 +235,16 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   //default to drawing just a line plot
   style = (data.style || "line").toLowerCase();
   
+  //configure plotting context
+  ctx.save();
+  ctx.translate(plotRegion.left, plotRegion.top + chart.height);
+  ctx.scale(1, -1);
+
+  //set colors for this plot
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+
+
   //draw the various styles that were specified
   if(style.indexOf("line") != -1){
     if(typeof plotter.drawLines == 'function'){
@@ -244,7 +253,6 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
       console.log(this.type + " plotter can not plot lines.");
     }
   }
-
   if(style.indexOf("point") != -1){
     if(typeof plotter.drawPoints == 'function'){
       plotter.drawPoints.call(this, data);
@@ -252,7 +260,6 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
       console.log(this.type + " plotter can not plot points.");
     }
   }
-
   if(style.indexOf("function") != -1){
     if(typeof plotter.drawFunction == 'function'){
       plotter.drawPoints.call(this, data);
@@ -261,11 +268,11 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
     }
   }
 
+  ctx.restore();
+
   if(this.chart.flags.legend){
     //this.plotter.drawLegend(data);
   }
-
-  this.ctx.restore();
 };
 
 Dave_js.Plot.prototype.drawAxes = function drawAxes() {
@@ -277,9 +284,6 @@ Dave_js.Plot.prototype.drawAxes = function drawAxes() {
 
   //add the grid based on the 
   if (!flags.hasRange) {
-    ctx.save();
-    ctx.translate(plotRegion.left, plotRegion.top);
     this.plotter.drawGrid.call(this);
-    ctx.restore();
   }
 };
