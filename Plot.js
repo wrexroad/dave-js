@@ -224,7 +224,7 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
     plotRegion = chart.plotRegion || {},
     brushWidth = +data.brushWidth || 2,
     color = data.color || 'black',
-    style;
+    style, coords, dot;
 
   //make sure the required variables are set
   if(!data || !data.vars){
@@ -235,6 +235,9 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   //default to drawing just a line plot
   style = (data.style || "line").toLowerCase();
   
+  //convert all of the values to pixel coordinates
+  coords = plotter.getCoords.call(this, data);
+
   //configure plotting context
   ctx.save();
   ctx.translate(plotRegion.left, plotRegion.top + chart.height);
@@ -244,18 +247,23 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   ctx.fillStyle = color;
   ctx.strokeStyle = color;
 
-
   //draw the various styles that were specified
   if(style.indexOf("line") != -1){
     if(typeof plotter.drawLines == 'function'){
-      plotter.drawLines.call(this, data);
+      plotter.drawLines.call(this, coords);
     } else {
       console.log(this.type + " plotter can not plot lines.");
     }
   }
   if(style.indexOf("point") != -1){
     if(typeof plotter.drawPoints == 'function'){
-      plotter.drawPoints.call(this, data);
+      dot = (
+        typeof data.dot == 'function' ?
+          dot :
+          Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
+      );
+
+      plotter.drawPoints.call(this, coords, dot);
     } else {
       console.log(this.type + " plotter can not plot points.");
     }

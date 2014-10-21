@@ -61,13 +61,6 @@ Dave_js.Cartesian.prototype.getAxisSize=function getAxisSize(varName){
   );
 };
 
-Dave_js.Cartesian.prototype.getCoords = function getCoords(x, y) {
-  return {
-    x: x * this.spacing.x,
-    y: y * this.spacing.y
-  };
-};
-
 Dave_js.Cartesian.prototype.drawGrid = function drawGrid(){
   var
     chart = this.chart || {},
@@ -204,50 +197,67 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
   };
 };
 
-Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
+Dave_js.Cartesian.prototype.getCoords = function getCoords(data) {
   var
-    ctx = this.ctx,
     x = this.dataStore.getVar(data.vars.x),
     y = this.dataStore.getVar(data.vars.y),
-    onPath = false,
-    coords, pnt_i, index, keys, xData, yData, numPts;
-  
-  //check if we have an good data
-  if (y === null) {
-    return;
-  } else {
-    yData = y.data;
-  }
-  if (x === null) {
-    //No x axis variable was set use the indexing values from y
-    xData = Dave_js.Utils.arrayToObject(y.keys);
-  } else {
-    xData = x.data;
-  }
-  keys = y.keys || {};
-  numPts = y.length || 0;
+    xSpacing = this.spacing.x,
+    ySpacing = this.spacing.y,
+    coords = [], data_i, pnt_i, xData, xMin, yData, yMin;
+    
+    //check if we have an good data
+    if (y === null) {
+      return;
+    } else {
+      yData = y.data;
+    }
+    if (x === null) {
+      //No x axis variable was set use the indexing values from y
+      xData = Dave_js.Utils.arrayToObject(y.keys);
+    } else {
+      xData = x.data;
+    }
 
+    xMin = x.min;
+    yMin = y.min;
+
+    keys = y.keys || {};
+    numPts = y.length || 0;
+
+    for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
+      data_i = keys[pnt_i];
+      coords[pnt_i] = {
+        x : (xData[data_i] - xMin) * xSpacing,
+        y : (yData[data_i] - yMin) * ySpacing
+      };
+    }
+
+  return coords;
+};
+
+Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
+  var
+    ctx = this.ctx,
+    onPath = false,
+    numPts = coords.length || 0,
+    pnt_i, x, y;
+  
   for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-    index = keys[pnt_i];
+    x = coords[pnt_i].x;
+    y = coords[pnt_i].y;
 
     //if we hit a data gap, end the current path
-    if (isNaN(yData[index])) {
+    if (isNaN(coords[pnt_i].y)) {
       ctx.stroke();
       onPath = false;
     } else {
-      //convert the data point to pixel coordinates
-      /*coords =
-        Dave_js.Cartesian.prototype.getCoords.call(
-          this, xData[index], yData[index]
-        );
-*/
       //make sure we have a current path
       if (!onPath) {
         ctx.beginPath();
-        ctx.moveTo((coords.x - xData.min) * this.spacing.x, (coords.y - yData.min) * this.spacing.y);
+        ctx.moveTo(x, y);
         onPath = true;
       } else {
-        ctx.lineTo((coords.x - xData.min) * this.spacing.x, (coords.y - yData.min) * this.spacing.y);
+        ctx.lineTo(x, y);
       }
     }
   }
@@ -255,40 +265,12 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(data) {
   ctx.stroke();
 };
 
-Dave_js.Cartesian.prototype.drawPoints = function drawPoints(data) {
+Dave_js.Cartesian.prototype.drawPoints = function drawPoints(coords, dot) {
   var
-    ctx = this.ctx,
-    x = this.dataStore.getVar(data.vars.x),
-    y = this.dataStore.getVar(data.vars.y),
-    color = data.color || 'black',
-    brushWidth = +data.brushWidth || 2,
-    dot =
-      (typeof data.dot == 'function' ?
-       dot :
-       Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
-      ),
-    coords, pnt_i, index, keys, xData, yData, numPts;
-  
-  if(y === null) {
-    return;
-  } else {
-    yData = y.data;
-  }
-  if (x === null) {
-    xData = Dave_js.Utils.arrayToObject(y.keys);
-  } else {
-    xData = x.data;
-  }
-  keys = y.keys || {};
-  numPts = y.length || 0;
-
+    numPts = coords.length || 0,
+    pnt_i;
   for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-    index = keys[pnt_i];
-    coords =
-      Dave_js.Cartesian.prototype.getCoords.call(
-        this, xData[index] ,yData[index]
-      );
-    dot.call(this, (coords.x - xData.min) * this.spacing.x, (coords.y - yData.min) * this.spacing.y);
+    dot.call(this, coords[pnt_i].x, coords[pnt_i].y);
   }
 };
 
