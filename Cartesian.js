@@ -13,7 +13,7 @@ Dave_js.Cartesian = function Cartesia1n(owner){
   };
 };
 
-Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
+Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
   var
     axisVars = labels.axisVars || {},
     top, bottom, left, right;
@@ -33,7 +33,7 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels){
   };
 };
 
-Dave_js.Cartesian.prototype.getAxisSize=function getAxisSize(varName){
+Dave_js.Cartesian.prototype.getAxisSize = function getAxisSize(varName) {
   var
     converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
     varData = (this.dataStore.getVar(varName) || {}),
@@ -61,7 +61,7 @@ Dave_js.Cartesian.prototype.getAxisSize=function getAxisSize(varName){
   );
 };
 
-Dave_js.Cartesian.prototype.drawGrid = function drawGrid(){
+Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
   var
     chart = this.chart || {},
     plotRegion = chart.plotRegion || {},
@@ -114,7 +114,7 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid(){
   ctx.restore();
 };
 
-Dave_js.Cartesian.prototype.autoRange = function autoRange(){
+Dave_js.Cartesian.prototype.autoRange = function autoRange() {
   var
     vars = this.chart.axisVars || {},
     dataStore = this.dataStore,
@@ -170,7 +170,7 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange(){
   });
 };
 
-Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels){
+Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels) {
   var left, right;
   if(!labels){return;}
   
