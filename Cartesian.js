@@ -203,7 +203,9 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(data) {
     y = this.dataStore.getVar(data.vars.y),
     xSpacing = this.spacing.x,
     ySpacing = this.spacing.y,
-    coords = [], data_i, pnt_i, xData, xMin, yData, yMin;
+    xMin = this.range.xMin || 0,
+    yMin = this.range.yMin || 0,
+    coords = [], data_i, pnt_i, xData, yData;
     
     //check if we have an good data
     if (y === null) {
@@ -217,9 +219,6 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(data) {
     } else {
       xData = x.data;
     }
-
-    xMin = x.min;
-    yMin = y.min;
 
     keys = y.keys || {};
     numPts = y.length || 0;
