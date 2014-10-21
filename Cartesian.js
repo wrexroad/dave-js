@@ -265,15 +265,6 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
   ctx.stroke();
 };
 
-Dave_js.Cartesian.prototype.drawPoints = function drawPoints(coords, dot) {
-  var
-    numPts = coords.length || 0,
-    pnt_i;
-  for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-    dot.call(this, coords[pnt_i].x, coords[pnt_i].y);
-  }
-};
-
 Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
   var
     ctx = this.ctx,

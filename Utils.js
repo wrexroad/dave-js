@@ -136,13 +136,12 @@ Dave_js.Utils.squareDotFactory = function squareDotFactory(opts) {
     );
     */
 
-  function dot(x, y) {
+  function dot(coords) {
     var ctx = this.ctx;
     ctx.save();
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
-
-    ctx.fillRect(x - halfWidth, y - halfWidth, width, width);
+    ctx.fillRect(coords.x - halfWidth, coords.y - halfWidth, width, width);
     ctx.restore();
   }
 

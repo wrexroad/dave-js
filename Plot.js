@@ -256,17 +256,13 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
     }
   }
   if(style.indexOf("point") != -1){
-    if(typeof plotter.drawPoints == 'function'){
-      dot = (
-        typeof data.dot == 'function' ?
-          dot :
-          Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
-      );
+    dot = (
+      typeof data.dot == 'function' ?
+        dot :
+        Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
+    );
 
-      plotter.drawPoints.call(this, coords, dot);
-    } else {
-      console.log(this.type + " plotter can not plot points.");
-    }
+    coords.forEach(dot, this);
   }
   if(style.indexOf("function") != -1){
     if(typeof plotter.drawFunction == 'function'){
