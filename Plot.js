@@ -273,10 +273,24 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   }
 
   ctx.restore();
+};
 
-  if(this.chart.flags.legend){
-    //this.plotter.drawLegend(data);
-  }
+Dave_js.Plot.prototype.drawTitleLegend = function drawTitleLegend(vars) {
+  var
+    ctx = this.ctx,
+    numVars = vars.length,
+    offset = 0, var_i;
+
+  ctx.save();
+  ctx.translate(this.chart.plotRegion.left, 0);
+  ctx.textAlign = "start";
+  ctx.textBaseline = "top";
+    while ((var_i = vars.pop())) {
+      ctx.fillStyle = var_i.color;
+      ctx.fillText(var_i.text, offset, 0);
+      offset += ctx.measureText(var_i.text + ' ').width;
+    }
+  ctx.restore();
 };
 
 Dave_js.Plot.prototype.drawAxes = function drawAxes() {
