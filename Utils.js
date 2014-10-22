@@ -151,30 +151,3 @@ Dave_js.Utils.arrayToObject = function arrayToObject(array){
 
   return object;
 };
-
-Dave_js.Utils.splitFloat = function splitFloat(num){
-  var
-    parts = ('' + num).split('.'),
-    whole = parts[0] || '',
-    fract = parts[1] || '',
-    exp = fract.length;
-
-  return [
-    +whole,
-    +fract,
-    +exp
-  ];
-};
-
-Dave_js.Utils.floatSubtraction = function floatSubtraction(num1, num2){
-  var
-    parts1 = Dave_js.Utils.splitFloat(num1),
-    parts2 = Dave_js.Utils.splitFloat(num2),
-    wholeDiff = parts1[0] - parts2[0],
-    fract1 = parts1[1] * Math.pow(10, parts2[2]),
-    fract2 = parts2[1] * Math.pow(10, parts1[2]),
-    fractDiff = fract1 - fract2,
-    minusone = fractDiff < 0 ? 1 : 0;
-
-  return +(wholeDiff + '.' + Math.abs(fractDiff) - minusone);
-};

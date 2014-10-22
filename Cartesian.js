@@ -37,19 +37,10 @@ Dave_js.Cartesian.prototype.getAxisSize = function getAxisSize(varName) {
   var
     converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
     varData = (this.dataStore.getVar(varName) || {}),
-    min = varData.min || 0,
-    max = varData.max || 0,
-    diff = Dave_js.Utils.floatSubtraction(max, min),
+    min = Big(varData.min || 0),
+    max = Big(varData.max || 0),
+    diff = max.minus(min),
     text1, text2;
-
-  //if we werent able to calculate a range, assume we have a constant value
-  //and bump it by 10% in either direction.
-  //If we STILL dont have a range, just use -1 to 1
-  if (!diff) {
-    min = (min || max) * 0.9 || -1;
-    max = (min || max) * 1.1 || 1;
-    diff = max - min;
-  }
   
   //convert the min and max values to determin which has the longer label
   //use the difference between max and min to figure out sigFigs
