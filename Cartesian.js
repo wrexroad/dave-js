@@ -36,19 +36,12 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
 Dave_js.Cartesian.prototype.getAxisSize = function getAxisSize(varName) {
   var
     converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
-    varData = (this.dataStore.getVar(varName) || {}),
-    min = Big(varData.min || 0),
-    max = Big(varData.max || 0),
-    diff = max.minus(min),
-    text1, text2;
-  
-  //convert the min and max values to determin which has the longer label
-  //use the difference between max and min to figure out sigFigs
-  text1 = converter(min, ('' + diff).length);
-  text2 = converter(max, ('' + diff).length);
+    varData = (this.dataStore.getVar(varName) || {}).sigFigs,
+    text = Math.pow(10, sigFigs);
 
   return (
-    this.ctx.measureText(text1.length > text2.length ? text1 : text2).width
+    //get the size of a numbner with the right sigFigs, plus space for symbols
+    this.ctx.measureText(' -.e' + text).width
   );
 };
 
