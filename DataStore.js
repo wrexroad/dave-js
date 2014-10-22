@@ -18,7 +18,8 @@ Dave_js.DataStore = (function DataStoreFactory() {
   DataStore.prototype.addJSONData = function addJSONData(jsonData, index) {
     var
       var_i, pnt_i, length, keyedData, varData, indexData, key, num,
-      numberData, min, max,
+      numberData, min, max, sigFigs, converter,
+      defaultConverter = Dave_js.Converters.default,
       dataSetVars = sets[this.id].vars;
 
     jsonData = jsonData || {};
@@ -29,6 +30,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
       if (jsonData.hasOwnProperty(var_i)) {
         varData = jsonData[var_i] || [];
         length = varData.length;
+        converter = Dave_js.Converters[var_i] || defaultConverter;
 
         //create a hash of data points whose keys are the index variable
         keyedData = {};
@@ -39,9 +41,12 @@ Dave_js.DataStore = (function DataStoreFactory() {
             //if there is no index, just use the order in which the data arrived
             key = indexData[pnt_i] = pnt_i;
           }
-
           keyedData[key] = varData[pnt_i];
 
+          //sigFigs is the length of the converted value of whatever 
+          //is in varData, regardless if it is really a number.
+          sigFigs = ('' + converter(varData[pnt_i])).length;
+          
           //figure out if this is a max or minimum point
           num = Dave_js.Utils.forceNumber(keyedData[key]);
           if(!isNaN(num)){
@@ -59,6 +64,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
           length: indexData.length,
           min: min,
           max: max,
+          sigFigs: sigFigs,
           constant: min == max ? true: false
         };
       }
