@@ -3,7 +3,7 @@ Dave_js.Utils = {};
 Dave_js.Utils.ground = function ground(num) {
   var mag, exp, sign;
   
-  num = +num || 0;
+  if(!(num = +num)){return 0;}
   
   //round the value down to the most significant digit    
   exp = num < 1 ?
@@ -18,7 +18,7 @@ Dave_js.Utils.ground = function ground(num) {
 Dave_js.Utils.sky = function sky(num) {
   var mag, exp, sign;
   
-  num = +num || 0;
+  if(!(num = +num)){return 0;}
 
   //round up the value to the incremented most significant digit
   exp = num < 1 ?
