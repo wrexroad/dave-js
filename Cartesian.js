@@ -121,56 +121,48 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange() {
     yVar = dataStore.getVar(vars.y),
     xVar = dataStore.getVar(vars.x),
     range = this.range,
-    xMin, xMax, yMin, yMax;
+    xMin = xVar.min,
+    xMax = xVar.max,
+    yMin = yVar.min,
+    yMax = yVar.max;
 
   //set the y variable first
   if(!yVar){
     console.log("No axis variables set. Can not determine plot scale.");
     return false;
   }
-  yMin = Dave_js.Utils.forceNumber(yVar.min);
-  yMin = isNaN(yMin) ? range.yMin : yMin;
-  yMin = Dave_js.Utils.ground(yMin);
-  yMax = Dave_js.Utils.forceNumber(yVar.max);
-  yMax = isNaN(yMax) ? range.yMax : yMax;
-  yMax = Dave_js.Utils.sky(yMax);
+  
+  yMin = !isNaN(yMin) ? yMin : range.yMin || 0;
+  yMax = !isNaN(yMax) ? yMax : range.yMax || 0;
+  //check if this is a constant variable  
+  if(yVar.constant){
+    yMin -= 1;
+    yMax += 1;
+  } else {
+    //create some nicely rounded min and max values
+    yMin = Dave_js.Utils.ground(yMin);
+    yMax = Dave_js.Utils.sky(yMax);
+  }
+  //make sure min and max arent set to zero
+  if(yMax === yMin === 0){
+    yMax = 1;
+    yMin = -1;
+  }
 
   //if no x var was set, use the y index for the range
   if(!xVar){
     xMin = yVar.keys[0];
     xMax = yVar.keys[yVar.length - 1];
   } else {
-    xMin = Dave_js.Utils.forceNumber(xVar.min);
-    xMin = isNaN(xMin) ? range.xMin : xMin;
-    xMax = Dave_js.Utils.forceNumber(xVar.max);
-    xMax = isNaN(xMax) ? range.xMax : xMax;
-  }
-
-  //make sure the max and min of either axis are not the same
-  if(xMax === xMin){
-    if(xMax === 0){
-      xMax = 1;
-      xMin = -1;
+    if(xVar.constant){
+      xMin -= 1;
+      xMax += 1;
     } else {
-      xMax *= 1.1;
-      xMin /= 1.1;
-    }
-  }
-  if(yMax === yMin){
-   if(yMax === 0){
-      yMax = 1;
-      yMin = -1;
-    } else {
-      yMax *= 1.1;
-      yMin /= 1.1;
+      xMin = !isNaN(xMin) ? xMin : range.xMin || 0;
+      xMax = !isNaN(xMax) ? xMax : range.xMax || 0;
     }
   }
 
-console.log({
-    x: {min: xMin, max: xMax},
-    y: {min: yMin, max: yMax}
-  })
-;
   this.setAxisRange({
     x: {min: xMin, max: xMax},
     y: {min: yMin, max: yMax}

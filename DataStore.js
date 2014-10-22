@@ -18,7 +18,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
   DataStore.prototype.addJSONData = function addJSONData(jsonData, index) {
     var
       var_i, pnt_i, length, keyedData, varData, indexData, key, num,
-      numberData,
+      numberData, min, max,
       dataSetVars = sets[this.id].vars;
 
     jsonData = jsonData || {};
@@ -49,13 +49,17 @@ Dave_js.DataStore = (function DataStoreFactory() {
           }
         }
 
+        min = Math.min.apply(null, numberData);
+        max = Math.max.apply(null, numberData);
+
         //save the indexed data and some statistics to the DataStore object
         dataSetVars[var_i] = {
           data: keyedData,
           keys: indexData,
           length: indexData.length,
-          min: Math.min.apply(null, numberData),
-          max: Math.max.apply(null, numberData)
+          min: min,
+          max: max,
+          constant: min == max ? true: false
         };
       }
     }
