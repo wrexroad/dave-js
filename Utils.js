@@ -1,37 +1,33 @@
 Dave_js.Utils = {};
 
-Dave_js.Utils.autoRange = function autoRange(unranged){
-
-  var
-    ranged = {
-      data: unranged.data || [],
-      min: +unranged.min || null,
-      max: +unranged.max || null
-    },
-    pad = 0;
+Dave_js.Utils.ground = function ground(num) {
+  var mag, exp, sign;
   
-  if(ranged.min === null){
-    //no minimum was set for this variable,
-    //find the smallest element in the array
-    ranged.min = Math.min.apply(null, ranged.data);
-  } else {
-    //There was a minimum set, 
-    //make sure the array does not contain any points smaller than the minimum
-    ranged.data = Dave_js.Utils.applyBounds(ranged.data, ranged.min, null);
-  }
-  if(ranged.max === null){
-    ranged.max = Math.max.apply(null, ranged.data);
-  } else {
-    ranged.data = Dave_js.Utils.applyBounds(ranged.data, null, ranged.max);
-  }
+  num = +num || 0;
   
+  //round the value down to the most significant digit    
+  exp = num < 1 ?
+    -Math.ceil(Math.abs(Math.log10(num))) :
+    Math.ceil(Math.abs(Math.log10(num))) - 1;
+  mag = Math.pow(10, exp);
+  num = (((num / mag)) >> 0) * mag;
+  
+  return num;
+};
 
-  //pad data range by 5%
-  pad = (ranged.max - ranged.min) * 0.05;
-  ranged.min -= pad;
-  ranged.max += pad;
+Dave_js.Utils.sky = function sky(num) {
+  var mag, exp, sign;
+  
+  num = +num || 0;
 
-  return ranged;
+  //round up the value to the incremented most significant digit
+  exp = num < 1 ?
+    -Math.ceil(Math.abs(Math.log10(num))) :
+    Math.ceil(Math.abs(Math.log10(num))) - 1;
+  mag = Math.pow(10, exp);
+  num = (((num / mag) + 1) >> 0) * mag;
+
+  return num;
 };
 
 Dave_js.Utils.applyBounds = function applyBounds(data, min, max) {

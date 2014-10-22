@@ -130,8 +130,10 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange() {
   }
   yMin = Dave_js.Utils.forceNumber(yVar.min);
   yMin = isNaN(yMin) ? range.yMin : yMin;
+  yMin = Dave_js.Utils.ground(yMin);
   yMax = Dave_js.Utils.forceNumber(yVar.max);
   yMax = isNaN(yMax) ? range.yMax : yMax;
+  yMax = Dave_js.Utils.sky(yMax);
 
   //if no x var was set, use the y index for the range
   if(!xVar){
@@ -164,6 +166,11 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange() {
     }
   }
 
+console.log({
+    x: {min: xMin, max: xMax},
+    y: {min: yMin, max: yMax}
+  })
+;
   this.setAxisRange({
     x: {min: xMin, max: xMax},
     y: {min: yMin, max: yMax}
