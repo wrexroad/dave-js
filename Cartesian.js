@@ -36,7 +36,7 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
 Dave_js.Cartesian.prototype.getAxisSize = function getAxisSize(varName) {
   var
     converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
-    varData = (this.dataStore.getVar(varName) || {}).sigFigs,
+    sigFigs = (this.dataStore.getVar(varName) || {}).sigFigs || 1,
     text = Math.pow(10, sigFigs);
 
   return (
