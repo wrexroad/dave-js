@@ -49,14 +49,9 @@ Dave_js.DataStore = (function DataStoreFactory() {
           sigFig_i = Dave_js.Utils.getSigFigs(varData[pnt_i]);
           sigFigs.push(sigFig_i);
           labelLength.push(converter(varData[pnt_i], sigFig_i).length);
-          
-          //figure out if this is a max or minimum point
-          num = Dave_js.Utils.forceNumber(keyedData[key]);
-          if(!isNaN(num)){
-            numberData.push(num);
-          }
         }
 
+        numberData = varData.filter(Dave_js.Utils.forceNumber);
         min = Math.min.apply(null, numberData);
         max = Math.max.apply(null, numberData);
 
@@ -67,8 +62,10 @@ Dave_js.DataStore = (function DataStoreFactory() {
           length: indexData.length,
           min: min,
           max: max,
-          labelLength: Math.max.apply(null, labelLength),
-          sigFigs: Math.max.apply(null, sigFigs),
+          labelLength:
+            Math.max.apply(null, labelLength.filter(Dave_js.Utils.forceNumber)),
+          sigFigs:
+            Math.max.apply(null, sigFigs.filter(Dave_js.Utils.forceNumber)),
           constant: min == max ? true: false,
           converter: converter
         };
