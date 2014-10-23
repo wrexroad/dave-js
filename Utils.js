@@ -79,18 +79,17 @@ Dave_js.Utils.getRange = function getRange(data){
   };
 };
 
-Dave_js.Utils.createLabels = function createLabels(min, max, length, converter){
+Dave_js.Utils.createLabels = function createLabels(min, max, length, varData) {
   var
-    i,
-    interval,
-    value,
-    result = [];
+    label_i, interval, value,
+    result = [],
+    converter = (varData || {}).converter || Dave_js.Converters.default;
   
   interval = (max - min) / length;
 
-  for (i = 0; i <= length; i++) {
-    value = (min + (i * interval));
-    result[i] = {
+  for (label_i = 0; label_i <= length; label_i++) {
+    value = (min + (label_i * interval));
+    result[label_i] = {
       text: converter(value),
       coord: value - min
     };

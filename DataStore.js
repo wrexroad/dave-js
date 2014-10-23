@@ -18,7 +18,8 @@ Dave_js.DataStore = (function DataStoreFactory() {
   DataStore.prototype.addJSONData = function addJSONData(jsonData, index) {
     var
       var_i, pnt_i, length, keyedData, varData, indexData, key, num,
-      numberData, min, max, converter, labelLength = [], sigFigs = [],
+      numberData, min, max, converter, sigFig_i,
+      labelLength = [], sigFigs = [],
       defaultConverter = Dave_js.Converters.default,
       dataSetVars = sets[this.id].vars;
 
@@ -44,9 +45,10 @@ Dave_js.DataStore = (function DataStoreFactory() {
           keyedData[key] = varData[pnt_i];
 
           //save the length of the converted label and significant figures
-          labelLength.push(converter(varData[pnt_i]).length);
-          sigFigs.push(Dave_js.Utils.getSigFigs(varData[pnt_i]));
-
+          sigFig_i = Dave_js.Utils.getSigFigs(varData[pnt_i]);
+          sigFigs.push(sigFig_i);
+          labelLength.push(converter(varData[pnt_i], sigFig_i).length);
+          
           //figure out if this is a max or minimum point
           num = Dave_js.Utils.forceNumber(keyedData[key]);
           if(!isNaN(num)){
@@ -66,7 +68,8 @@ Dave_js.DataStore = (function DataStoreFactory() {
           max: max,
           labelLength: Math.max.apply(null, labelLength),
           sigFigs: Math.max.apply(null, sigFigs),
-          constant: min == max ? true: false
+          constant: min == max ? true: false,
+          converter: converter
         };
       }
     }

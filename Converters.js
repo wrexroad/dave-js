@@ -3,7 +3,7 @@ Dave_js.Converters = {
     var num = +val;
     
     return num < 1000 ?
-      val : num.toExponential(sigFigs || 3);
+      val : num.toPrecision(sigFigs || (val + '').length);
   },
   jsTimeToString: function jsTimeToString(ms) {
     return (new Date(ms)).toUTCString();
