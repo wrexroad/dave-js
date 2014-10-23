@@ -81,16 +81,18 @@ Dave_js.Utils.getRange = function getRange(data){
 
 Dave_js.Utils.createLabels = function createLabels(min, max, length, varData) {
   var
-    label_i, interval, value,
-    result = [],
-    converter = (varData || {}).converter || Dave_js.Converters.default;
-  
+    label_i, interval, value, converter, sigFigs,
+    result = [];
+
+  varData = varData || {};
+  converter = varData.converter || Dave_js.Converters.default;
+  sigFigs = varData.sigFigs;
   interval = (max - min) / length;
 
   for (label_i = 0; label_i <= length; label_i++) {
     value = (min + (label_i * interval));
     result[label_i] = {
-      text: converter(value),
+      text: converter(value, sigFigs),
       coord: value - min
     };
   }
