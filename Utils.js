@@ -176,18 +176,24 @@ Dave_js.Utils.getSigFigs = function getSigFigs(num) {
   //break number into integer and fractional parts
   parts = num.split('.');
 
-  //remove leading zeros from the integer and fractional parts
+  //remove leading zeros from the integer part
   char_i = 0;
   while (parts[0].charAt(char_i) == '0'){
     char_i++;
   }
   parts[0] = parts[0].substring(char_i);
-  char_i = 0;
-  while (parts[1].charAt(char_i) == '0'){
-    char_i++;
+
+  //remove leading zeros from the fractional part if it exists
+  if(parts[1]){
+    char_i = 0;
+    while (parts[1].charAt(char_i) == '0'){
+      char_i++;
+    }
+    parts[1] = parts[1].substring(char_i);
+  } else {
+    parts[1] = '';
   }
-  parts[1] = parts[1].substring(char_i);
-  
+
   //count the remaining digits
   return (parts[0].length + parts[1].length);
 };
