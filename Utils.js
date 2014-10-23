@@ -79,25 +79,37 @@ Dave_js.Utils.getRange = function getRange(data){
   };
 };
 
-Dave_js.Utils.createLabels = function createLabels(min, max, length, varData) {
+Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
   var
-    label_i, interval, value, converter, sigFigs,
-    result = [];
+    label_i, interval, converter, sigFigs, range, divisor, significand,
+    labels = [],
+    numLabels = 10;
 
   varData = varData || {};
   converter = varData.converter || Dave_js.Converters.default;
   sigFigs = varData.sigFigs;
-  interval = (max - min) / length;
+  min = new Big(min || 0);
+  max = new Big(max || 0);
 
-  for (label_i = 0; label_i <= length; label_i++) {
-    value = (min + (label_i * interval));
-    result[label_i] = {
-      text: converter(value, sigFigs),
-      coord: value - min
-    };
+  //get the range of values
+  range = max.minus(min);
+  interval = range.div(numLabels);
+
+  //make sure there is a range
+  if(max.eq(min)){
+    console.error('Dave_js: Cannot create labels when min == max:');
+    console.error('\t(' + min + ' == ' + max + ')');
+    return [];
   }
 
-  return result;
+  for (label_i = min; label_i.lte(max); label_i = label_i.plus(interval)) {
+    labels.push({
+      text: converter(+label_i, sigFigs),
+      coord: +label_i.minus(min)
+    });
+  }
+
+  return labels;
 };
 
 Dave_js.Utils.forceNumber = function forceNumber(num){

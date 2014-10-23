@@ -51,7 +51,7 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     dataStore = this.dataStore || {},
     vars = chart.axisVars || {},
     ctx = this.ctx || {},
-    labels, numTics, coords, pnt_i;
+    labels, maxTics, numLabels, coords, pnt_i;
   
   //configure the drawing context
   ctx.save();
@@ -64,15 +64,17 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
 
   //draw the y axis tics and labels
   ctx.translate(0, chart.height);
-  numTics = (chart.height / chart.fontSize || 25) >> 0;
+  maxTics = (chart.height / (chart.fontSize || 25)) >> 0;
+  
   labels =
     Dave_js.Utils.createLabels(
       this.range.yMin,
       this.range.yMax,
-      numTics,
       dataStore.getVar(vars.y)
     );
-  for (pnt_i = 0; pnt_i <= numTics; pnt_i ++) {
+  numLabels = labels.length;
+
+  for (pnt_i = 0; pnt_i < numLabels; pnt_i ++) {
     Dave_js.Utils.drawTic(
       ctx, labels[pnt_i].text, -labels[pnt_i].coord * this.spacing.y
     );
@@ -80,15 +82,16 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
 
   //draw the x axis tics and labels
   ctx.rotate(1.5 * Math.PI);
-  numTics = (chart.width / chart.fontSize || 25) >> 0;
+  maxTics = (chart.width / (chart.fontSize || 25)) >> 0;
   labels =
     Dave_js.Utils.createLabels(
       this.range.xMin,
       this.range.xMax,
-      numTics,
       dataStore.getVar(vars.x)
     );
-  for (pnt_i = 0; pnt_i <= numTics; pnt_i++) {
+  numLabels = labels.length;
+
+  for (pnt_i = 0; pnt_i < numLabels; pnt_i++) {
     Dave_js.Utils.drawTic(
       ctx, labels[pnt_i].text, labels[pnt_i].coord * this.spacing.x
     );
