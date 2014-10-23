@@ -31,7 +31,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
         varData = jsonData[var_i] || [];
         length = varData.length;
         converter = Dave_js.Converters[var_i] || defaultConverter;
-        sigFigs = 0;
+        labelLength = 0;
 
         //create a hash of data points whose keys are the index variable
         keyedData = {};
@@ -46,8 +46,9 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
           //sigFigs is the length of the converted value of whatever 
           //is in varData, regardless if it is really a number.
-          sigFigs = Math.max(sigFigs, ('' + converter(varData[pnt_i])).length);
-          
+          labelLength =
+            Math.max(labelLength, ('' + converter(varData[pnt_i])).length);
+
           //figure out if this is a max or minimum point
           num = Dave_js.Utils.forceNumber(keyedData[key]);
           if(!isNaN(num)){
@@ -65,7 +66,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
           length: indexData.length,
           min: min,
           max: max,
-          sigFigs: sigFigs,
+          labelLength: labelLength,
           constant: min == max ? true: false
         };
       }

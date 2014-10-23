@@ -35,13 +35,12 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
 
 Dave_js.Cartesian.prototype.getAxisSize = function getAxisSize(varName) {
   var
-    converter = Dave_js.Converters[varName] || Dave_js.Converters.default,
-    sigFigs = (this.dataStore.getVar(varName) || {}).sigFigs || 1,
-    text = Math.pow(10, sigFigs);
+    labelLength = (this.dataStore.getVar(varName) || {}).labelLength || 1;
 
   return (
-    //get the size of a numbner with the right sigFigs, plus space for symbols
-    this.ctx.measureText(' -.e' + text).width
+    //get the rendered width of a string with as many characters as the 
+    //largest label
+    this.ctx.measureText((new Array(labelLength)).join('W')).width
   );
 };
 
