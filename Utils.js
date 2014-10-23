@@ -151,3 +151,43 @@ Dave_js.Utils.arrayToObject = function arrayToObject(array){
 
   return object;
 };
+
+Dave_js.Utils.getSigFigs = function getSigFigs(num) {
+  var
+    significand, parts, numDigits, char_i;
+
+  //check if num is a literal 0
+  if (num === 0) {
+    return 0;
+  }
+
+  //make sure num is a string that can be parsed as a number. 
+  //If it is already a number, precision information will be lost
+  if (typeof num !== 'string' || isNaN(num)) {
+    return null;
+  }
+
+  //strip off any scientific notation
+  num = num.split('e')[0];
+  
+  //strip off any negative sign
+  if(num.charAt(0) == '-'){num = num.substring(1);}
+
+  //break number into integer and fractional parts
+  parts = num.split('.');
+
+  //remove leading zeros from the integer and fractional parts
+  char_i = 0;
+  while (parts[0].charAt(char_i) == '0'){
+    char_i++;
+  }
+  parts[0] = parts[0].substring(char_i);
+  char_i = 0;
+  while (parts[1].charAt(char_i) == '0'){
+    char_i++;
+  }
+  parts[1] = parts[1].substring(char_i);
+  
+  //count the remaining digits
+  return (parts[0].length + parts[1].length);
+};
