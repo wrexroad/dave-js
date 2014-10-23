@@ -51,7 +51,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
           labelLength.push(converter(varData[pnt_i], sigFig_i).length);
         }
 
-        numberData = varData.filter(Dave_js.Utils.forceNumber);
+        numberData = varData.filter(Dave_js.Utils.isNumber);
         min = Math.min.apply(null, numberData);
         max = Math.max.apply(null, numberData);
 
@@ -63,9 +63,9 @@ Dave_js.DataStore = (function DataStoreFactory() {
           min: min,
           max: max,
           labelLength:
-            Math.max.apply(null, labelLength.filter(Dave_js.Utils.forceNumber)),
+            Math.max.apply(null, labelLength.filter(Dave_js.Utils.isNumber)),
           sigFigs:
-            Math.max.apply(null, sigFigs.filter(Dave_js.Utils.forceNumber)),
+            Math.max.apply(null, sigFigs.filter(Dave_js.Utils.isNumber)),
           constant: min == max ? true: false,
           converter: converter
         };

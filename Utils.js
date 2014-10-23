@@ -100,7 +100,7 @@ Dave_js.Utils.createLabels = function createLabels(min, max, length, varData) {
   return result;
 };
 
-Dave_js.Utils.forceNumber = function isNaN(num){
+Dave_js.Utils.forceNumber = function forceNumber(num){
   if(typeof num === 'number'){
     //the input was already a number so there is nothing to do
     return num;
@@ -111,6 +111,10 @@ Dave_js.Utils.forceNumber = function isNaN(num){
     //convert anything falsey to NaN and anything truthy to a number
     return (!num ? NaN : +num);
   }
+};
+
+Dave_js.Utils.isNumber = function isNumber(num){
+  return !isNaN(Dave_js.Utils.forceNumber(num));
 };
 
 Dave_js.Utils.squareDotFactory = function squareDotFactory(opts) {
