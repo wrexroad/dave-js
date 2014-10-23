@@ -176,6 +176,9 @@ Dave_js.Utils.getSigFigs = function getSigFigs(num) {
   //break number into integer and fractional parts
   parts = num.split('.');
 
+  //make sure there is something in the fractional part
+  parts[1] = parts[1] || '';
+
   //remove leading zeros from the integer part
   char_i = 0;
   while (parts[0].charAt(char_i) == '0'){
@@ -183,15 +186,13 @@ Dave_js.Utils.getSigFigs = function getSigFigs(num) {
   }
   parts[0] = parts[0].substring(char_i);
 
-  //remove leading zeros from the fractional part if it exists
-  if(parts[1]){
+  //remove leading zeros from the fractional part if integer part is empty
+  if(parts[0].length === 0){
     char_i = 0;
     while (parts[1].charAt(char_i) == '0'){
       char_i++;
     }
     parts[1] = parts[1].substring(char_i);
-  } else {
-    parts[1] = '';
   }
 
   //count the remaining digits
