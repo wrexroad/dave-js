@@ -81,9 +81,7 @@ Dave_js.Utils.getRange = function getRange(data){
 
 Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
   var
-    label_i, interval, converter, sigFigs, range, divisor, significand,
-    labels = [],
-    numLabels = 10;
+    label_i, stepSize, converter, sigFigs, range, labels = [], numLabels = 10;
 
   varData = varData || {};
   converter = varData.converter || Dave_js.Converters.default;
@@ -93,8 +91,7 @@ Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
 
   //get the range of values
   range = max.minus(min);
-  interval = range.div(numLabels);
-
+  
   //make sure there is a range
   if(max.eq(min)){
     console.error('Dave_js: Cannot create labels when min == max:');
@@ -102,10 +99,68 @@ Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
     return [];
   }
 
-  for (label_i = min; label_i.lte(max); label_i = label_i.plus(interval)) {
+  stepSize = range.div(numLabels);
+  for (label_i = min; label_i.lte(max); label_i = label_i.plus(stepSize)) {
     labels.push({
       text: converter(+label_i, sigFigs),
       coord: +label_i.minus(min)
+    });
+  }
+
+  return labels;
+};
+
+Dave_js.Utils.createTimeLabels=function createTimeLabels(min, max, varData) {
+  var
+    label_i, stepSize, converter, sigFigs, range, startDate,
+    labels = [], numLabels = 10;
+
+  varData = varData || {};
+  //dont use the default converter for dates
+  if(!(converter = varData.converter)){
+    console.warn(
+      'Dave_js: Time converter not set. Assuming values are jsTime.'
+    );
+    converter = Dave_js.Converters.jsTime;
+  }
+  
+  //convert min and max to javascript date objects
+  min = converter(min);
+  max = converter(max);
+  startDate = new Date(min);
+
+  //get the range of values and the setpSize
+  range = max - min;
+
+  //make sure there is a range
+  if(max == min){
+    console.error('Dave_js: Cannot create labels when min == max:');
+    console.error('\t(' + min + ' == ' + max + ')');
+    return [];
+  }
+
+  stepSize = new Date(range / numLabels);
+console.log(min, max, new Date(startDate), +stepSize);
+  //round the step size to hours, minutes or seconds
+  if (stepSize > 3600000) {
+    stepSize = 3600000;
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+  } else if (stepSize > 60000) {
+    stepSize = 60000;
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+  } else if (stepSize > 1000) {
+    setpSize = 1000;
+    startDate.setMilliseconds(0);
+  }
+console.log(+startDate, +stepSize);
+  for (label_i = +startDate; label_i <= max; label_i += stepSize) {
+    console.log(label_i, (new Date(label_i)).toUTCString(), label_i - min);
+    labels.push({
+      text: new Date(label_i).toUTCString(),
+      coord: label_i - min
     });
   }
 

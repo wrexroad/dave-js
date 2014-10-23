@@ -84,7 +84,7 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
   ctx.rotate(1.5 * Math.PI);
   maxTics = (chart.width / (chart.fontSize || 25)) >> 0;
   labels =
-    Dave_js.Utils.createLabels(
+    Dave_js.Utils.createTimeLabels(
       this.range.xMin,
       this.range.xMax,
       dataStore.getVar(vars.x)

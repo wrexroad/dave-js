@@ -48,7 +48,7 @@ Dave_js.DataStore = (function DataStoreFactory() {
           //save the length of the converted label and significant figures
           sigFig_i = Dave_js.Utils.getSigFigs(varData[pnt_i]);
           sigFigs.push(sigFig_i);
-          labelLength.push(converter(varData[pnt_i], sigFig_i).length);
+          labelLength.push(('' + converter(varData[pnt_i], sigFig_i)).length);
         }
 
         numberData = varData.filter(Dave_js.Utils.isNumber);
