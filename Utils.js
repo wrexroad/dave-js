@@ -110,10 +110,11 @@ Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
   return labels;
 };
 
-Dave_js.Utils.createTimeLabels=function createTimeLabels(min, max, varData) {
+Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   var
-    label_i, stepSize, converter, sigFigs, range, startDate,
-    labels = [], numLabels = 10;
+    label_i, stepSize, converter, sigFigs, range, startDate, numLabels,
+    minute, hr, sec, ms,
+    labels = [];
 
   varData = varData || {};
   //dont use the default converter for dates
@@ -128,39 +129,100 @@ Dave_js.Utils.createTimeLabels=function createTimeLabels(min, max, varData) {
   min = converter(min);
   max = converter(max);
   startDate = new Date(min);
-
+  
   //get the range of values and the setpSize
-  range = max - min;
-
-  //make sure there is a range
   if(max == min){
     console.error('Dave_js: Cannot create labels when min == max:');
     console.error('\t(' + min + ' == ' + max + ')');
     return [];
   }
+  range = Math.abs(max - min);
 
-  stepSize = new Date(range / numLabels);
-console.log(min, max, new Date(startDate), +stepSize);
-  //round the step size to hours, minutes or seconds
-  if (stepSize > 3600000) {
+  //Use the range to determine step size and number of labels.
+  //Round the starting date based on the stepSize
+  if (range <= 10) { //10ms range: 2ms resolution
+    stepSize = 2;
+  } else if (range <= 100) { //100ms: 20ms res
+    stepSize = 20;
+
+    ms = (((startDate.getMilliseconds() / 20) >> 0) * 20) + 20;
+    startDate.setMilliseconds(ms);
+
+  } else if (range <= 1000) { //1sec: 200ms res
+    stepSize = 200;
+
+    ms = startDate.getMilliseconds();
+    ms = (((ms / 200) >> 0) * 200) + 200;
+    startDate.setMilliseconds(ms);
+
+  } else if (range <= 60000) { //1min: 10sec res
+    stepSize = 10000;
+
+    sec = (((startDate.getSeconds() / 10) >> 0) * 10) + 10;
+    startDate.setSeconds(sec);
+    startDate.setMilliseconds(0);
+
+  } else if (range <= 600000) { //10min: 1min res
+    stepSize = 60000;
+
+    startDate.setSeconds(60);
+    startDate.setMilliseconds(0);
+
+  } else if (range <= 900000) { //15min: 3min res
+    stepSize = 180000;
+
+    minutes = (((startDate.getMinutes() / 3) >> 0) * 3) + 3;
+    startDate.setMinutes(minutes);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+
+  } else if (range <= 1800000) { //30min: 5min res
+    stepSize = 300000;
+   
+    minutes = (((startDate.getMinutes() / 5) >> 0) * 5) + 5;
+    startDate.setMinutes(minutes);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+
+  } else if (range <= 3600000) { //1hr: 10min res
+    stepSize = 600000;
+
+    minutes = (((startDate.getMinutes() / 10) >> 0) * 10) + 10;
+    startDate.setMinutes(minutes);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+
+  } else if (range <= 43200000) { //12hr: 1hr res
     stepSize = 3600000;
+
+    startDate.setMinutes(60);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+  } else if (range <= 86400000) { //24hr: 6hr res
+    stepSize = 3600000;
+
+    hr = (((startDate.getHours() / 6) >> 0) * 6) + 6;
+    startDate.setHours(hr);
     startDate.setMinutes(0);
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
-  } else if (stepSize > 60000) {
-    stepSize = 60000;
+
+  } else { //24hr res
+    stepSize = 36000000;
+    hr = (((startDate.getHours() / 10) >> 0) * 10) + 10;
+    startDate.setHours(hr);
+    startDate.setMinutes(0);
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
-  } else if (stepSize > 1000) {
-    setpSize = 1000;
-    startDate.setMilliseconds(0);
   }
-console.log(+startDate, +stepSize);
+
+  console.log(min, max, new Date(startDate), range, stepSize);
+
   for (label_i = +startDate; label_i <= max; label_i += stepSize) {
     console.log(label_i, (new Date(label_i)).toUTCString(), label_i - min);
     labels.push({
       text: new Date(label_i).toUTCString(),
-      coord: label_i - min
+      coord: (label_i - min) / 1000
     });
   }
 
