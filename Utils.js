@@ -112,8 +112,8 @@ Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
 
 Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   var
-    label_i, stepSize, converter, sigFigs, range, startDate, numLabels,
-    minute, hr, sec, ms,
+    label_i, stepSize, converter, sigFigs, range, startDate, numLabels, 
+    inverseConverse, minute, hr, sec, ms,
     labels = [];
 
   varData = varData || {};
@@ -125,6 +125,9 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
     converter = Dave_js.Converters.jsTime;
   }
   
+  //get an inverter for the converter
+  inverseConverse = 1 / converter(1);
+
   //convert min and max to javascript date objects
   min = converter(min);
   max = converter(max);
@@ -216,13 +219,10 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
     startDate.setMilliseconds(0);
   }
 
-  console.log(min, max, new Date(startDate), range, stepSize);
-
   for (label_i = +startDate; label_i <= max; label_i += stepSize) {
-    console.log(label_i, (new Date(label_i)).toUTCString(), label_i - min);
     labels.push({
       text: new Date(label_i).toUTCString(),
-      coord: (label_i - min) / 1000
+      coord: (label_i - min) * inverseConverse
     });
   }
 
