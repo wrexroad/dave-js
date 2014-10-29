@@ -49,15 +49,6 @@ Dave_js.Utils.applyBounds = function applyBounds(data, min, max) {
   return result;
 };
 
-Dave_js.Utils.drawTic = function drawTic(ctx, ticLabel, offset) {
-  if(ticLabel == "--") {ticLabel = "No Label";}
-  ctx.fillText(ticLabel, -5, offset + 5);
-  ctx.beginPath();
-  ctx.moveTo(0, offset);
-  ctx.lineTo(5, offset);
-  ctx.stroke();
-};
-
 Dave_js.Utils.getRange = function getRange(data){
   var
     numbers = [],
@@ -112,7 +103,7 @@ Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
 
 Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   var
-    label_i, stepSize, converter, sigFigs, range, startDate, numLabels, 
+    label_i, stepSize, converter, sigFigs, range, startDate, numLabels,
     inverseConverse, minute, hr, sec, ms,
     labels = [];
 

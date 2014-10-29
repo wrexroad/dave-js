@@ -15,33 +15,24 @@ Dave_js.Cartesian = function Cartesia1n(owner){
 
 Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
   var
+    top, bottom, left, right,
+    fontSize = this.chart.fontSize || 0,
     axisVars = labels.axisVars || {},
-    top, bottom, left, right;
+    labelLength = (this.dataStore.getVar(axisVars.x) || {}).labelLength || 1;
 
-  //calculate the top margin based on the font height
-  top = labels.plotTitle ? this.chart.fontSize : 0;
+  //calculate the top and bottom margins based on the font height
+  top = labels.plotTitle ? fontSize : 0;
+  bottom = fontSize << 1; //possible 2 rows of axis labels
 
   //figure out how wide each axis label set will be
-  bottom = this.getAxisSize.call(this, axisVars.x);
-  left = this.getAxisSize.call(this, axisVars.y);
+  left = this.ctx.measureText((new Array(labelLength)).join('W')).width;
   
   return {
-    top: (top || 0) + this.chart.fontSize,
-    bottom: (bottom || 0) + this.chart.fontSize,
-    left: (left || 0) + this.chart.fontSize,
-    right: (right || 0) + this.chart.fontSize
+    top: (top || 0) + fontSize,
+    bottom: (bottom || 0) + fontSize,
+    left: (left || 0) + fontSize,
+    right: (right || 0) + fontSize
   };
-};
-
-Dave_js.Cartesian.prototype.getAxisSize = function getAxisSize(varName) {
-  var
-    labelLength = (this.dataStore.getVar(varName) || {}).labelLength || 1;
-
-  return (
-    //get the rendered width of a string with as many characters as the 
-    //largest label
-    this.ctx.measureText((new Array(labelLength)).join('W')).width
-  );
 };
 
 Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
@@ -51,7 +42,7 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     dataStore = this.dataStore || {},
     vars = chart.axisVars || {},
     ctx = this.ctx || {},
-    labels, maxTics, numLabels, coords, pnt_i;
+    labels, maxTics, numLabels, pnt_i, offset;
   
   //configure the drawing context
   ctx.save();
@@ -74,14 +65,19 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     );
   numLabels = labels.length;
 
-  for (pnt_i = 0; pnt_i < numLabels; pnt_i ++) {
-    Dave_js.Utils.drawTic(
-      ctx, labels[pnt_i].text, -labels[pnt_i].coord * this.spacing.y
-    );
+  for (pnt_i = 0, offset = 0; pnt_i < numLabels; pnt_i ++) {
+    offset = -labels[pnt_i].coord * this.spacing.y;
+    ctx.fillText(labels[pnt_i].text, -5, offset + 5);
+    ctx.beginPath();
+    ctx.moveTo(0, offset);
+    ctx.lineTo(5, offset);
+    ctx.stroke();
   }
 
   //draw the x axis tics and labels
-  ctx.rotate(1.5 * Math.PI);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+
   maxTics = (chart.width / (chart.fontSize || 25)) >> 0;
   labels =
     Dave_js.Utils.createTimeLabels(
@@ -91,10 +87,13 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     );
   numLabels = labels.length;
 
-  for (pnt_i = 0; pnt_i < numLabels; pnt_i++) {
-    Dave_js.Utils.drawTic(
-      ctx, labels[pnt_i].text, labels[pnt_i].coord * this.spacing.x
-    );
+  for (pnt_i = 0, offset = 0; pnt_i < numLabels; pnt_i++) {
+    offset = labels[pnt_i].coord * this.spacing.x;
+    ctx.fillText(labels[pnt_i].text, offset, 0);
+    ctx.beginPath();
+    ctx.moveTo(offset, 0);
+    ctx.lineTo(offset, -5);
+    ctx.stroke();
   }
   ctx.restore();
 };
