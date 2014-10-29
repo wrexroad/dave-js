@@ -38,6 +38,7 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
 Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
   var
     chart = this.chart || {},
+    fontSize = chart.fontSize,
     plotRegion = chart.plotRegion || {},
     dataStore = this.dataStore || {},
     vars = chart.axisVars || {},
@@ -60,7 +61,6 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
 
   //draw the y axis tics and labels
   ctx.translate(0, chart.height);
-  maxTics = (chart.height / (chart.fontSize || 25)) >> 0;
   
   labels =
     Dave_js.Utils.createLabels(
@@ -98,7 +98,7 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     ticLocation = labels[pnt_i].coord * this.spacing.x;
 
     if(ticLocation > lastText) {
-      ctx.fillText(labelText, ticLocation, 5);
+      ctx.fillText(labelText, ticLocation, fontSize);
       lastText = ticLocation + halfWidth;
       ticLength = -15;
     } else {
