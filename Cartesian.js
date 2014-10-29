@@ -41,8 +41,13 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     plotRegion = chart.plotRegion || {},
     dataStore = this.dataStore || {},
     vars = chart.axisVars || {},
+    x = dataStore.getVar(vars.x),
+    y = dataStore.getVar(vars.y),
     ctx = this.ctx || {},
-    labels, maxTics, numLabels, pnt_i, offset;
+    skipTics = 1,
+    ticLocation = 0,
+    lastText = 0,
+    labels, maxTics, numLabels, pnt_i, labelText, halfWidth, ticLength;
   
   //configure the drawing context
   ctx.save();
@@ -61,16 +66,16 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     Dave_js.Utils.createLabels(
       this.range.yMin,
       this.range.yMax,
-      dataStore.getVar(vars.y)
+      y
     );
   numLabels = labels.length;
 
-  for (pnt_i = 0, offset = 0; pnt_i < numLabels; pnt_i ++) {
-    offset = -labels[pnt_i].coord * this.spacing.y;
-    ctx.fillText(labels[pnt_i].text, -5, offset + 5);
+  for (pnt_i = 0, ticLocation = 0; pnt_i < numLabels; pnt_i ++) {
+    ticLocation = -labels[pnt_i].coord * this.spacing.y;
+    ctx.fillText(labels[pnt_i].text, -5, ticLocation + 5);
     ctx.beginPath();
-    ctx.moveTo(0, offset);
-    ctx.lineTo(5, offset);
+    ctx.moveTo(0, ticLocation);
+    ctx.lineTo(5, ticLocation);
     ctx.stroke();
   }
 
@@ -78,21 +83,31 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
 
-  maxTics = (chart.width / (chart.fontSize || 25)) >> 0;
   labels =
     Dave_js.Utils.createTimeLabels(
       this.range.xMin,
       this.range.xMax,
       dataStore.getVar(vars.x)
     );
+    
   numLabels = labels.length;
+  halfWidth = ctx.measureText((new Array(x.labelLength)).join('W')).width >> 1;
 
-  for (pnt_i = 0, offset = 0; pnt_i < numLabels; pnt_i++) {
-    offset = labels[pnt_i].coord * this.spacing.x;
-    ctx.fillText(labels[pnt_i].text, offset, 0);
+  for (pnt_i = 0, ticLocation = 0; pnt_i < numLabels; pnt_i++) {
+    labelText = labels[pnt_i].text;
+    ticLocation = labels[pnt_i].coord * this.spacing.x;
+
+    if(ticLocation > lastText) {
+      ctx.fillText(labelText, ticLocation, 5);
+      lastText = ticLocation + halfWidth;
+      ticLength = -15;
+    } else {
+      ticLength = -5;
+    }
+
     ctx.beginPath();
-    ctx.moveTo(offset, 0);
-    ctx.lineTo(offset, -5);
+    ctx.moveTo(ticLocation, 0);
+    ctx.lineTo(ticLocation, ticLength);
     ctx.stroke();
   }
   ctx.restore();
