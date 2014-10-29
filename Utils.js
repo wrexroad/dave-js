@@ -139,7 +139,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 100) { //100ms: 20ms res
     stepSize = 20;
 
-    ms = (((startDate.getMilliseconds() / 20) >> 0) * 20) + 20;
+    ms = (((startDate.getMilliseconds() / 20) >> 0) * 20);
     startDate.setMilliseconds(ms);
 
   } else if (range <= 1000) { //1sec: 200ms res
@@ -152,7 +152,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 60000) { //1min: 10sec res
     stepSize = 10000;
 
-    sec = (((startDate.getSeconds() / 10) >> 0) * 10) + 10;
+    sec = (((startDate.getSeconds() / 10) >> 0) * 10);
     startDate.setSeconds(sec);
     startDate.setMilliseconds(0);
 
@@ -165,7 +165,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 900000) { //15min: 3min res
     stepSize = 180000;
 
-    minutes = (((startDate.getMinutes() / 3) >> 0) * 3) + 3;
+    minutes = (((startDate.getMinutes() / 3) >> 0) * 3);
     startDate.setMinutes(minutes);
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
@@ -173,7 +173,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 1800000) { //30min: 5min res
     stepSize = 300000;
    
-    minutes = (((startDate.getMinutes() / 5) >> 0) * 5) + 5;
+    minutes = (((startDate.getMinutes() / 5) >> 0) * 5);
     startDate.setMinutes(minutes);
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
@@ -181,7 +181,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 3600000) { //1hr: 10min res
     stepSize = 600000;
 
-    minutes = (((startDate.getMinutes() / 10) >> 0) * 10) + 10;
+    minutes = (((startDate.getMinutes() / 10) >> 0) * 10);
     startDate.setMinutes(minutes);
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
@@ -195,7 +195,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 86400000) { //24hr: 6hr res
     stepSize = 3600000;
 
-    hr = (((startDate.getHours() / 6) >> 0) * 6) + 6;
+    hr = (((startDate.getHours() / 6) >> 0) * 6);
     startDate.setHours(hr);
     startDate.setMinutes(0);
     startDate.setSeconds(0);
@@ -203,7 +203,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
 
   } else { //24hr res
     stepSize = 36000000;
-    hr = (((startDate.getHours() / 10) >> 0) * 10) + 10;
+    hr = (((startDate.getHours() / 10) >> 0) * 10);
     startDate.setHours(hr);
     startDate.setMinutes(0);
     startDate.setSeconds(0);
@@ -211,6 +211,8 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   }
 
   for (label_i = +startDate; label_i <= max; label_i += stepSize) {
+    if(label_i < min){continue;}
+    
     labels.push({
       text: new Date(label_i).toUTCString(),
       coord: (label_i - min) * inverseConverse
