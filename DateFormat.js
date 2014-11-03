@@ -51,7 +51,11 @@ Dave_js.DateFormat.prototype.dd = function dd(date){
   return date.getUTCDate();
 };
 Dave_js.DateFormat.prototype.doy = function doy(date){
-  return date.getUTCDate();
+  //find out how many milliseconds have elapsed since the start of the year
+  var ms = date - new Date(date.getFullYear(), 0, 0);
+
+  //convert ms to full days that have elapsed
+  return Math.floor(ms / 86400000);
 };
 Dave_js.DateFormat.prototype.dow = function dow(date){
   return date.date.getUTCDay() + 1;
