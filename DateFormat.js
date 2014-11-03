@@ -1,24 +1,24 @@
-Dave_js.DateFormatter = function dateFormatter(format){
-  date: function date(dateObj, format) {
-    var
-      code,
-      formatLength,
-      formatter = Dave_js.DateFormatter,
-      result = "";
-    
-    //make sure date is a Date object
-    dateObj = new Date(dateObj);
+Dave_js.DateFormat = function dateFormatter(fmt){
+  return {
+    format: [].concat(fmt),
+    getDate: function getDate(date) {
+      var
+        code,
+        formatLength,
+        result = "";
+      
+      //make sure date is a Date object
+      date = new Date(date);
 
-    //cycle through the format array 
-    format = [].concat(format);
-    while(format.length){
-      code = format.pop();
-      result += (typeof formatter[code] != 'function') ?
-        formatter[code](dateObj) : code;
+      //cycle through the format array 
+      format = [].concat(format);
+      while(format.length){
+        code = format.pop();
+        result += (typeof formatter[code] != 'function') ?
+          this[code](date) : code;
+      }
     }
-
-    return 
-  
+  };
 };
 Dave_js.DateFormatter.prototype.days = [
   'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
