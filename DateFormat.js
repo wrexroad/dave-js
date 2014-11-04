@@ -42,33 +42,40 @@ Dave_js.DateFormat.prototype.yyyy = function yyyy(date){
   return date.getUTCFullYear();
 };
 Dave_js.DateFormat.prototype.mm = function mm(date){
-  return date.getUTCMonth() + 1;
+  var month = date.getUTCMonth() + 1;
+  return (month < 10 ? "0" : "") + month;
 };
 Dave_js.DateFormat.prototype.MM = function MM(date){
   return this.months[date.getUTCMonth()];
 };
 Dave_js.DateFormat.prototype.dd = function dd(date){
-  return date.getUTCDate();
+  var day = date.getUTCDate() + 1;
+  return (day < 10 ? "0" : "") + day;
 };
 Dave_js.DateFormat.prototype.doy = function doy(date){
-  //find out how many milliseconds have elapsed since the start of the year
-  var ms = date - new Date(date.getFullYear(), 0, 0);
+  var
+    //find out how many milliseconds have elapsed since the start of the year
+    ms = date - new Date(date.getFullYear(), 0, 0),
+    //convert ms to full days that have elapsed
+    day = Math.ceil(ms / 86400000);
 
-  //convert ms to full days that have elapsed
-  return Math.floor(ms / 86400000);
+  return (day < 10 ? "0" : "") + day;
 };
 Dave_js.DateFormat.prototype.dow = function dow(date){
-  return date.date.getUTCDay() + 1;
+  var day = date.date.getUTCDay() + 1;
+
+  return (day < 10 ? "0" : "") + day;
 };
 Dave_js.DateFormat.prototype.DOW = function DOW(date){
   return this.days[date.getUTCDay()];
 };
 Dave_js.DateFormat.prototype.DD = function DD(date){
-  return this.days[date.getUTCDay()];
+  return Dave_js.DateFormat.prototype.DOW(date);
 };
 Dave_js.DateFormat.prototype.hr = function hr(date){
   var hours = date.getUTCHours();
-  return  hours - (hours > 12 ? 12 : 0);
+  hours -= (hours > 12 ? 12 : 0);
+  return (hours < 10 ? "0" : "") + hours;
 };
 Dave_js.DateFormat.prototype.ampm = function ampm(date){
   var hours = date.getUTCHours();
@@ -79,14 +86,18 @@ Dave_js.DateFormat.prototype.AMPM = function AMPM(date){
   return  hours > 12 ? 'AM' : 'PM';
 };
 Dave_js.DateFormat.prototype.HR = function HR(date){
-  return date.getUTCHours();
+  var hours = date.getUTCHours();
+  return (hours < 10 ? "0" : "") + hours;
 };
 Dave_js.DateFormat.prototype.m = function m(date){
-  return date.getUTCMinutes();
+  var min = date.getUTCMinutes();
+  return (min < 10 ? "0" : "") + min;
 };
 Dave_js.DateFormat.prototype.s = function s(date){
-  return date.getUTCSeconds();
+  var sec = date.getUTCSeconds();
+  return (sec < 10 ? "0" : "") + sec;
 };
 Dave_js.DateFormat.prototype.ms = function ms(date){
-  return date.getUTCMilliseconds();
+  var milli = date.getUTCMilliseconds();
+  return (milli < 10 ? "0" : "") + milli;
 };
