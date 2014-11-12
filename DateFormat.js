@@ -1,31 +1,40 @@
 Dave_js.DateFormat = function DateFormat(fmt, dateBuilder) {
+  var detDateObject, format, converter;
 
   //use the Date constructor if no dateBuilder was set
-  var getDateObject = (typeof dateBuilder == "function") ?
+  getDateObject = (typeof dateBuilder == "function") ?
       dateBuilder : Date;
 
   //make sure format is an array
-  var format = [].concat(fmt);
+  format = [].concat(fmt);
   
-  return (function toDateString(date) {
-      var
-        code, code_i, result = "",
-        formatters = Dave_js.DateFormat.prototype;
-      
-      //convert the raw date to a Date object
+  //create a function that will convert the date to a formated string
+  converter = (function toString(date) {
+    var
+      code, code_i, result = "",
+      formatters = Dave_js.DateFormat.prototype;
+    
+    //convert the raw date to a Date object if needed
+    if(date.getTime !== Date.prototype.getTime){
       date = new getDateObject(date);
+    }
+    
+    //cycle through the format array
+    for(code_i = 0; code_i < format.length; code_i++){
+      code = format[code_i];
+      result =
+        result +
+        (typeof formatters[code] == 'function' ?
+        formatters[code](date) : code);
+    }
 
-      //cycle through the format array
-      for(code_i = 0; code_i < format.length; code_i++){
-        code = format[code_i];
-        result =
-          result +
-          (typeof formatters[code] == 'function' ?
-          formatters[code](date) : code);
-      }
-
-      return result;
+    return result;
   });
+
+  //add an accessor that will return the internal date object
+  converter.toDateObject = getDateObject;
+
+  return converter;
 };
 
 Dave_js.DateFormat.prototype.days = [

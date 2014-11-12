@@ -103,25 +103,27 @@ Dave_js.Utils.createLabels=function createLabels(min, max, varData) {
 
 Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   var
-    label_i, stepSize, converter, sigFigs, range, startDate, numLabels,
-    inverseConverse, minute, hr, sec, ms,
+    label_i, stepSize, sigFigs, range, startDate, numLabels,
+    inverseConverse, minute, hr, sec, ms, getDateObject, dateFormatter,
     labels = [];
 
   varData = varData || {};
-  //dont use the default converter for dates
-  if(!(converter = varData.converter)){
-    console.warn(
-      'Dave_js: Time converter not set. Assuming values are jsTime.'
-    );
-    converter = Dave_js.Converters.jsTime;
+  
+  //get the Date object and string converters
+  dateFormatter =
+    varData.converter ||
+    (function(time){return (new Date(time)).toUTCString();});
+
+  if(typeof (getDateObject = dateFormatter.toDateObject) !== "function"){
+    getDateObject = Dave_js.Converters.jsTime;
   }
   
   //get an inverter for the converter
-  inverseConverse = 1 / converter(1);
+  inverseConverse = 1 / getDateObject(1);
 
   //convert min and max to javascript date objects
-  min = converter(min);
-  max = converter(max);
+  min = getDateObject(min);
+  max = getDateObject(max);
   startDate = new Date(min);
   
   //get the range of values and the setpSize
@@ -193,7 +195,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
   } else if (range <= 86400000) { //24hr: 6hr res
-    stepSize = 3600000;
+    stepSize = 6400000;
 
     hr = (((startDate.getHours() / 6) >> 0) * 6);
     startDate.setHours(hr);
@@ -214,7 +216,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
     if(label_i < min){continue;}
     
     labels.push({
-      text: new Date(label_i).toUTCString(),
+      text: dateFormatter(new Date(label_i)),
       coord: (label_i - min) * inverseConverse
     });
   }
