@@ -195,7 +195,7 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
   } else if (range <= 86400000) { //24hr: 6hr res
-    stepSize = 6400000;
+    stepSize = 3600000;
 
     hr = (((startDate.getHours() / 6) >> 0) * 6);
     startDate.setHours(hr);
