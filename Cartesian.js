@@ -91,7 +91,8 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     );
     
   numLabels = labels.length;
-  halfWidth = ctx.measureText((new Array(x.labelLength)).join('W')).width >> 1;
+  halfWidth =
+    Math.ceil(ctx.measureText((new Array(x.labelLength)).join('W')).width);
 
   for (pnt_i = 0, ticLocation = 0; pnt_i < numLabels; pnt_i++) {
     labelText = labels[pnt_i].text;
