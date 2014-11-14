@@ -1,0 +1,39 @@
+{
+  "name": "davejs",
+  "version": "0.0.1",
+
+  "bigjsPath": "deps/bigjs/big.js",
+  "cssPath": "css/",
+  "buildPath": "build/",
+  "distPath": "dist/",
+
+  "daveFiles": [
+    "DateFormat.js",
+    "Converters.js",
+    "ChartProperties.js",
+    "Plot.js",
+    "Utils.js",
+    "Cartesian.js",
+    "Zoom.js",
+    "ColorPallet.js",
+    "DataFilters.js",
+    "AjaxDataConnector.js",
+    "DataStore.js",
+    "Message.js",
+    "dave.js"
+  ],
+
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-shell": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-concat": "*"
+  },
+  "engines": {
+      "node": ">=0.10.0"
+  }
+}
