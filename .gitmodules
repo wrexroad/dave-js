@@ -1,0 +1,3 @@
+[submodule "deps/bigjs"]
+	path = deps/bigjs
+	url = https://github.com/MikeMcl/big.js

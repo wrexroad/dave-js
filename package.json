@@ -2,7 +2,7 @@
   "name": "davejs",
   "version": "0.0.1",
 
-  "bigjsPath": "deps/bigjs/big.js",
+  "bigjsPath": "deps/bigjs/big.min.js",
   "cssPath": "css/",
   "buildPath": "build/",
   "distPath": "dist/",
