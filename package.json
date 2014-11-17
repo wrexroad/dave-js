@@ -8,6 +8,7 @@
   "distPath": "dist/",
 
   "daveFiles": [
+    "dave.js",
     "DateFormat.js",
     "Converters.js",
     "ChartProperties.js",
@@ -19,8 +20,7 @@
     "DataFilters.js",
     "AjaxDataConnector.js",
     "DataStore.js",
-    "Message.js",
-    "dave.js"
+    "Message.js"
   ],
 
   "dependencies": {},

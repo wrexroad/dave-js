@@ -70,7 +70,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('build', ['jshint', 'concat:build', 'uglify:build']);
+  grunt.registerTask('debug', ['test', 'concat:build']);
+  grunt.registerTask('build', ['debug', 'uglify:build']);
   grunt.registerTask('dist', ['build', 'copy']);
-  grunt.registerTask('default', ['build']);
+  grunt.registerTask('default', ['dist']);
 };
