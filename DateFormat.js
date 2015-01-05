@@ -66,9 +66,10 @@ Dave_js.DateFormat.prototype.doy = function doy(date){
     //find out how many milliseconds have elapsed since the start of the year
     ms = date - new Date(date.getFullYear(), 0, 0),
     //convert ms to full days that have elapsed
-    day = Math.ceil(ms / 86400000);
+    day = Math.ceil(ms / 86400000),
+    zeros = day < 10 ? "00" : day < 100 ? "0" : "";
 
-  return (day < 10 ? "0" : "") + day;
+  return zeros + day;
 };
 Dave_js.DateFormat.prototype.dow = function dow(date){
   var day = date.date.getUTCDay() + 1;
