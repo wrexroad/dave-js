@@ -118,24 +118,39 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange() {
   var
     vars = this.chart.axisVars || {},
     dataStore = this.dataStore,
-    yVar = dataStore.getVar(vars.y),
-    xVar = dataStore.getVar(vars.x),
     range = this.range,
-    xMin = xVar.min,
-    xMax = xVar.max,
-    yMin = yVar.min,
-    yMax = yVar.max;
+    
+    xVarData = dataStore.getVar(vars.x),
+    xMin = xVarData.min,
+    xMax = xVarData.max,
+    
+    yVarNames = vars.y,
+    yMinSet = [],
+    yMaxSet = [],
+    yMin, yMax, yVarData, name_i;
 
   //set the y variable first
-  if(!yVar){
+  if(!yVarNames){
     console.log("No axis variables set. Can not determine plot scale.");
     return false;
   }
   
-  yMin = !isNaN(yMin) ? yMin : range.yMin || 0;
-  yMax = !isNaN(yMax) ? yMax : range.yMax || 0;
+  //get the range of all y variables
+  for (name_i in yVarNames) {
+    yVarData = dataStore.getVar(yVarNames[name_i]);
+    yMin = yVarData.min;
+    yMax = yVarData.max;
+
+    if (yMin !== "" && !isNaN(yMin)) {yMinSet.push(yMin);}
+    if (yMax !== "" && !isNaN(yMax)) {yMaxSet.push(yMax);}
+  }
+
+  //make sure we have valid min and max values
+  yMin = yMinSet.length !== 0 ? Math.min.apply(null, yMinSet) : range.yMin || 0;
+  yMax = yMaxSet.length !== 0 ? Math.max.apply(null, yMaxSet) : range.yMax || 0;
+  
   //check if this is a constant variable  
-  if(yVar.constant){
+  if (yVarData.constant) {
     yMin -= 1;
     yMax += 1;
   } else {
@@ -144,17 +159,17 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange() {
     yMax = Dave_js.Utils.sky(yMax);
   }
   //make sure min and max arent set to zero
-  if(yMax === yMin === 0){
+  if (yMax === yMin === 0) {
     yMax = 1;
     yMin = -1;
   }
 
-  //if no x var was set, use the y index for the range
-  if(!xVar){
-    xMin = yVar.keys[0];
-    xMax = yVar.keys[yVar.length - 1];
+  //if no x var was set, use the last y index for the range
+  if(!xVarData){
+    xMin = yVarData.keys[0];
+    xMax = yVarData.keys[yVar.length - 1];
   } else {
-    if(xVar.constant){
+    if(xVarData.constant){
       xMin -= 1;
       xMax += 1;
     } else {
