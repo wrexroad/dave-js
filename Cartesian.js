@@ -248,6 +248,18 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(data) {
   return coords;
 };
 
+Dave_js.Cartesian.prototype.invertCoords = function getCoords(coords) {
+  var
+    range = this.range,
+    chart = this.chart,
+    plotRegion = chart.plotRegion;
+    
+  return {
+    x: range.xMax - (coords.x - plotRegion.left) / this.spacing.x,
+    y: range.yMax - (coords.y - plotRegion.top) / this.spacing.y
+  };
+};
+
 Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
   var
     ctx = this.ctx,

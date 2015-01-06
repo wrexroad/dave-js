@@ -120,8 +120,6 @@ Dave_js.Plot.prototype.decorate = function decorate(labels) {
   if (labels.axisLabels) {
     plotter.labelAxes.call(labels.axisLabels);
   }
-
-  
 };
 
 Dave_js.Plot.prototype.setOrigin = function setOrigin(x, y) {
@@ -273,6 +271,10 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
   }
 
   ctx.restore();
+};
+
+Dave_js.Plot.prototype.invertCoords = function invertCoords(coords) {
+  return this.plotter.invertCoords(coords);
 };
 
 Dave_js.Plot.prototype.drawTitleLegend = function drawTitleLegend(vars) {
