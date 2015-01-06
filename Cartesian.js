@@ -255,7 +255,7 @@ Dave_js.Cartesian.prototype.invertCoords = function getCoords(coords) {
     plotRegion = chart.plotRegion;
     
   return {
-    x: range.xMax - (coords.x - plotRegion.left) / this.spacing.x,
+    x: range.xMin + (coords.x - plotRegion.left) / this.spacing.x,
     y: range.yMax - (coords.y - plotRegion.top) / this.spacing.y
   };
 };
