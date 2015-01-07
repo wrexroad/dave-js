@@ -307,3 +307,7 @@ Dave_js.Plot.prototype.drawAxes = function drawAxes() {
     this.plotter.drawGrid.call(this);
   }
 };
+
+Dave_js.Plot.prototype.getMargins = function getPlotMargins() {
+  return this.chart.plotRegion;
+};
