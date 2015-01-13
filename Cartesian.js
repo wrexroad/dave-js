@@ -357,3 +357,7 @@ Dave_js.Cartesian.prototype.setAxisRange = function setAxisRange(range) {
 
   this.chart.flags.hasPixelConversion = true;
 };
+
+Dave_js.Cartesian.prototype.getAxisRange = function getAxisRange() {
+  return this.range;
+};
