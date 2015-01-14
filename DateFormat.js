@@ -1,5 +1,5 @@
 Dave_js.DateFormat = function DateFormat(fmt, dateBuilder) {
-  var detDateObject, format, converter;
+  var getDateObject, format, converter;
 
   //use the Date constructor if no dateBuilder was set
   getDateObject = (typeof dateBuilder == "function") ?
@@ -64,9 +64,12 @@ Dave_js.DateFormat.prototype.dd = function dd(date){
 Dave_js.DateFormat.prototype.doy = function doy(date){
   var
     //find out how many milliseconds have elapsed since the start of the year
-    ms = date - new Date(date.getFullYear(), 0, 0),
+    ms = date - new Date(date.getUTCFullYear(), 0, 0),
+
     //convert ms to full days that have elapsed
-    day = Math.ceil(ms / 86400000),
+    day = (ms / 86400000) >> 0,
+
+    //get zeros for paddings
     zeros = day < 10 ? "00" : day < 100 ? "0" : "";
 
   return zeros + day;

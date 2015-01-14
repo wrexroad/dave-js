@@ -141,75 +141,75 @@ Dave_js.Utils.createTimeLabels = function createTimeLabels(min, max, varData) {
   } else if (range <= 100) { //100ms: 20ms res
     stepSize = 20;
 
-    ms = (((startDate.getMilliseconds() / 20) >> 0) * 20);
-    startDate.setMilliseconds(ms);
+    ms = (((startDate.getUTCMilliseconds() / 20) >> 0) * 20);
+    startDate.setUTCMilliseconds(ms);
 
   } else if (range <= 1000) { //1sec: 200ms res
     stepSize = 200;
 
-    ms = startDate.getMilliseconds();
+    ms = startDate.getUTCMilliseconds();
     ms = (((ms / 200) >> 0) * 200) + 200;
-    startDate.setMilliseconds(ms);
+    startDate.setUTCMilliseconds(ms);
 
   } else if (range <= 60000) { //1min: 10sec res
     stepSize = 10000;
 
-    sec = (((startDate.getSeconds() / 10) >> 0) * 10);
-    startDate.setSeconds(sec);
-    startDate.setMilliseconds(0);
+    sec = (((startDate.getUTCSeconds() / 10) >> 0) * 10);
+    startDate.setUTCSeconds(sec);
+    startDate.setUTCMilliseconds(0);
 
   } else if (range <= 600000) { //10min: 1min res
     stepSize = 60000;
 
-    startDate.setSeconds(60);
-    startDate.setMilliseconds(0);
+    startDate.setUTCSeconds(60);
+    startDate.setUTCMilliseconds(0);
 
   } else if (range <= 900000) { //15min: 3min res
     stepSize = 180000;
 
-    minutes = (((startDate.getMinutes() / 3) >> 0) * 3);
-    startDate.setMinutes(minutes);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    minutes = (((startDate.getUTCMinutes() / 3) >> 0) * 3);
+    startDate.setUTCMinutes(minutes);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
 
   } else if (range <= 1800000) { //30min: 5min res
     stepSize = 300000;
    
-    minutes = (((startDate.getMinutes() / 5) >> 0) * 5);
-    startDate.setMinutes(minutes);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    minutes = (((startDate.getUTCMinutes() / 5) >> 0) * 5);
+    startDate.setUTCMinutes(minutes);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
 
   } else if (range <= 3600000) { //1hr: 10min res
     stepSize = 600000;
 
-    minutes = (((startDate.getMinutes() / 10) >> 0) * 10);
-    startDate.setMinutes(minutes);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    minutes = (((startDate.getUTCMinutes() / 10) >> 0) * 10);
+    startDate.setUTCMinutes(minutes);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
 
   } else if (range <= 43200000) { //12hr: 1hr res
     stepSize = 3600000;
 
-    startDate.setMinutes(60);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    startDate.setUTCMinutes(60);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
   } else if (range <= 86400000) { //24hr: 6hr res
     stepSize = 3600000;
 
-    hr = (((startDate.getHours() / 6) >> 0) * 6);
-    startDate.setHours(hr);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    hr = (((startDate.getUTCHours() / 6) >> 0) * 6);
+    startDate.setUTCHours(hr);
+    startDate.setUTCMinutes(0);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
 
   } else { //24hr res
     stepSize = 36000000;
-    hr = (((startDate.getHours() / 10) >> 0) * 10);
-    startDate.setHours(hr);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    hr = (((startDate.getUTCHours() / 10) >> 0) * 10);
+    startDate.setUTCHours(hr);
+    startDate.setUTCMinutes(0);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
   }
 
   for (label_i = +startDate; label_i <= max; label_i += stepSize) {
