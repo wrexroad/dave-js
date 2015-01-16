@@ -15,10 +15,10 @@ Dave_js.Plot = function Plot(type) {
   //create the canvas elements
   this.dataCanvas = document.createElement("canvas");
   this.dataCanvas.id = this.chart.dataCanvasId;
-  this.dataCanvas.class = "davejs-data-canvas";
+  this.dataCanvas.className = "davejs-data-canvas";
   this.decorCanvas = document.createElement("canvas");
   this.decorCanvas.id = this.chart.decorCanvasId;
-  this.dataCanvas.class = "davejs-decor-canvas";
+  this.decorCanvas.className = "davejs-decor-canvas";
   
   //initialize canvas context
   this.dataCtx = this.dataCanvas.getContext("2d");
@@ -45,8 +45,8 @@ Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
     );
   }
 
-  this.canvasBox.appendChild(this.decorCanvas);
   this.canvasBox.appendChild(this.dataCanvas);
+  this.canvasBox.appendChild(this.decorCanvas);
 };
 
 Dave_js.Plot.prototype.configure = function configure(labels) {
@@ -252,7 +252,7 @@ Dave_js.Plot.prototype.drawData = function drawData(data) {
 
   //configure plotting context
   ctx.save();
-  ctx.translate(plotRegion.left, plotRegion.top + chart.height);
+  ctx.translate(0, chart.height);
   ctx.scale(1, -1);
 
   //set colors for this plot

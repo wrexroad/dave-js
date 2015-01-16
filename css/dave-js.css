@@ -37,7 +37,10 @@
    right: 0;
 }
 .davejs-decor-canvas{
-  z-index: 99;
+  position: relative;
+  z-index: 50;
+  left: 0;
+  top: 0;
 }
 .davejs-data-canvas{
   position: absolute;

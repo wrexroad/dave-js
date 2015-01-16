@@ -254,8 +254,7 @@ Dave_js.Cartesian.prototype.getCoords = function getCoords(data) {
 Dave_js.Cartesian.prototype.invertPlotCoords = function getCoords(coords) {
   var
     range = this.range,
-    chart = this.chart,
-    plotRegion = chart.plotRegion;
+    chart = this.chart;
     
   return {
     x: range.xMin + coords.x / this.spacing.x,
