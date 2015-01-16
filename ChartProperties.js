@@ -1,6 +1,7 @@
 Dave_js.ChartProperties = function ChartProperties(){
   //canvas id based on the user specified name
-  this.id = Math.random() + "-canvas";
+  this.dataCanvasId = Math.random() + "-dataCanvas";
+  this.decorCanvasId = Math.random() + "-decorCanvas";
   
   //default canvas size
   this.sizes = {

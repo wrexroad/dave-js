@@ -36,3 +36,11 @@
    left: 0;
    right: 0;
 }
+.davejs-decor-canvas{
+  z-index: 99;
+}
+.davejs-data-canvas{
+  position: absolute;
+  left: 0;
+  top: 0;
+}

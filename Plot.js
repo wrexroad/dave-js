@@ -12,12 +12,17 @@ Dave_js.Plot = function Plot(type) {
   //get a new set of properties
   this.chart = new Dave_js.ChartProperties();
 
-  //create the canvas element
-  this.canvas = document.createElement("canvas");
-  this.canvas.id = this.chart.id;
+  //create the canvas elements
+  this.dataCanvas = document.createElement("canvas");
+  this.dataCanvas.id = this.chart.dataCanvasId;
+  this.dataCanvas.class = "davejs-data-canvas";
+  this.decorCanvas = document.createElement("canvas");
+  this.decorCanvas.id = this.chart.decorCanvasId;
+  this.dataCanvas.class = "davejs-decor-canvas";
   
   //initialize canvas context
-  this.ctx = this.canvas.getContext("2d");
+  this.dataCtx = this.dataCanvas.getContext("2d");
+  this.decorCtx = this.decorCanvas.getContext("2d");
 
   this.canvasBox = document.getElementsByTagName("body")[0];
 };
@@ -40,15 +45,18 @@ Dave_js.Plot.prototype.renderInto = function renderInto(canvasDivID) {
     );
   }
 
-  this.canvasBox.appendChild(this.canvas);
+  this.canvasBox.appendChild(this.decorCanvas);
+  this.canvasBox.appendChild(this.dataCanvas);
 };
 
 Dave_js.Plot.prototype.configure = function configure(labels) {
   var
-    canvas = this.canvas || {},
+    decorCanvas = this.decorCanvas || {},
+    dataCanvas = this.dataCanvas || {},
     chart = this.chart || {},
     flags = chart.flags || {},
-    ctx = this.ctx || {},
+    dataCtx = this.dataCtx || {},
+    decorCtx = this.decorCtx || {},
     plotter = this.plotter,
     font = this.chart.cssFont || '',
     plotRegion, fontSize;
@@ -69,7 +77,7 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
       font = '12px ' + font;
     }
   }
-  chart.cssFont = ctx.font = font;
+  chart.cssFont = dataCtx.font = decorCtx.font = font;
   chart.fontSize = fontSize;
 
   //figure out how much space the ticmarks and labels will occupy
@@ -77,23 +85,28 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
     this.plotter.calculateMargins.call(this, labels);
 
   //get the size of the plotting area
-  canvas.width = chart.width + plotRegion.left + plotRegion.right;
-  canvas.height = chart.height + plotRegion.top + plotRegion.bottom;
+  dataCanvas.width = chart.width;
+  dataCanvas.height = chart.height;
+  decorCanvas.width = chart.width + plotRegion.left + plotRegion.right;
+  decorCanvas.height = chart.height + plotRegion.top + plotRegion.bottom;
   
-  //draw background
-  ctx.save();
-  ctx.translate(plotRegion.left, plotRegion.top);
+  //move the data canvas to the origin
+  dataCanvas.style.left = plotRegion.left + "px";
+  dataCanvas.style.top = plotRegion.top + "px";
+
+  //draw background of the data canvas
+  dataCtx.save();
   if (chart.bgImg) {
     //resize the image to fit the plotting area
-    chart.bgImg.width = canvas.width;
-    chart.bgImg.height = canvas.height;
+    chart.bgImg.width = dataCanvas.width;
+    chart.bgImg.height = dataCanvas.height;
 
-    ctx.drawImage(chart.bgImg,0 , 0);
+    dataCtx.drawImage(chart.bgImg,0 , 0);
   } else {
-    ctx.fillStyle = chart.colors.bgColor;
-    ctx.fillRect(0,0, chart.width, chart.height);
+    dataCtx.fillStyle = chart.colors.bgColor;
+    dataCtx.fillRect(0,0, dataCanvas.width, dataCanvas.height);
   }
-  ctx.restore();
+  dataCtx.restore();
 
   //calculate the value/pixes ratio
   if (flags.autoRange) {
@@ -102,15 +115,16 @@ Dave_js.Plot.prototype.configure = function configure(labels) {
 };
 
 Dave_js.Plot.prototype.decorate = function decorate(labels) {
-  
+  var ctx = this.decorCtx;
+
   //print title (bold)
   if (typeof labels.plotTitle == "string") {
     
-    this.ctx.save();
-    this.ctx.textAlign = "center";
-    this.ctx.fillStyle = this.chart.colors.text;
-    this.ctx.font = "bold " + this.chart.cssFont;
-    this.ctx.fillText(
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.fillStyle = this.chart.colors.text;
+    ctx.font = "bold " + this.chart.cssFont;
+    ctx.fillText(
       labels.plotTitle,
       (this.chart.width / 2), -5
     );
@@ -217,7 +231,7 @@ Dave_js.Plot.prototype.getChartProps = function getChartProps() {
 Dave_js.Plot.prototype.drawData = function drawData(data) {
   var
     plotter = this.plotter,
-    ctx = this.ctx || {},
+    ctx = this.dataCtx || {},
     chart = this.chart || {},
     plotRegion = chart.plotRegion || {},
     brushWidth = +data.brushWidth || 2,
@@ -279,7 +293,7 @@ Dave_js.Plot.prototype.invertCoords = function invertCoords(coords) {
 
 Dave_js.Plot.prototype.drawTitleLegend = function drawTitleLegend(vars) {
   var
-    ctx = this.ctx,
+    ctx = this.decorCtx,
     numVars = vars.length,
     offset = 0, var_i;
 
@@ -300,7 +314,7 @@ Dave_js.Plot.prototype.drawAxes = function drawAxes() {
     chart = this.chart || {},
     flags = chart.flags || {},
     plotRegion = chart.plotRegion || {},
-    ctx = this.ctx;
+    ctx = this.decorCtx;
 
   //add the grid based on the 
   if (!flags.hasRange) {

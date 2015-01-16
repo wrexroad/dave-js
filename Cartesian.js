@@ -25,7 +25,7 @@ Dave_js.Cartesian.prototype.calculateMargins=function calculateMargins(labels) {
   bottom = fontSize << 1; //possible 2 rows of axis labels
 
   //figure out how wide each axis label set will be
-  left = this.ctx.measureText((new Array(labelLength)).join('W')).width;
+  left = this.decorCtx.measureText((new Array(labelLength)).join('W')).width;
   
   return {
     top: (top || 0) + fontSize,
@@ -44,7 +44,7 @@ Dave_js.Cartesian.prototype.drawGrid = function drawGrid() {
     vars = chart.axisVars || {},
     x = dataStore.getVar(vars.x),
     y = dataStore.getVar(vars.y),
-    ctx = this.ctx || {},
+    ctx = this.decorCtx || {},
     skipTics = 1,
     ticLocation = 0,
     lastText = 0,
@@ -185,25 +185,28 @@ Dave_js.Cartesian.prototype.autoRange = function autoRange() {
 };
 
 Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels) {
-  var left, right;
+  var
+    ctx = this.decorCtx,
+    left, right;
+
   if(!labels){return;}
   
-  this.ctx.save();
+  ctx.save();
 
   if(labels.x){
-    this.ctx.fillStyle = this.chart.colors.text;
-    this.ctx.textAlign = "start";
-    this.ctx.fillText(labels.x, -50, (this.chart.height + 40));
+    ctx.fillStyle = this.chart.colors.text;
+    ctx.textAlign = "start";
+    ctx.fillText(labels.x, -50, (this.chart.height + 40));
   }
 
   if(labels.y){
-    this.ctx.translate(-45, (this.chart.height / 2) );
-    this.ctx.rotate(1.5 * Math.PI);
-    this.ctx.textAlign = "center";
-    this.ctx.fillText(labels.y, 0, -20);
+    ctx.translate(-45, (this.chart.height / 2) );
+    ctx.rotate(1.5 * Math.PI);
+    ctx.textAlign = "center";
+    ctx.fillText(labels.y, 0, -20);
   }
 
-  this.ctx.restore();
+  ctx.restore();
 
   return {
     left: left || 0,
@@ -275,7 +278,7 @@ Dave_js.Cartesian.prototype.invertCanvasCoords = function getCoords(coords) {
 
 Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
   var
-    ctx = this.ctx,
+    ctx = this.dataCtx,
     onPath = false,
     numPts = coords.length || 0,
     pnt_i, x, y;
@@ -305,7 +308,7 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
 
 Dave_js.Cartesian.prototype.drawLegend = function drawLegend() {
   var
-    ctx = this.ctx,
+    ctx = this.decorCtx,
     vars = this.vars,
     chart = this.chart,
     var_i;
