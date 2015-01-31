@@ -216,74 +216,77 @@ Dave_js.Plot.prototype.setAutoRange = function setAutoRange(bool) {
   this.chart.flags.autoRange = bool;
 };
 
-Dave_js.Plot.prototype.getDataStore = function getDataStore() {
-  return this.dataStore;
-};
-
-Dave_js.Plot.prototype.setDataStore = function setDataStore(ds) {
-  this.dataStore = ds;
-};
-
 Dave_js.Plot.prototype.getChartProps = function getChartProps() {
   return this.chart;
 };
 
-Dave_js.Plot.prototype.drawData = function drawData(data) {
+/*
+Expect the data to be either one object (or object array) with this layout:
+{
+  coords: {//an object containing all coordinate data keyed by variable names
+    String: [[Number, Number]] //An array of coordinate pairs. 
+  },
+  style: { //an object conaining plotting style for each variable keyed by name
+    String: { 
+      color: String, //color of line or points
+      brushWidth: Number, //line or point thickness in pixes
+      lines: Boolean, //do we want to draw lines?
+      points: Boolean, //do we want to draw points?
+      dot: Function // function that will describes how to draw points
+    }
+  }
+}
+*/
+Dave_js.Plot.prototype.drawData = function draw(data) {
   var
     plotter = this.plotter,
     ctx = this.dataCtx || {},
     chart = this.chart || {},
     plotRegion = chart.plotRegion || {},
     brushWidth = +data.brushWidth || 2,
-    color = data.color || 'black',
-    style, coords, dot;
+    coords = data.coords,
+    color, style, dot, pixCoords, varName;
 
   //make sure the required variables are set
   if(!data || !data.vars){
-    console.log('No data to draw!');
+    console.error('No data to draw!', (new Error()));
     return;
   }
 
-  //default to drawing just a line plot
-  style = (data.style || "line").toLowerCase();
-  
-  //convert all of the values to pixel coordinates
-  coords = plotter.getCoords.call(this, data);
-
-  //configure plotting context
+  //configure the context for plotting data
   ctx.save();
   ctx.translate(0, chart.height);
   ctx.scale(1, -1);
 
-  //set colors for this plot
-  ctx.fillStyle = color;
-  ctx.strokeStyle = color;
+  for (varName in coords) {
+    style = data.style[varName];
+    color = style.color;
+    brushWidth = style.brushWidth;
+  
+    //set colors for this plot
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
 
-  //draw the various styles that were specified
-  if(style.indexOf("line") != -1){
-    if(typeof plotter.drawLines == 'function'){
-      plotter.drawLines.call(this, coords);
-    } else {
-      console.log(this.type + " plotter can not plot lines.");
+    //convert all of the values to pixel coordinates
+    pixCoords = plotter.getCoords.call(this, data);
+
+    if (style.line) {
+      if(typeof plotter.drawLines == 'function'){
+        plotter.drawLines.call(this, pixCoords);
+      } else {
+        console.error(this.type + " plotter can not plot lines.",(new Error()));
+      }
     }
-  }
-  if(style.indexOf("point") != -1){
-    dot = (
-      typeof data.dot == 'function' ?
-        dot :
-        Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
-    );
 
-    coords.forEach(dot, this);
-  }
-  if(style.indexOf("function") != -1){
-    if(typeof plotter.drawFunction == 'function'){
-      plotter.drawPoints.call(this, data);
-    } else {
-      console.log(this.type + " plotter can not plot function.");
+    if (style.points) {
+      dot = (
+        typeof data.dot == 'function' ?
+          dot :
+          Dave_js.Utils.squareDotFactory({color: color, width: brushWidth})
+      );
+      pixCoords.forEach(dot, this);
     }
-  }
-
+  }  
   ctx.restore();
 };
 

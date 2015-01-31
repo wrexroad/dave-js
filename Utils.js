@@ -262,7 +262,9 @@ Dave_js.Utils.squareDotFactory = function squareDotFactory(opts) {
     */
 
   function dot(coords) {
-    this.ctx.fillRect(coords.x - halfWidth, coords.y - halfWidth, width, width);
+    this.ctx.fillRect(
+      coords[0] - halfWidth, coords[1] - halfWidth, width, width
+    );
   }
 
   return dot;

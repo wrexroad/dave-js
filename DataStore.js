@@ -1,3 +1,4 @@
+/*
 Dave_js.DataStore = (function DataStoreFactory() {
   var sets = [];
   
@@ -102,3 +103,4 @@ Dave_js.DataStore = (function DataStoreFactory() {
 
   return DataStore;
 })();
+*/

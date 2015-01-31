@@ -3,7 +3,7 @@ AjaxDataConnector defines how DaveJS will collect the data it is meant to plot.
 This is a very simple module just meant to demonstrate how to write a custom 
 data collector for DaveJS. However its use is not required.
 */
-
+/*
 Dave_js.AjaxDataConnector = function AjaxDataConnector() {
   //default settings
   this.settings = {
@@ -141,7 +141,7 @@ Dave_js.AjaxDataConnector.prototype.getDataField = function getDataField() {
   return result;
 };
 */
-
+/*
 Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData(d){
   var
     line,
@@ -200,3 +200,4 @@ Dave_js.AjaxDataConnector.prototype.processTableData = function processTableData
 
   return data;
 };
+*/

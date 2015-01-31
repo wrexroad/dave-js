@@ -216,64 +216,47 @@ Dave_js.Cartesian.prototype.labelAxes = function labelAxes(labels) {
 
 Dave_js.Cartesian.prototype.getCoords = function getCoords(data) {
   var
-    x = this.dataStore.getVar(data.vars.x),
-    y = this.dataStore.getVar(data.vars.y),
     xSpacing = this.spacing.x,
     ySpacing = this.spacing.y,
     xMin = this.range.xMin || 0,
     yMin = this.range.yMin || 0,
-    coords = [], data_i, pnt_i, xData, yData;
+    numPts = data.length,
+    coords = [], pnt_i, xData, yData;
     
-    //check if we have an good data
-    if (y === null) {
-      return;
-    } else {
-      yData = y.data;
-    }
-    if (x === null) {
-      //No x axis variable was set use the indexing values from y
-      xData = Dave_js.Utils.arrayToObject(y.keys);
-    } else {
-      xData = x.data;
-    }
-
-    keys = y.keys || {};
-    numPts = y.length || 0;
-
     for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-      data_i = keys[pnt_i];
-      coords[pnt_i] = {
-        x : (xData[data_i] - xMin) * xSpacing,
-        y : (yData[data_i] - yMin) * ySpacing
-      };
+      coords[pnt_i] = [
+        (data[pnt_i][0] - xMin) * xSpacing,
+        (data[pnt_i][1] - yMin) * ySpacing
+      ];
     }
 
   return coords;
 };
 
-Dave_js.Cartesian.prototype.invertPlotCoords = function getCoords(coords) {
-  var
-    range = this.range,
-    chart = this.chart;
-    
-  return {
-    x: range.xMin + coords.x / this.spacing.x,
-    y: range.yMax - coords.y / this.spacing.y
+Dave_js.Cartesian.prototype.invertPlotCoords =
+  function invertPlotCoords(coords) {
+    var
+      range = this.range,
+      chart = this.chart;
+      
+    return {
+      x: range.xMin + coords.x / this.spacing.x,
+      y: range.yMax - coords.y / this.spacing.y
+    };
   };
-};
 
-Dave_js.Cartesian.prototype.invertCanvasCoords = function getCoords(coords) {
-  var
-    range = this.range,
-    chart = this.chart,
-    plotRegion = chart.plotRegion;
-    
-  return {
-    x: range.xMin + (coords.x - plotRegion.left) / this.spacing.x,
-    y: range.yMax - (coords.y - plotRegion.top) / this.spacing.y
+Dave_js.Cartesian.prototype.invertCanvasCoords = 
+  function invertCanvasCoords(coords) {
+    var
+      range = this.range,
+      chart = this.chart,
+      plotRegion = chart.plotRegion;
+      
+    return {
+      x: range.xMin + (coords.x - plotRegion.left) / this.spacing.x,
+      y: range.yMax - (coords.y - plotRegion.top) / this.spacing.y
+    };
   };
-};
-
 
 Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
   var
@@ -283,11 +266,11 @@ Dave_js.Cartesian.prototype.drawLines = function drawLines(coords) {
     pnt_i, x, y;
   
   for (pnt_i = 0; pnt_i < numPts; pnt_i++) {
-    x = coords[pnt_i].x;
-    y = coords[pnt_i].y;
+    x = coords[pnt_i][0];
+    y = coords[pnt_i][1];
 
     //if we hit a data gap, end the current path
-    if (isNaN(coords[pnt_i].y)) {
+    if (isNaN(y)) {
       ctx.stroke();
       onPath = false;
     } else {
